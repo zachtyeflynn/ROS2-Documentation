@@ -1,0 +1,284 @@
+---
+import DocLayout from '../layouts/DocLayout.astro';
+import CodeBlock from '../components/CodeBlock.astro';
+
+// --- 4.3.1 Creating YAML Parameter Files ---
+const yamlDirCode = `[YAML_parameters_directory] = ~/.../[package_name]/config`;
+const yamlDirCustom = `<span class="ph-dir">[YAML_parameters_directory]</span> = ~/.../<span class="ph-generic">[package_name]</span>/config`;
+
+const mkdirCode = `mkdir config`;
+const touchCode = 
+`cd config
+touch [YAML_file_name].yaml`;
+const touchCustom = 
+`cd config
+touch <span class="ph-file">[YAML_file_name]</span>.yaml`;
+
+// --- 4.3.2 Defining Parameters Within YAML File ---
+const yamlDefCode = 
+`[node_name]
+
+    # Always include this line
+    ros__parameters:
+
+        # Parameters go here
+        [parameter_name]: [parameter_value]
+        # Arrays are stored as [0, 0, 0, ...] with the proper data type
+
+        # You can define nested parameters this way
+        [parameter_set]:
+        
+            [parameter_name]: [parameter_value]
+            # Result: accessed via [parameter_set].[parameter_name]`;
+
+const yamlDefCustom = 
+`<span class="ph-generic">[node_name]</span>
+
+    # Always include this line
+    ros__parameters:
+
+        # Parameters go here
+        <span class="ph-generic">[parameter_name]</span>: <span class="ph-generic">[parameter_value]</span>
+        # Arrays are stored as [0, 0, 0, ...] with the proper data type
+
+        # You can define nested parameters this way
+        <span class="ph-generic">[parameter_set]</span>:
+        
+            <span class="ph-generic">[parameter_name]</span>: <span class="ph-generic">[parameter_value]</span>
+            # Result: accessed via [parameter_set].[parameter_name]`;
+
+// --- 4.3.3 Declaring Parameters Within Nodes ---
+const pyDeclareCode = `self.declare_parameter("[parameter_name]", [default_value])`;
+const pyDeclareCustom = `self.declare_parameter("<span class="ph-generic">[parameter_name]</span>", <span class="ph-generic">[default_value]</span>)`;
+
+const cppDeclareCode = 
+`// ...
+public:
+//...
+    // Constructor
+    [node_class_name]() : Node("[node_name]") {
+
+    // Declare parameter
+    this->declare_parameter<[parameter_type]>("[parameter_name]", [default_value]);
+    
+    }`;
+
+const cppDeclareCustom = 
+`// ...
+public:
+//...
+    // Constructor
+    <span class="ph-class">[node_class_name]</span>() : Node("<span class="ph-generic">[node_name]</span>") {
+
+    // Declare parameter
+    this-&gt;declare_parameter&lt;<span class="ph-type">[parameter_type]</span>&gt;("<span class="ph-generic">[parameter_name]</span>", <span class="ph-generic">[default_value]</span>);
+    
+    }`;
+
+// --- 4.3.4 Reading Parameter Values Within Nodes ---
+const pyReadCode = `self.[parameter_variable] = self.get_parameter("[parameter_name]").value`;
+const pyReadCustom = `self.<span class="ph-var">[parameter_variable]</span> = self.get_parameter("<span class="ph-generic">[parameter_name]</span>").value`;
+
+const cppReadCode = 
+`// ...
+public:
+//...
+    // Constructor
+    [node_class_name]() : Node("[node_name]") {
+
+        // Get parameter value
+        if (!this->get_parameter("[parameter_name]", [parameter_variable])) {
+
+        // Do something if fetching parameter value fails
+        // Optional - simply use this->get_parameter if you don't care, it will revert to default parameter value as long as parameter was declared (see above)
+
+        }
+    
+    }
+// ...
+private:
+
+    // Declare the local copy of the parameter (with the proper data type)
+    [data_type] [parameter_variable];
+// ...`;
+
+const cppReadCustom = 
+`// ...
+public:
+//...
+    // Constructor
+    <span class="ph-class">[node_class_name]</span>() : Node("<span class="ph-generic">[node_name]</span>") {
+
+        // Get parameter value
+        if (!this-&gt;get_parameter("<span class="ph-generic">[node_name]</span>", <span class="ph-var">[parameter_variable]</span>)) {
+
+        // Do something if fetching parameter value fails
+        // Optional - simply use this->get_parameter if you don't care, it will revert to default parameter value as long as parameter was declared (see above)
+
+        }
+    
+    }
+// ...
+private:
+
+    // Declare the local copy of the parameter (with the proper data type)
+    <span class="ph-type">[data_type]</span> <span class="ph-var">[parameter_variable]</span>;
+// ...`;
+
+// --- 4.3.5 Running Nodes with YAML Parameter Files ---
+const runYamlCode = `ros2 run [package_name] [executable_node_name] --ros-args --params-file [YAML_parameters_directory]/[YAML_file_name].yaml`;
+const runYamlCustom = `ros2 run <span class="ph-generic">[package_name]</span> <span class="ph-exec">[executable_node_name]</span> --ros-args --params-file <span class="ph-dir">[YAML_parameters_directory]</span>/<span class="ph-generic">[YAML_file_name]</span>.yaml`;
+
+// --- 4.4 Introspecting Parameters ---
+const paramListCode = `ros2 param list`;
+const nodeListCode = `ros2 node list`;
+const paramGetCode = `ros2 param get [node_name] [parameter_name]`;
+const paramGetCustom = `ros2 param get <span class="ph-generic">[node_name]</span> <span class="ph-generic">[parameter_name]</span>`;
+const paramSetCode = `ros2 param set [node_name] [parameter_name] [value]`;
+const paramSetCustom = `ros2 param set <span class="ph-generic">[node_name]</span> <span class="ph-generic">[parameter_name]</span> <span class="ph-generic">[value]</span>`;
+---
+
+<DocLayout title="ROS 2 Parameters" activeSection="parameters">
+
+  <h1 class="doc-title">ROS 2 Parameters</h1>
+
+  <h2 class="section-heading" id="allowed-parameter-types">Allowed Parameter Types</h2>
+  
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>ROS 2 Parameter Type</th>
+          <th>C++ Type</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>bool</td>
+          <td><code>bool</code></td>
+        </tr>
+        <tr>
+          <td>integer</td>
+          <td><code>int64_t</code> (or <code>int</code>)</td>
+        </tr>
+        <tr>
+          <td>double</td>
+          <td><code>double</code></td>
+        </tr>
+        <tr>
+          <td>string</td>
+          <td><code>std::string</code></td>
+        </tr>
+        <tr>
+          <td>bool[]</td>
+          <td><code>std::vector&lt;bool&gt;</code></td>
+        </tr>
+        <tr>
+          <td>int[]</td>
+          <td><code>std::vector&lt;int64_t&gt;</code></td>
+        </tr>
+        <tr>
+          <td>double[]</td>
+          <td><code>std::vector&lt;double&gt;</code></td>
+        </tr>
+        <tr>
+          <td>string[]</td>
+          <td><code>std::vector&lt;std::string&gt;</code></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 class="section-heading" id="defining-loading-parameters">Defining &amp; Loading Parameters</h2>
+
+  <h3 class="subsection-heading">Creating YAML Parameter Files</h3>
+  <p>By convention, parameter files live within a config/ directory of a package, and its parameters are used by the nodes used within this package. In other words, your YAML parameter files should be located at:</p>
+  
+  <CodeBlock code={yamlDirCode} lang="bash" customHtml={yamlDirCustom} />
+
+  <p>If there is no config/ directory, create it within ~/ ... /[package_name] by using:</p>
+  <CodeBlock code={mkdirCode} lang="bash" />
+
+  <p>Then go into the config/ directory and create a YAML script.</p>
+  <CodeBlock code={touchCode} lang="bash" customHtml={touchCustom} />
+
+  <h3 class="subsection-heading">Defining Parameters Within YAML File</h3>
+  <p>You can include as many parameters as needed for each node.</p>
+  
+  <CodeBlock code={yamlDefCode} lang="yaml" customHtml={yamlDefCustom} />
+
+  <blockquote>
+    <strong>NOTE:</strong> <code class="ph-generic-inline">[parameter_name]</code> must match those found in your Python/C++ scripts.
+  </blockquote>
+
+  <h3 class="subsection-heading">Declaring Parameters Within Nodes</h3>
+  <p>Include the following within the constructor of your node class.</p>
+
+  <div class="param-list">
+    <div class="param-item">
+      <code class="param-name ph-type-inline">[parameter_type]</code>
+      <span class="param-desc">: the data type associated with the parameter.</span>
+    </div>
+    <div class="param-item">
+      <code class="param-name ph-generic-inline">[parameter_name]</code>
+      <span class="param-desc">: The name of your parameter that will appear in the YAML files and when introspecting parameters.</span>
+    </div>
+    <div class="param-item">
+      <code class="param-name ph-generic-inline">[default_value]</code>
+      <span class="param-desc">: the value that the parameter will retain if no value is loaded (must match the data type).</span>
+    </div>
+  </div>
+
+  <h4 class="subsubsection-heading">Python</h4>
+  <CodeBlock code={pyDeclareCode} lang="python" customHtml={pyDeclareCustom} />
+
+  <hr class="section-divider" />
+
+  <h4 class="subsubsection-heading">C++</h4>
+  <CodeBlock code={cppDeclareCode} lang="cpp" customHtml={cppDeclareCustom} />
+
+  <h3 class="subsection-heading">Reading Parameter Values Within Nodes</h3>
+  <p>Add this to the constructor of your node class.</p>
+
+  <div class="param-list">
+    <div class="param-item">
+      <code class="param-name ph-var-inline">[parameter_variable]</code>
+      <span class="param-desc">: a variable within the source code to which the parameter value is copied to. Use this to populate your node script with the appropriate parameters.</span>
+    </div>
+  </div>
+
+  <blockquote>
+    <strong>NOTE:</strong> Always declare your parameters before reading their values in your scripts, not doing so is bad practice and could lead to bad side effects.
+  </blockquote>
+
+  <h4 class="subsubsection-heading">Python</h4>
+  <CodeBlock code={pyReadCode} lang="python" customHtml={pyReadCustom} />
+
+  <hr class="section-divider" />
+
+  <h4 class="subsubsection-heading">C++</h4>
+  <CodeBlock code={cppReadCode} lang="cpp" customHtml={cppReadCustom} />
+
+  <h3 class="subsection-heading">Running Nodes with YAML Parameter Files</h3>
+  <CodeBlock code={runYamlCode} lang="bash" customHtml={runYamlCustom} />
+  <p>You may include further arguments.</p>
+
+  <h2 class="section-heading" id="introspecting-parameters">Introspecting Parameters</h2>
+
+  <h3 class="subsection-heading">List All Parameters</h3>
+  <p>View all available parameters.</p>
+  <CodeBlock code={paramListCode} lang="bash" />
+
+  <h3 class="subsection-heading">Get Value of a Parameter</h3>
+  <p>Use the following to see what nodes are currently available (find the correct <code class="ph-generic-inline">[node_name]</code>):</p>
+  <CodeBlock code={nodeListCode} lang="bash" />
+
+  <p>Then find the parameters associated with one of these nodes by using:</p>
+  <CodeBlock code={paramGetCode} lang="bash" customHtml={paramGetCustom} />
+
+  <h3 class="subsection-heading">Set Value of a Parameter (Without YAML File)</h3>
+  <p>Change the value associated with a certain parameter:</p>
+  <CodeBlock code={paramSetCode} lang="bash" customHtml={paramSetCustom} />
+  <p>This does not change the default parameter value, just the current runtime value.</p>
+
+</DocLayout>

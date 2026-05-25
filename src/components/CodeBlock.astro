@@ -6,24 +6,20 @@ interface Props {
   lang?: string;
   customHtml?: string;
   showLegend?: boolean;
+  defaultTab?: 'lang' | 'custom';
 }
 
-const { code, lang = 'text', customHtml, showLegend = false } = Astro.props;
+const { code, lang = 'text', customHtml, showLegend = false, defaultTab = 'lang' } = Astro.props;
 
-const langHighlightedRaw = await codeToHtml(code, {
+const lightHtml = (await codeToHtml(code, {
   lang,
-  themes: {
-    light: 'github-light',
-    dark:  'catppuccin-mocha',
-  },
-  defaultColor: false,
-});
+  theme: 'github-light',
+})).replace(/(<pre[^>]*) style="[^"]*"([^>]*>)/g, '$1$2');
 
-// Strip the style attribute from <pre> entirely — it contains --shiki-light-bg
-// and --shiki-dark-bg which would render as a visible background box.
-// Our CSS bg-code variable handles the background instead.
-const langHighlighted = langHighlightedRaw
-  .replace(/(<pre[^>]*) style="[^"]*"([^>]*>)/g, '$1$2');
+const darkHtml = (await codeToHtml(code, {
+  lang,
+  theme: 'catppuccin-mocha',
+})).replace(/(<pre[^>]*) style="[^"]*"([^>]*>)/g, '$1$2');
 
 const id = `cb-${Math.random().toString(36).slice(2, 8)}`;
 ---
@@ -34,8 +30,8 @@ const id = `cb-${Math.random().toString(36).slice(2, 8)}`;
     <div class="header-right">
       {customHtml && (
         <div class="pill-switcher" role="group" aria-label="Highlighting mode">
-          <button class="pill-btn active" data-tab="lang" data-target={id}>Syntax</button>
-          <button class="pill-btn" data-tab="custom" data-target={id}>Keywords</button>
+          <button class="pill-btn" class:list={[{ active: defaultTab === 'lang' }]} data-tab="lang" data-target={id}>Syntax</button>
+          <button class="pill-btn" class:list={[{ active: defaultTab === 'custom' }]} data-tab="custom" data-target={id}>Keywords</button>
         </div>
       )}
       <button class="copy-btn" data-copy={id} aria-label="Copy code">
@@ -45,22 +41,22 @@ const id = `cb-${Math.random().toString(36).slice(2, 8)}`;
   </div>
 
   <div class="code-content">
-    {customHtml ? (
-      <div class="code-view lang-view active" id={`${id}-lang`}>
-        <pre class="shiki" set:html={customHtml} />
-      </div>
-    ) : (
-      <div class="code-view lang-view active" id={`${id}-lang`} set:html={langHighlighted} />
-    )}
+    <!-- Syntax tab: two pre-rendered Shiki outputs, swapped by CSS based on [data-theme] -->
+    <div class="code-view lang-view" class:list={[{ active: defaultTab === 'lang' }]} id={`${id}-lang`}>
+      <div class="shiki-light" set:html={lightHtml} />
+      <div class="shiki-dark"  set:html={darkHtml} />
+    </div>
+
+    <!-- Keywords tab: custom hand-tagged HTML -->
     {customHtml && (
-      <div class="code-view custom-view" id={`${id}-custom`}>
+      <div class="code-view custom-view" class:list={[{ active: defaultTab === 'custom' }]} id={`${id}-custom`}>
         <pre class="shiki" set:html={customHtml} />
       </div>
     )}
   </div>
 
   {showLegend && (
-    <div class="ph-legend" id={`${id}-legend`}>
+    <div class="ph-legend" class:list={[{ visible: showLegend && defaultTab === 'custom' }]} id={`${id}-legend`}>
       <span class="ph-legend-item"><span class="ph-legend-swatch ph-generic">[generic]</span></span>
       <span class="ph-legend-item"><span class="ph-legend-swatch ph-var">[variable]</span></span>
       <span class="ph-legend-item"><span class="ph-legend-swatch ph-type">[type]</span></span>

@@ -150,7 +150,7 @@ main {
   width: 100%;
   max-width: calc(var(--sidebar-width) + var(--content-max));
   margin: 0 auto;
-  padding: 3rem clamp(1.5rem, 5vw, 4rem); /* ← responsive horizontal padding */
+  padding: 3rem clamp(1.5rem, 5vw, 4rem);
   min-width: 0;
 }
 
@@ -348,8 +348,7 @@ code {
 .code-view { display: none; }
 .code-view.active { display: block; }
 
-/* Reset the global code{} rule inside code blocks so it doesn't
-   apply background/padding/font to Shiki's <code> wrapper */
+/* Reset the global code{} rule inside code blocks */
 .code-block code {
   background: transparent;
   padding: 0;
@@ -360,17 +359,11 @@ code {
   color: inherit;
 }
 
-/* ── Scrollbar theming ── */
-/* Tells the browser to use a dark-on-dark scrollbar in dark mode */
-[data-theme="dark"] .code-block pre {
-  color-scheme: dark;
-}
-[data-theme="light"] .code-block pre {
-  color-scheme: light;
-}
+/* ── Dual-theme Shiki: show only the correct variant ── */
+[data-theme="dark"]  .shiki-light { display: none; }
+[data-theme="light"] .shiki-dark  { display: none; }
 
-/* Shared pre styles — identical across both lang and custom views */
-/* Edit font-family, font-size, line-height, letter-spacing here */
+/* Shared pre styles */
 pre.shiki,
 .code-view pre {
   margin: 0;
@@ -383,10 +376,21 @@ pre.shiki,
   tab-size: 4;
 }
 
+/* Shiki wraps output in its own <pre>; make sure nested pre inside
+   .shiki-light / .shiki-dark also picks up the shared pre styles */
+.shiki-light pre,
+.shiki-dark pre {
+  margin: 0;
+  padding: 1.1rem 1.25rem;
+  overflow-x: auto;
+  font-family: 'Lucida Console', Lucida Console, monospace;
+  font-size: 12px;
+  line-height: 1.4;
+  background: transparent !important;
+  tab-size: 4;
+}
 
 /* ── Suppress placeholder colors in Syntax (lang) tab ── */
-/* The lang view renders the same customHtml but hides ph-* colors   */
-/* so only the .t-* language keyword colors show through             */
 .lang-view .ph-generic,
 .lang-view .ph-dir,
 .lang-view .ph-exec,
@@ -403,7 +407,6 @@ pre.shiki,
 }
 
 /* ── Custom highlight tokens — 8 LaTeX categories ── */
-/* Shared base style */
 .ph-generic, .ph-dir, .ph-exec, .ph-file,
 .ph-var, .ph-class, .ph-fn, .ph-type {
   border-radius: 3px;
@@ -483,7 +486,7 @@ pre.shiki,
   --copy-icon-hover: #cdd6f4;
   --legend-text: #6c7086;
 
-  /* Dark-mode token overrides — brightened for dark bg readability */
+  /* Dark-mode token overrides */
   --c-generic: #ff6b6b;
   --c-dir:     #06e7e7;
   --c-exec:    #fc7ca0;
@@ -493,15 +496,6 @@ pre.shiki,
   --c-fn:      #ff7cfb;
   --c-type:    #4dabf7;
 
-  --c-generic-bg:    #d01a14; /* bashGeneric  — RGB(208,26,20)   */
-  --c-dir-bg:        #00b8d4; /* directories  — Green            */
-  --c-exec-bg:       #cc0077; /* executables  — RGB(255,102,178) darkened for readability */
-  --c-file-bg:       #ac3400; /* fileNames    — NavyBlue         */
-  --c-var-bg:        #00a900; /* variables    — RGB(0,75,0)      */
-  --c-class-bg:      #c05f00; /* classes      — Orange darkened  */
-  --c-fn-bg:         #9b30d0; /* functions    — Orchid darkened  */
-  --c-type-bg:       #0000cc; /* types        — Blue             */
-
   --c-generic-bg: rgba(255, 107, 107, 0.12);
   --c-dir-bg:     rgba(105, 219, 211, 0.12);
   --c-exec-bg:    rgba(255, 153, 196, 0.12);
@@ -510,7 +504,6 @@ pre.shiki,
   --c-class-bg:   rgba(255, 169,  77, 0.12);
   --c-fn-bg:      rgba(245, 139, 255, 0.12);
   --c-type-bg:    rgba( 77, 171, 247, 0.12);
-  
 }
 
 a {
@@ -566,7 +559,7 @@ a {
 .sidebar-section-title-link {
   display: block;
   font-family: var(--font-ui);
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 600;
   letter-spacing: 0.08em;
   color: var(--text-muted);
@@ -682,8 +675,19 @@ body.landing {
   min-width: 2.5rem;
 }
 
-/* ── Inline param-name color variants (for description lists) ── */
-/* Override accent blue with the LaTeX category color             */
+[data-theme="dark"] .shiki-light pre,
+[data-theme="dark"] .shiki-dark pre,
+[data-theme="dark"] .code-view pre {
+  color-scheme: dark;
+}
+
+[data-theme="light"] .shiki-light pre,
+[data-theme="light"] .shiki-dark pre,
+[data-theme="light"] .code-view pre {
+  color-scheme: light;
+}
+
+/* ── Inline param-name color variants ── */
 .param-name.ph-generic-inline { color: var(--c-generic); background: var(--c-generic-bg); }
 .param-name.ph-var-inline     { color: var(--c-var);     background: var(--c-var-bg);     }
 .param-name.ph-type-inline    { color: var(--c-type);    background: var(--c-type-bg);    }
@@ -693,9 +697,6 @@ body.landing {
 .param-name.ph-file-inline    { color: var(--c-file);    background: var(--c-file-bg);    }
 .param-name.ph-dir-inline     { color: var(--c-dir);     background: var(--c-dir-bg);     }
 
-/* ── Shiki dual-theme CSS variable wiring ── */
-/* Only applied to .lang-view so .custom-view token colors are untouched  */
-
-/* Custom tab — set base text color to match Shiki output, no span overrides */
+/* ── Custom tab base text color ── */
 [data-theme="light"] .custom-view pre { color: #24292e; }
 [data-theme="dark"]  .custom-view pre { color: #cdd6f4; }

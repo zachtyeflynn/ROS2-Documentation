@@ -14,14 +14,14 @@ import CodeBlock from '../components/CodeBlock.astro';
 
 // ── Preamble ─────────────────────────────────────────────────────────────────
 const xmlPlaceholderCode =
-`|[generic]|
-|[directory]|
-|[executable]|
-|[file]|
-|[variable]|
-|[class]|
-|[function]|
-|[type]|`;
+`[generic]
+[directory]
+[executable]
+[file]
+[variable]
+[class]
+[function]
+[type]`;
 
 const xmlPlaceholderCustom =
 `<span class="ph-generic">[generic]</span>
@@ -58,10 +58,12 @@ const documentationLinks = [
   <p>This guide was created for ROS 2 Jazzy Jalisco on Ubuntu 24.04. As of May 2026, Jazzy Jalisco is no longer the most up to date long term support (LTS) version of ROS 2, succeeded by Lyrical Luth. LTS of Jazzy Jalisco will continue until May 2029. For now, Jazzy remains one of the most commonly and stable LTS version of ROS 2. This guide will eventually be updated for Lyrical once adoption is widespread.</p>
   <p>For more on ROS 2 distributions, please refer <a href="https://docs.ros.org/en/jazzy/Releases.html" target="_blank" rel="noopener noreferrer">here</a>.</p>
 
-  <h2 class="subsection-heading">Placeholder Notation</h2>
-  <p>This guide will use placeholder variables in its code blocks that are meant to be replaced depending on the context. The following colour-code and notation will be used:</p>
+  <h2 class="subsection-heading">Keyword Placeholders Notation</h2>
+  <p>This documentation uses a highlighting system for placeholder keywords within its codeblocks. These placeholders are intended to be replaced by the user when copying over to their code base. The highlighting is intended to provide clarity over what data types these placeholders are.</p>
 
-  <CodeBlock code={xmlPlaceholderCode} lang="text" customHtml={xmlPlaceholderCustom} showLegend={false} />
+  <CodeBlock code={xmlPlaceholderCode} lang="text" customHtml={xmlPlaceholderCustom} showLegend={false} defaultTab="custom" />
+
+  <p>Most codeblocks have a toggle to change between typical, language-specific syntax highlighting and the keyword placeholder highlighting.</p>
 
   <h2 class="subsection-heading">Further Documentation</h2>
   <div class="table-container">

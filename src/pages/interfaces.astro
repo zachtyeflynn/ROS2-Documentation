@@ -1,0 +1,576 @@
+---
+import DocLayout from '../layouts/DocLayout.astro';
+import CodeBlock from '../components/CodeBlock.astro';
+
+// --- 4.9.2 Structure of Interfaces & Action Types ---
+const msgInterfaceCode = `[msg_type] = [package_name]/msg/[msg_file_name]`;
+const msgInterfaceCustom = `<span class="ph-type">[msg_type]</span> = <span class="ph-generic">[package_name]</span>/msg/<span class="ph-file">[msg_file_name]</span>`;
+
+const srvInterfaceCode = `[srv_type] = [package_name]/srv/[srv_file_name]`;
+const srvInterfaceCustom = `<span class="ph-type">[srv_type]</span> = <span class="ph-generic">[package_name]</span>/srv/<span class="ph-file">[srv_file_name]</span>`;
+
+const actionInterfaceCode = `[action_type] = [package_name]/action/[action_type].action`;
+const actionInterfaceCustom = `<span class="ph-type">[action_type]</span> = <span class="ph-generic">[package_name]</span>/action/<span class="ph-file">[action_type]</span>.action`;
+
+// --- Python Imports ---
+const pyImportMsgCode = `from [package_name].msg import [msg_type]`;
+const pyImportMsgCustom = `from <span class="ph-generic">[package_name]</span>.msg import <span class="ph-type">[msg_type]</span>`;
+
+const pyImportSrvCode = `from [package_name].srv import [srv_type]`;
+const pyImportSrvCustom = `from <span class="ph-generic">[package_name]</span>.srv import <span class="ph-type">[srv_type]</span>`;
+
+const pyImportActionCode = `from [package_name].action import [action_type]`;
+const pyImportActionCustom = `from <span class="ph-generic">[package_name]</span>.action import <span class="ph-type">[action_type]</span>`;
+
+// --- C++ Includes ---
+const cppIncludeMsgCode = `#include "[package_name]/msg/[msg_type].hpp"`;
+const cppIncludeMsgCustom = `#include "<span class="ph-generic">[package_name]</span>/msg/<span class="ph-type">[msg_type]</span>.hpp"`;
+
+const cppIncludeSrvCode = `#include "[package_name]/srv/[srv_type].hpp"`;
+const cppIncludeSrvCustom = `#include "<span class="ph-generic">[package_name]</span>/srv/<span class="ph-type">[srv_type]</span>.hpp"`;
+
+const cppIncludeActionCode = `#include "[package_name]/action/[action_type].hpp"`;
+const cppIncludeActionCustom = `#include "<span class="ph-generic">[package_name]</span>/action/<span class="ph-type">[action_type]</span>.hpp"`;
+
+// --- Storing Custom Interfaces ---
+const rmIncludeSrcCode = `rm -r include/ src/`;
+
+const xmlPackageDepsCode = 
+`<buildtool_depend>rosidl_default_generators</buildtool_depend>
+<exec_depend>rosidl_default_runtime</exec_depend>
+<member_of_group>rosidl_interface_packages</member_of_group>`;
+
+const cmakeListsSkeletonCode = 
+`cmake_minimum_required(VERSION 3.8)
+project([package_name])
+
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  add_compile_options(-Wall -Wextra -Wpedantic)
+endif()
+
+# find dependencies
+find_package(ament_cmake REQUIRED)
+find_package(rosidl_default_generators REQUIRED)
+
+rosidl_generate_interfaces(\${PROJECT_NAME}
+
+)
+
+ament_export_dependencies(rosidl_default_runtime)
+
+ament_package()`;
+
+const mkdirMsgCode = `mkdir msg`;
+const mkdirSrvCode = `mkdir srv`;
+const mkdirActionCode = `mkdir action`;
+
+// --- Custom Message Interfaces ---
+const touchMsgCode = `touch [msg_type].msg`;
+const touchMsgCustom = `touch <span class="ph-type">[msg_type]</span>.msg`;
+
+const msgFormatCode = 
+`[data_type] [message_variable_1]
+[data_type] [message_variable_2]
+[data_type] [message_variable_3]
+// ... Insert as many as needed`;
+const msgFormatCustom = 
+`<span class="ph-type">[data_type]</span> <span class="ph-var">[message_variable_1]</span>
+<span class="ph-type">[data_type]</span> <span class="ph-var">[message_variable_2]</span>
+<span class="ph-type">[data_type]</span> <span class="ph-var">[message_variable_3]</span>
+// ... Insert as many as needed`;
+
+const cmakeGenMsgCode = 
+`// ...
+rosidl_generate_interfaces(\${PROJECT_NAME}
+
+    // No commas needed between entries, just \\n
+    // ...
+    "msg/[msg_type].msg"
+    // ...
+    
+)
+// ...`;
+const cmakeGenMsgCustom = 
+`// ...
+rosidl_generate_interfaces(\${PROJECT_NAME}
+
+    // No commas needed between entries, just \\n
+    // ...
+    "msg/<span class="ph-type">[msg_type]</span>.msg"
+    // ...
+    
+)
+// ...`;
+
+const colconBuildCode = `colcon build --packages-select [package_name]\nsource install/setup.bash`;
+const msgFormatOutputCustom = `<span class="ph-generic">[package_name]</span>/msg/<span class="ph-type">[msg_type]</span>`;
+const showInterfaceMsgCode = `ros2 interface show [package_name]/msg/[msg_type]`;
+const showInterfaceMsgCustom = `ros2 interface show <span class="ph-generic">[package_name]</span>/msg/<span class="ph-type">[msg_type]</span>`;
+
+// --- Custom Service Interfaces ---
+const touchSrvCode = `touch [srv_type].srv`;
+const touchSrvCustom = `touch <span class="ph-type">[srv_type]</span>.srv`;
+
+const srvFormatCode = 
+`[data_type] [request_variable_1]
+[data_type] [request_variable_2]
+[data_type] [request_variable_3]
+// ... Insert as many request variables as needed
+---
+[data_type] [response_variable_1]
+[data_type] [response_variable_2]
+[data_type] [response_variable_3]
+// ... Insert as many response variables as needed`;
+const srvFormatCustom = 
+`<span class="ph-type">[data_type]</span> <span class="ph-var">[request_variable_1]</span>
+<span class="ph-type">[data_type]</span> <span class="ph-var">[request_variable_2]</span>
+<span class="ph-type">[data_type]</span> <span class="ph-var">[request_variable_3]</span>
+// ... Insert as many request variables as needed
+---
+<span class="ph-type">[data_type]</span> <span class="ph-var">[response_variable_1]</span>
+<span class="ph-type">[data_type]</span> <span class="ph-var">[response_variable_2]</span>
+<span class="ph-type">[data_type]</span> <span class="ph-var">[response_variable_3]</span>
+// ... Insert as many response variables as needed`;
+
+const cmakeGenSrvCode = 
+`// ...
+rosidl_generate_interfaces(\${PROJECT_NAME}
+
+    // No commas needed between entries, just \\n
+    // ...
+    "srv/[srv_type].srv"
+    // ...
+    
+)
+// ...`;
+const cmakeGenSrvCustom = 
+`// ...
+rosidl_generate_interfaces(\${PROJECT_NAME}
+
+    // No commas needed between entries, just \\n
+    // ...
+    "srv/<span class="ph-type">[srv_type]</span>.srv"
+    // ...
+    
+)
+// ...`;
+
+const srvFormatOutputCustom = `<span class="ph-generic">[package_name]</span>/srv/<span class="ph-type">[srv_type]</span>`;
+const showInterfaceSrvCode = `ros2 interface show [package_name]/srv/[srv_type]`;
+const showInterfaceSrvCustom = `ros2 interface show <span class="ph-generic">[package_name]</span>/srv/<span class="ph-type">[srv_type]</span>`;
+
+// --- Custom Action Types ---
+const touchActionCode = `touch [action_type].action`;
+const touchActionCustom = `touch <span class="ph-type">[action_type]</span>.action`;
+
+const actionFormatCode = 
+`[data_type] [goal_variable_1]
+[data_type] [goal_variable_2]
+[data_type] [goal_variable_3]
+// ... Insert as many request variables as needed
+---
+[data_type] [result_variable_1]
+[data_type] [result_variable_2]
+[data_type] [result_variable_3]
+// ... Insert as many response variables as needed
+---
+[data_type] [feedback_variable_1]
+[data_type] [feedback_variable_2]
+[data_type] [feedback_variable_3]`;
+const actionFormatCustom = 
+`<span class="ph-type">[data_type]</span> <span class="ph-var">[goal_variable_1]</span>
+<span class="ph-type">[data_type]</span> <span class="ph-var">[goal_variable_2]</span>
+<span class="ph-type">[data_type]</span> <span class="ph-var">[goal_variable_3]</span>
+// ... Insert as many request variables as needed
+---
+<span class="ph-type">[data_type]</span> <span class="ph-var">[result_variable_1]</span>
+<span class="ph-type">[data_type]</span> <span class="ph-var">[result_variable_2]</span>
+<span class="ph-type">[data_type]</span> <span class="ph-var">[result_variable_3]</span>
+// ... Insert as many response variables as needed
+---
+<span class="ph-type">[data_type]</span> <span class="ph-var">[feedback_variable_1]</span>
+<span class="ph-type">[data_type]</span> <span class="ph-var">[feedback_variable_2]</span>
+<span class="ph-type">[data_type]</span> <span class="ph-var">[feedback_variable_3]</span>`;
+
+const cmakeGenActionCode = 
+`// ...
+rosidl_generate_interfaces(\${PROJECT_NAME}
+
+    // No commas needed between entries, just \\n
+    // ...
+    "action/[action_type].action"
+    // ...
+    
+)
+// ...`;
+const cmakeGenActionCustom = 
+`// ...
+rosidl_generate_interfaces(\${PROJECT_NAME}
+
+    // No commas needed between entries, just \\n
+    // ...
+    "action/<span class="ph-type">[action_type]</span>.action"
+    // ...
+    
+)
+// ...`;
+
+const actionFormatOutputCustom = `<span class="ph-generic">[package_name]</span>/action/<span class="ph-type">[action_type]</span>`;
+const showInterfaceActionCode = `ros2 interface show [package_name]/action/[action_type]`;
+const showInterfaceActionCustom = `ros2 interface show <span class="ph-generic">[package_name]</span>/action/<span class="ph-type">[action_type]</span>`;
+
+// --- VS Code Configuration ---
+const vscodeJsonCode = 
+`"includePath": [
+        "/opt/ros/jazzy/include/**",
+        "/usr/include/**",
+        "/home/[user]/[workspace]/install/[package_name]/include/**"
+      ],`;
+const vscodeJsonCustom = 
+`"includePath": [
+        "/opt/ros/jazzy/include/**",
+        "/usr/include/**",
+        "/home/<span class="ph-generic">[user]</span>/<span class="ph-generic">[workspace]</span>/install/<span class="ph-generic">[package_name]</span>/include/**"
+      ],`;
+
+const codePeriodCode = `code .`;
+const pwdCode = `pwd`;
+
+// --- Introspecting Interfaces ---
+const interfaceListCode = `ros2 interface list`;
+const interfaceListMsgCode = `ros2 interface list -m`;
+const interfaceListSrvCode = `ros2 interface list -r`;
+const interfaceListStructureCode = `ros2 interface list -s`;
+
+const interfacePackageCode = `ros2 interface package [package_name]`;
+const interfacePackageCustom = `ros2 interface package <span class="ph-generic">[package_name]</span>`;
+---
+
+<DocLayout title="Interface &amp; Action Types" activeSection="interfaces">
+
+  <h1 class="doc-title">Interface &amp; Action Types</h1>
+
+  <h2 class="section-heading" id="common-ros2-interface-data-types">Common ROS2 Interface &amp; Action Data Types</h2>
+  <p>The following <code class="ph-type-inline">[data_type]</code> can be used for either message variables, request/response parameters, goals, results, or feedback structures.</p>
+  
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>ROS 2 Field Type</th>
+          <th>C++ Equivalent</th>
+          <th>Python Equivalent</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>bool</td>
+          <td><code>bool</code></td>
+          <td><code>bool</code></td>
+        </tr>
+        <tr>
+          <td>byte / char</td>
+          <td><code>int8_t</code> / <code>uint8_t</code></td>
+          <td><code>bytes</code> / <code>int</code></td>
+        </tr>
+        <tr>
+          <td>float32 / float64</td>
+          <td><code>float</code> / <code>double</code></td>
+          <td><code>float</code></td>
+        </tr>
+        <tr>
+          <td>int8 / uint8</td>
+          <td><code>int8_t</code> / <code>uint8_t</code></td>
+          <td><code>int</code></td>
+        </tr>
+        <tr>
+          <td>int16 / uint16</td>
+          <td><code>int16_t</code> / <code>uint16_t</code></td>
+          <td><code>int</code></td>
+        </tr>
+        <tr>
+          <td>int32 / uint32</td>
+          <td><code>int32_t</code> / <code>uint32_t</code></td>
+          <td><code>int</code></td>
+        </tr>
+        <tr>
+          <td>int64 / uint64</td>
+          <td><code>int64_t</code> / <code>uint64_t</code></td>
+          <td><code>int</code></td>
+        </tr>
+        <tr>
+          <td>string</td>
+          <td><code>std::string</code></td>
+          <td><code>str</code></td>
+        </tr>
+        <tr>
+          <td><em>Type[]</em> (Arrays)</td>
+          <td><code>std::vector&lt;Type&gt;</code></td>
+          <td><code>list</code></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+
+  <h2 class="section-heading" id="structure-of-interfaces">Structure of Interfaces &amp; Action Types</h2>
+  <p>Interfaces are organized by packages, and then by messages (<code>msg</code>), services (<code>srv</code>), or actions (<code>action</code>).</p>
+
+  <h3 class="subsection-heading">Message Interfaces</h3>
+  <CodeBlock code={msgInterfaceCode} lang="bash" customHtml={msgInterfaceCustom} />
+
+  <h3 class="subsection-heading">Service Interfaces</h3>
+  <CodeBlock code={srvInterfaceCode} lang="bash" customHtml={srvInterfaceCustom} />
+
+  <h3 class="subsection-heading">Action Types</h3>
+  <CodeBlock code={actionInterfaceCode} lang="bash" customHtml={actionInterfaceCustom} />
+
+
+  <h2 class="section-heading" id="using-interfaces-actions">Using Interfaces &amp; Actions</h2>
+
+  <h3 class="subsection-heading">Common Standard ROS 2 Interfaces</h3>
+  <p>Before making a custom ROS 2 interface, verify if the functionality you require already exists within an interface already packaged with ROS 2.</p>
+  
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Package Name</th>
+          <th>Interface Type</th>
+          <th>Common Purpose</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>std_msgs</code></td>
+          <td>msg</td>
+          <td>Primitive wrappers (Bool, Int32, Float64, String, etc.)</td>
+        </tr>
+        <tr>
+          <td><code>geometry_msgs</code></td>
+          <td>msg</td>
+          <td>Common geometric primitives (Point, Pose, Vector3, Twist, Transform)</td>
+        </tr>
+        <tr>
+          <td><code>sensor_msgs</code></td>
+          <td>msg</td>
+          <td>Sensor outputs (Image, LaserScan, Imu, JointState, PointCloud2)</td>
+        </tr>
+        <tr>
+          <td><code>nav_msgs</code></td>
+          <td>msg / srv</td>
+          <td>Navigation data structures (Odometry, OccupancyGrid, Path, GetPlan)</td>
+        </tr>
+        <tr>
+          <td><code>std_srvs</code></td>
+          <td>srv</td>
+          <td>Basic atomic services (Empty, SetBool, Trigger)</td>
+        </tr>
+        <tr>
+          <td><code>action_msgs</code></td>
+          <td>msg</td>
+          <td>Goal statuses and tracking structures utilized by actions</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 class="subsection-heading">Importing Interfaces &amp; Actions Into Nodes</h3>
+  <p>You must import interfaces within node scripts. <strong>Don't forget to add the packages which your interfaces come from to the dependencies of your own package under its <code>CMakeLists.txt</code> and <code>package.xml</code> files.</strong></p>
+
+  <h4 class="subsubsection-heading">Python</h4>
+  <p>For subscribers or publishers:</p>
+  <CodeBlock code={pyImportMsgCode} lang="python" customHtml={pyImportMsgCustom} />
+
+  <p>For servers or clients:</p>
+  <CodeBlock code={pyImportSrvCode} lang="python" customHtml={pyImportSrvCustom} />
+
+  <p>For action servers &amp; action clients:</p>
+  <CodeBlock code={pyImportActionCode} lang="python" customHtml={pyImportActionCustom} />
+
+  <blockquote>
+    <strong>NOTE:</strong> <code class="ph-type-inline">[msg_type]</code>, <code class="ph-type-inline">[srv_type]</code> or <code class="ph-type-inline">[action_type]</code> will be simply the name of the .msg, .srv or .action file - <strong>first letters in every word are capitalized and there are no underscores (PascalCase).</strong>
+    <br /><br />
+    Example: <code>SensorStatus</code>
+  </blockquote>
+
+  <hr class="section-divider" />
+
+  <h4 class="subsubsection-heading">C++</h4>
+  <p>For subscribers or publishers:</p>
+  <CodeBlock code={cppIncludeMsgCode} lang="cpp" customHtml={cppIncludeMsgCustom} />
+
+  <p>For servers or clients:</p>
+  <CodeBlock code={cppIncludeSrvCode} lang="cpp" customHtml={cppIncludeSrvCustom} />
+
+  <p>For action servers &amp; action clients:</p>
+  <CodeBlock code={cppIncludeActionCode} lang="cpp" customHtml={cppIncludeActionCustom} />
+
+  <blockquote>
+    <strong>NOTE:</strong> In <code>#include</code> paths, <strong>the interface name must be all-lowercase and the words separated by underscores (snake_case)</strong>. More specifically, the words that were PascalCase when creating the file name are converted to lowercase snake_case for the <code>.hpp</code> header filename.
+    <br /><br />
+    Example: <code>#include "custom_interfaces/msg/sensor_status.hpp"</code>
+  </blockquote>
+
+  <blockquote>
+    <strong>NOTE:</strong> In <code>#include</code> paths, words separated by numbers within the interface name will not have underscores between them.
+    <br /><br />
+    Example (Message type is <code>custom_interfaces/msg/Pose3dFeedback</code>):<br />
+    <code>#include "custom_interfaces/msg/pose3d_feedback.hpp"</code>
+  </blockquote>
+
+  <blockquote>
+    <strong>NOTE:</strong> While referencing the interfaces in the C++ program block, <strong>the scoped types use PascalCase matching the original file name</strong>.
+    <br /><br />
+    Example: <code>custom_interfaces::msg::SensorStatus</code>
+  </blockquote>
+
+
+  <h2 class="section-heading" id="storing-custom-interfaces">Storing Custom Interfaces &amp; Action Types</h2>
+  <p>Create a C++ package for the custom message interface. No source dependencies are needed. You may remove the <code>/include</code> and <code>/src</code> directories within the package since they are not essential.</p>
+  <CodeBlock code={rmIncludeSrcCode} lang="bash" />
+
+  <p>Include the following in the <code>package.xml</code> file, right before the <code>&lt;test_depend&gt;</code> lines.</p>
+  <CodeBlock code={xmlPackageDepsCode} lang="xml" />
+
+  <p>Replace the contents of the <code>CMakeLists.txt</code> file with the following standard skeleton:</p>
+  <CodeBlock code={cmakeListsSkeletonCode} lang="cmake" />
+
+  <h3 class="subsection-heading">Directory to Store Message Interfaces</h3>
+  <p>Create a new directory within your custom interfaces package directory:</p>
+  <CodeBlock code={mkdirMsgCode} lang="bash" />
+
+  <h3 class="subsection-heading">Directory to Store Service Interfaces</h3>
+  <CodeBlock code={mkdirSrvCode} lang="bash" />
+
+  <h3 class="subsection-heading">Directory to Store Action Types</h3>
+  <CodeBlock code={mkdirActionCode} lang="bash" />
+
+
+  <h2 class="section-heading" id="custom-message-interfaces">Custom Message Interfaces</h2>
+  <p>Create a new file within your message interfaces directory (<code>msg/</code>). Its title will be the name of the message type (interface) you wish to create.</p>
+  <CodeBlock code={touchMsgCode} lang="bash" customHtml={touchMsgCustom} />
+
+  <blockquote>
+    <strong>NOTE:</strong> Make sure that <code class="ph-type-inline">[msg_type]</code> has no underscores, and that every first letter in each word is capitalized (PascalCase).
+    <br /><br />
+    Example: <code>SensorStatus.msg</code>
+  </blockquote>
+
+  <p>In this file, use the following format to organize message fields:</p>
+  <CodeBlock code={msgFormatCode} lang="txt" customHtml={msgFormatCustom} />
+
+  <blockquote>
+    <strong>NOTE:</strong> The message variables/fields must be entirely lowercase and separated by underscores (snake_case).
+  </blockquote>
+
+  <p>Include any message interfaces created into the <code>CMakeLists.txt</code> macro for the interface package:</p>
+  <CodeBlock code={cmakeGenMsgCode} lang="cmake" customHtml={cmakeGenMsgCustom} />
+
+  <p>Build your package and source your workspace (make sure to execute in the workspace root directory):</p>
+  <CodeBlock code={colconBuildCode} lang="bash" />
+
+  <p>Your message interface will be finalized in the following layout format:</p>
+  <div class="custom-block-preview">
+    <code custom-html={msgFormatOutputCustom}></code>
+  </div>
+
+  <p>You can verify your generated message variables by using:</p>
+  <CodeBlock code={showInterfaceMsgCode} lang="bash" customHtml={showInterfaceMsgCustom} />
+
+
+  <h2 class="section-heading" id="custom-service-interfaces">Custom Service Interfaces</h2>
+  <p>Create a new file within your service interfaces directory (<code>srv/</code>). Its title will be the name of the service interface you wish to create.</p>
+  <CodeBlock code={touchSrvCode} lang="bash" customHtml={touchSrvCustom} />
+
+  <blockquote>
+    <strong>NOTE:</strong> Ensure <code class="ph-type-inline">[srv_type]</code> has no underscores and every first letter in each word is capitalized (PascalCase).
+    <br /><br />
+    Example: <code>GetSensorData.srv</code>
+  </blockquote>
+
+  <p>In this file, use the following structure split by 3 dashes (<code>---</code>) separating request and response fields:</p>
+  <CodeBlock code={srvFormatCode} lang="txt" customHtml={srvFormatCustom} />
+
+  <blockquote>
+    <strong>NOTE:</strong> The service fields must be completely lowercase and separated by underscores (snake_case).
+  </blockquote>
+
+  <p>Include any service interfaces created into the <code>CMakeLists.txt</code> configuration:</p>
+  <CodeBlock code={cmakeGenSrvCode} lang="cmake" customHtml={cmakeGenSrvCustom} />
+
+  <p>Once you build your package and source your workspace, your service layout follows this format:</p>
+  <div class="custom-block-preview">
+    <code custom-html={srvFormatOutputCustom}></code>
+  </div>
+
+  <p>You can inspect your service fields by using:</p>
+  <CodeBlock code={showInterfaceSrvCode} lang="bash" customHtml={showInterfaceSrvCustom} />
+
+
+  <h2 class="section-heading" id="custom-action-types">Custom Action Types</h2>
+  <p>Create a new file within your action types directory (<code>action/</code>). Its title will be the name of the action type you wish to create.</p>
+  <CodeBlock code={touchActionCode} lang="bash" customHtml={touchActionCustom} />
+
+  <blockquote>
+    <strong>NOTE:</strong> Ensure <code class="ph-type-inline">[action_type]</code> has no underscores and every first letter in each word is capitalized (PascalCase).
+    <br /><br />
+    Example: <code>SensorsInitialization.action</code>
+  </blockquote>
+
+  <p>Actions require two sets of dividers (<code>---</code>) to break the file into <strong>Goal</strong>, <strong>Result</strong>, and <strong>Feedback</strong> sections:</p>
+  <CodeBlock code={actionFormatCode} lang="txt" customHtml={actionFormatCustom} />
+
+  <blockquote>
+    <strong>NOTE:</strong> Action inner variables must be lowercase and separated by underscores (snake_case).
+  </blockquote>
+
+  <p>Include any action files created into the <code>CMakeLists.txt</code> interface registration block:</p>
+  <CodeBlock code={cmakeGenActionCode} lang="cmake" customHtml={cmakeGenActionCustom} />
+
+  <p>Once you build your package and source your workspace, your action type structure will layout as follows:</p>
+  <div class="custom-block-preview">
+    <code custom-html={actionFormatOutputCustom}></code>
+  </div>
+
+  <p>You can view your action fields by using:</p>
+  <CodeBlock code={showInterfaceActionCode} lang="bash" customHtml={showInterfaceActionCustom} />
+
+
+  <h2 class="section-heading" id="configuring-vs-code">Configuring VS Code to Recognize Custom Interfaces</h2>
+  <p><strong>This is a completely optional helper step for C++ nodes.</strong> VS Code will resolve your custom paths and clear syntax indexing errors in your script editor. Code compilation works independently of this adjustment.</p>
+  
+  <p>The compiled header artifacts are saved under the <code>install/[package_name]/include</code> output track.</p>
+  <p>Modify the <code>c_cpp_properties.json</code> file located inside your local workspace <code>.vscode</code> folder, inserting the track layout rule:</p>
+  <CodeBlock code={vscodeJsonCode} lang="json" customHtml={vscodeJsonCustom} />
+
+  <blockquote>
+    <strong>NOTE:</strong> You must open VS Code directly targeted at the root or <code>src</code> path of your workspace directory tree to hook the properties configuration. Use the command sequence inside your active terminal:
+  </blockquote>
+  <CodeBlock code={codePeriodCode} lang="bash" />
+
+  <p>To confirm your current path string matches your context requirements, check the output of:</p>
+  <CodeBlock code={pwdCode} lang="bash" />
+  <p>Remember to append the deep directory inclusion wildcards (<code>/**</code>) at the end of your custom paths.</p>
+
+
+  <h2 class="section-heading" id="introspecting-interfaces">Introspecting Interfaces</h2>
+
+  <h3 class="subsection-heading">List Available Interfaces</h3>
+  <CodeBlock code={interfaceListCode} lang="bash" />
+
+  <h4 class="subsubsection-heading">List Available Message Interfaces</h4>
+  <CodeBlock code={interfaceListMsgCode} lang="bash" />
+
+  <h4 class="subsubsection-heading">List Available Service Interfaces</h4>
+  <CodeBlock code={interfaceListSrvCode} lang="bash" />
+
+  <h3 class="subsection-heading">Show Available Interfaces With Structure</h3>
+  <p>This expands all discovered interfaces, reporting individual fields, structural subdivisions, and matching primitive datatypes:</p>
+  <CodeBlock code={interfaceListStructureCode} lang="bash" />
+  <p>You may combine this with the <code>-m</code> or <code>-r</code> flags to strictly scope messages or services.</p>
+
+  <h3 class="subsection-heading">List Interfaces Within a Single Package</h3>
+  <CodeBlock code={interfacePackageCode} lang="bash" customHtml={interfacePackageCustom} />
+
+</DocLayout>
