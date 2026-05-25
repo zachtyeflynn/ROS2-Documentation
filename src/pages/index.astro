@@ -1,0 +1,144 @@
+---
+import LandingLayout from '../layouts/LandingLayout.astro';
+// Import Astro's optimized image handling component
+import { Image } from 'astro:assets';
+// Import your local image relatively from the current directory
+import coverImg from './Drone.jpg'; 
+---
+
+<LandingLayout title="ROS 2 Documentation">
+
+  <h1 class="landing-title">ROS 2 Documentation</h1>
+  <p class="landing-subtitle">Zachary Flynn</p>
+
+  <div class="landing-cover-container">
+    {/* Using Astro's <Image /> component automatically optimizes Drone.jpg */}
+    <Image 
+      src={coverImg} 
+      alt="ROS 2 Drone Project Cover" 
+      class="landing-cover" 
+    />
+  </div>
+
+  <nav class="toc" aria-label="Table of Contents">
+
+    {/* ── CHAPTER 1 ── */}
+    <div class="toc-chapter">
+      <a href="/preamble" class="toc-chapter-header">
+        <span class="toc-chapter-num">1.</span>
+        <span class="toc-chapter-title">Preamble</span>
+      </a>
+    </div>
+
+    {/* ── CHAPTER 2 ── */}
+    <div class="toc-chapter">
+      <a href="/setup" class="toc-chapter-header">
+        <span class="toc-chapter-num">2.</span>
+        <span class="toc-chapter-title">ROS 2 Setup</span>
+      </a>
+      <div class="toc-links">
+        <a href="/setup#installation" class="toc-link">
+          <span class="toc-link-num">2.1</span>
+          ROS 2 Installation
+        </a>
+        <a href="/setup#setup-environment" class="toc-link">
+          <span class="toc-link-num">2.2</span>
+          Setup Development Environment
+        </a>
+        <a href="/setup#updating-packages" class="toc-link">
+          <span class="toc-link-num">2.3</span>
+          Updating ROS 2 Packages
+        </a>
+      </div>
+    </div>
+
+    {/* ── CHAPTER 3 ── */}
+    <div class="toc-chapter">
+      <a href="/packages" class="toc-chapter-header">
+        <span class="toc-chapter-num">3.</span>
+        <span class="toc-chapter-title">Packages &amp; Nodes</span>
+      </a>
+      <div class="toc-links">
+        <a href="/packages#creating-packages" class="toc-link">
+          <span class="toc-link-num">3.1</span>
+          Creating Packages
+        </a>
+        <a href="/packages#building-packages" class="toc-link">
+          <span class="toc-link-num">3.2</span>
+          Building Packages
+        </a>
+        <a href="/packages#creating-nodes" class="toc-link">
+          <span class="toc-link-num">3.3</span>
+          Creating Nodes
+        </a>
+        <a href="/packages#running-nodes" class="toc-link">
+          <span class="toc-link-num">3.4</span>
+          Running Nodes
+        </a>
+        <a href="/packages#introspecting-nodes" class="toc-link">
+          <span class="toc-link-num">3.5</span>
+          Introspecting Nodes
+        </a>
+        <a href="/packages#configuring-packages" class="toc-link">
+          <span class="toc-link-num">3.6</span>
+          Configuring Packages
+        </a>
+      </div>
+    </div>
+
+    {/* ── CHAPTER 4 ── */}
+    <div class="toc-chapter">
+      <a href="/topics" class="toc-chapter-header">
+        <span class="toc-chapter-num">4.</span>
+        <span class="toc-chapter-title">Topics, Publishers &amp; Subscribers</span>
+      </a>
+      <div class="toc-links">
+        <a href="/topics#publishers" class="toc-link">
+          <span class="toc-link-num">4.1</span>
+          Publishers
+        </a>
+        <a href="/topics#subscribers" class="toc-link">
+          <span class="toc-link-num">4.2</span>
+          Subscribers
+        </a>
+        <a href="/topics#introspection" class="toc-link">
+          <span class="toc-link-num">4.3</span>
+          Introspecting Topics
+        </a>
+      </div>
+    </div>
+
+  </nav>
+
+</LandingLayout>
+
+<style>
+  .landing-cover-container {
+    width: 100%;
+    margin-bottom: 2.5rem;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+
+  .landing-cover-container {
+    width: 100%;
+    /* 1. Matches standard documentation container limits */
+    max-width: 1000px; 
+    /* 2. Centers the container if the screen expands wider than 720px */
+    margin: 0 auto 2.5rem auto; 
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+
+  .landing-cover {
+    width: 100%;
+    height: auto;
+    /* 3. Drop or adjust this if you want to see the full vertical height of the drone */
+    max-height: 600px; 
+    object-fit: cover;
+    display: block;
+  }
+
+</style>

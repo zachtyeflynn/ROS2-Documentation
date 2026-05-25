@@ -1,0 +1,109 @@
+---
+import { codeToHtml } from 'shiki';
+
+interface Props {
+  code: string;
+  lang?: string;
+  customHtml?: string;
+  showLegend?: boolean;
+}
+
+const { code, lang = 'text', customHtml, showLegend = false } = Astro.props;
+
+const langHighlightedRaw = await codeToHtml(code, {
+  lang,
+  themes: {
+    light: 'github-light',
+    dark:  'catppuccin-mocha',
+  },
+  defaultColor: false,
+});
+
+// Strip the style attribute from <pre> entirely — it contains --shiki-light-bg
+// and --shiki-dark-bg which would render as a visible background box.
+// Our CSS bg-code variable handles the background instead.
+const langHighlighted = langHighlightedRaw
+  .replace(/(<pre[^>]*) style="[^"]*"([^>]*>)/g, '$1$2');
+
+const id = `cb-${Math.random().toString(36).slice(2, 8)}`;
+---
+
+<div class="code-block" id={id}>
+  <div class="code-header">
+    <span class="lang-badge">{lang}</span>
+    <div class="header-right">
+      {customHtml && (
+        <div class="pill-switcher" role="group" aria-label="Highlighting mode">
+          <button class="pill-btn active" data-tab="lang" data-target={id}>Syntax</button>
+          <button class="pill-btn" data-tab="custom" data-target={id}>Keywords</button>
+        </div>
+      )}
+      <button class="copy-btn" data-copy={id} aria-label="Copy code">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="code-content">
+    {customHtml ? (
+      <div class="code-view lang-view active" id={`${id}-lang`}>
+        <pre class="shiki" set:html={customHtml} />
+      </div>
+    ) : (
+      <div class="code-view lang-view active" id={`${id}-lang`} set:html={langHighlighted} />
+    )}
+    {customHtml && (
+      <div class="code-view custom-view" id={`${id}-custom`}>
+        <pre class="shiki" set:html={customHtml} />
+      </div>
+    )}
+  </div>
+
+  {showLegend && (
+    <div class="ph-legend" id={`${id}-legend`}>
+      <span class="ph-legend-item"><span class="ph-legend-swatch ph-generic">[generic]</span></span>
+      <span class="ph-legend-item"><span class="ph-legend-swatch ph-var">[variable]</span></span>
+      <span class="ph-legend-item"><span class="ph-legend-swatch ph-type">[type]</span></span>
+      <span class="ph-legend-item"><span class="ph-legend-swatch ph-class">[class]</span></span>
+      <span class="ph-legend-item"><span class="ph-legend-swatch ph-fn">[function]</span></span>
+      <span class="ph-legend-item"><span class="ph-legend-swatch ph-exec">[executable]</span></span>
+      <span class="ph-legend-item"><span class="ph-legend-swatch ph-file">[file]</span></span>
+      <span class="ph-legend-item"><span class="ph-legend-swatch ph-dir">[directory]</span></span>
+    </div>
+  )}
+</div>
+
+<script>
+  document.querySelectorAll('.pill-btn[data-tab]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.getAttribute('data-target');
+      const tab = btn.getAttribute('data-tab');
+      const block = document.getElementById(id);
+
+      block.querySelectorAll('.pill-btn').forEach(b => b.classList.remove('active'));
+      block.querySelectorAll('.code-view').forEach(v => v.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(`${id}-${tab}`)?.classList.add('active');
+
+      const legend = document.getElementById(`${id}-legend`);
+      if (legend) legend.classList.toggle('visible', tab === 'custom');
+    });
+  });
+
+  document.querySelectorAll('.copy-btn[data-copy]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.getAttribute('data-copy');
+      const block = document.getElementById(id);
+      const activeView = block?.querySelector('.code-view.active');
+      const text = activeView?.innerText ?? '';
+      navigator.clipboard.writeText(text).then(() => {
+        btn.classList.add('copied');
+        btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
+        setTimeout(() => {
+          btn.classList.remove('copied');
+          btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>`;
+        }, 2000);
+      });
+    });
+  });
+</script>

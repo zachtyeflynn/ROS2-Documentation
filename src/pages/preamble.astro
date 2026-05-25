@@ -1,0 +1,136 @@
+---
+import DocLayout from '../layouts/DocLayout.astro';
+import CodeBlock from '../components/CodeBlock.astro';
+
+// Key:
+//   ph-generic  → bashGeneric   RGB(208,26,20)    red
+//   ph-var      → variables     RGB(0,75,0)       dark green
+//   ph-type     → types         Blue
+//   ph-class    → classes       Orange
+//   ph-fn       → functions     Orchid
+//   ph-exec     → executables   RGB(255,102,178)  pink
+//   ph-file     → fileNames     NavyBlue
+//   ph-dir      --> directories   Green
+
+// ── Preamble ─────────────────────────────────────────────────────────────────
+const xmlPlaceholderCode =
+`|[generic]|
+|[directory]|
+|[executable]|
+|[file]|
+|[variable]|
+|[class]|
+|[function]|
+|[type]|`;
+
+const xmlPlaceholderCustom =
+`<span class="ph-generic">[generic]</span>
+<span class="ph-dir">[directory]</span>
+<span class="ph-exec">[executable]</span>
+<span class="ph-file">[file_name]</span>
+<span class="ph-var">[variable]</span>
+<span class="ph-class">[class]</span>
+<span class="ph-fn">[function]</span>
+<span class="ph-type">[type]</span>`;
+
+const documentationLinks = [
+  { name: "ROS 2 Jazzy Jalisco", url: "https://docs.ros.org/en/jazzy/index.html" },
+  { name: "C++ ROS Client Library (rclcpp)", url: "https://docs.ros.org/en/jazzy/p/rclcpp/generated/index.html" },
+  { name: "Python ROS Client Library (rclpy)", url: "https://docs.ros.org/en/iron/p/rclpy/" },
+  { name: "Eigen3", url: "https://libeigen.gitlab.io/eigen/docs-3.4/" },
+  { name: "Pinocchio", url: "https://docs.ros.org/en/humble/p/pinocchio/" },
+  { name: "MoveIt 2", url: "https://moveit.picknik.ai/main/index.html" },
+  { name: "Gazebo", url: "https://gazebosim.org/docs/latest/getstarted/" },
+  { name: "ros_2_control", url: "https://control.ros.org/rolling/index.html" },
+  { name: "RViz2", url: "https://docs.ros.org/en/jazzy/Visualization/Rviz.html" },
+  { name: "Colcon / Build Tools", url: "https://docs.ros.org/en/jazzy/Tutorials/Colcon-Tutorial.html" },
+  { name: "Drake", url: "https://drake.mit.edu/" },
+  { name: "MuJoCo", url: "https://mujoco.readthedocs.io/en/stable/overview.html" }
+];
+---
+
+<DocLayout title="Preamble" activeSection="preamble">
+
+  <h1 class="doc-title">Preamble</h1>
+  <p class="doc-subtitle">Chapter 1</p>
+
+  <h2 class="subsection-heading">ROS 2 Version</h2>
+  <p>This guide was created for ROS 2 Jazzy Jalisco on Ubuntu 24.04. As of May 2026, Jazzy Jalisco is no longer the most up to date long term support (LTS) version of ROS 2, succeeded by Lyrical Luth. LTS of Jazzy Jalisco will continue until May 2029. For now, Jazzy remains one of the most commonly and stable LTS version of ROS 2. This guide will eventually be updated for Lyrical once adoption is widespread.</p>
+  <p>For more on ROS 2 distributions, please refer <a href="https://docs.ros.org/en/jazzy/Releases.html" target="_blank" rel="noopener noreferrer">here</a>.</p>
+
+  <h2 class="subsection-heading">Placeholder Notation</h2>
+  <p>This guide will use placeholder variables in its code blocks that are meant to be replaced depending on the context. The following colour-code and notation will be used:</p>
+
+  <CodeBlock code={xmlPlaceholderCode} lang="text" customHtml={xmlPlaceholderCustom} showLegend={false} />
+
+  <h2 class="subsection-heading">Further Documentation</h2>
+  <div class="table-container">
+    <table class="doc-table">
+      <thead>
+        <tr>
+          <th>Documentation</th>
+          <th>Link</th>
+        </tr>
+      </thead>
+      <tbody>
+        {documentationLinks.map((doc) => (
+          <tr>
+            <td><strong>{doc.name}</strong></td>
+            <td><a href={doc.url} target="_blank" rel="noopener noreferrer">{doc.url}</a></td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <h2 class="subsection-heading">Acknowledgments</h2>
+  <p>Some of the code and other elements of this guide was adapted from the course COMP 514: Applied Robotics at McGill University by Professor Hsiu-Chin Lin and the Udemy course ROS 2 for Beginners by Edouard Renard.</p>
+  <p>Title cover image by Jeff Robertson - Associated Press.</p>
+
+</DocLayout>
+
+<style>
+  .table-container {
+    overflow-x: auto;
+    margin: 2rem 0;
+    border-radius: 6px;
+  }
+
+  .doc-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 0.95rem;
+  }
+
+  /* Structural Grid Borders */
+  .doc-table th, 
+  .doc-table td {
+    padding: 0.75rem 1rem;
+    border: 1px solid #cbd5e1; /* Default slate border color */
+  }
+
+  /* Header Styling */
+  .doc-table th {
+    background-color: #f1f5f9;
+    font-weight: 700;
+  }
+
+  /* Alternate row background coloring for readability */
+  .doc-table tbody tr:nth-child(even) {
+    background-color: #f8fafc;
+  }
+
+  /* Theme adjustments for dark-mode compatibility if needed */
+  :global([data-theme="dark"]) .doc-table th {
+    background-color: #1e293b;
+    color: #f8fafc;
+  }
+  :global([data-theme="dark"]) .doc-table th,
+  :global([data-theme="dark"]) .doc-table td {
+    border-color: #334155;
+  }
+  :global([data-theme="dark"]) .doc-table tbody tr:nth-child(even) {
+    background-color: #0f172a;
+  }
+</style>

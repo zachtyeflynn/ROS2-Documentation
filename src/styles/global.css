@@ -1,0 +1,701 @@
+@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --font-body: 'Arial', Arial, serif;
+  --font-ui: 'Arial', Arial, serif;
+  --font-mono: 'Arial', Arial, serif;
+
+  --bg: #faf9f7;
+  --bg-sidebar: #f3f1ed;
+  --bg-code: #ffffff;
+  --bg-code-header: #f5f5f5;
+  --bg-code-tab-active: #ffffff;
+  --bg-inline-code: #ede9e3;
+  --border-code-color: #d0cec9;
+  --lang-badge-color: #888580;
+  --pill-text: rgba(60, 55, 50, 0.5);
+  --pill-text-active: #1a1917;
+  --pill-bg-active: rgba(0, 0, 0, 0.08);
+  --pill-border: rgba(0, 0, 0, 0.12);
+  --copy-icon-color: rgba(100, 95, 90, 0.7);
+  --copy-icon-hover: #1a1917;
+  --legend-text: #6b6560;
+
+  --text-primary: #1a1917;
+  --text-secondary: #4a4845;
+  --text-muted: #7a7875;
+  --text-code: #cdd6f4;
+
+  --border: #dedad4;
+  --border-code: #d0cec9;
+  --accent: #2563eb;
+  --accent-light: #dbeafe;
+
+  --tok-kw: #cba6f7;
+  --tok-str: #a6e3a1;
+  --tok-cmt: #6c7086;
+  --tok-type: #89dceb;
+  --tok-num: #fab387;
+  --tok-fn: #89b4fa;
+  --tok-self: #f38ba8;
+  --tok-op: #94e2d5;
+
+  /* LaTeX colour-matched custom tokens */
+  /* Light mode: exact LaTeX RGB values */
+  --c-generic:    #d01a14; /* bashGeneric  — RGB(208,26,20)   */
+  --c-dir:        #00b8d4; /* directories  — Green            */
+  --c-exec:       #cc0077; /* executables  — RGB(255,102,178) darkened for readability */
+  --c-file:       #5400f0; /* fileNames    — NavyBlue         */
+  --c-var:        #00a900; /* variables    — RGB(0,75,0)      */
+  --c-class:      #ff8000; /* classes      — Orange darkened  */
+  --c-fn:         #c73fd9; /* functions    — Orchid darkened  */
+  --c-type:       #0000cc; /* types        — Blue             */
+
+  --c-generic-bg: rgba(208, 26,  20,  0.08);
+  --c-dir-bg:     rgba(0, 196, 187, 0.08);
+  --c-exec-bg:    rgba(204, 0,   119, 0.08);
+  --c-file-bg:    rgba(59, 0, 253, 0.06);
+  --c-var-bg:     rgba(0, 164, 0, 0.08);
+  --c-class-bg:   rgba(228, 114, 0, 0.08);
+  --c-fn-bg:      rgba(181, 48, 208, 0.08);
+  --c-type-bg:    rgba(0, 0, 252, 0.052);
+
+  --sidebar-width: 260px;
+  --content-max: 1000px;
+}
+
+html { font-size: 16px; scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text-primary);
+  line-height: 1.75;
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ── Sidebar ── */
+.sidebar {
+  width: var(--sidebar-width);
+  min-width: var(--sidebar-width);
+  background: var(--bg-sidebar);
+  border-right: 1px solid var(--border);
+  padding: 2rem 0;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  font-family: var(--font-ui);
+}
+
+.sidebar-logo {
+  padding: 0 1.5rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 1rem;
+}
+
+.sidebar-logo h1 {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+
+.sidebar-logo p {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.sidebar-section { margin-bottom: 0.25rem; }
+
+.sidebar-section-title {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  padding: 0.75rem 1.5rem 0.25rem;
+}
+
+.sidebar-link {
+  display: block;
+  font-size: 13px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  padding: 0.3rem 1.5rem;
+  border-left: 2px solid transparent;
+  transition: color 0.12s, background 0.12s, border-color 0.12s;
+}
+
+.sidebar-link:hover { color: var(--text-primary); background: rgba(0,0,0,0.04); }
+.sidebar-link.active { color: var(--accent); border-left-color: var(--accent); background: var(--accent-light); font-weight: 500; }
+
+.sidebar-sublink {
+  display: block;
+  font-size: 12.5px;
+  color: var(--text-muted);
+  text-decoration: none;
+  padding: 0.2rem 1.5rem 0.2rem 2.75rem;
+  border-left: 2px solid transparent;
+  transition: color 0.12s;
+}
+.sidebar-sublink:hover { color: var(--text-secondary); }
+
+/* ── Main content ── */
+main {
+  flex: 1;
+  width: 100%;
+  max-width: calc(var(--sidebar-width) + var(--content-max));
+  margin: 0 auto;
+  padding: 3rem clamp(1.5rem, 5vw, 4rem); /* ← responsive horizontal padding */
+  min-width: 0;
+}
+
+.content-body { max-width: var(--content-max); }
+
+/* ── Typography ── */
+.doc-title {
+  font-size: 36px;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.3;
+  margin-bottom: 0.5rem;
+}
+
+.doc-subtitle {
+  font-size: 16px;
+  color: var(--text-muted);
+  font-weight: 300;
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+h2.section-heading {
+  font-family: var(--font-ui);
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 2.5rem 0 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+}
+
+h3.subsection-heading {
+  font-family: var(--font-ui);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 1.75rem 0 0.5rem;
+  letter-spacing: 0.05em;
+}
+
+.section-num {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+p { margin-bottom: 1rem; font-size: 16px; color: var(--text-secondary); }
+
+code {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  background: var(--bg-inline-code);
+  color: var(--text-primary);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+/* ── Parameter list ── */
+.param-list { margin: 1rem 0 1.25rem; display: flex; flex-direction: column; gap: 0.5rem; }
+
+.param-item {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.5rem 1rem;
+  font-size: 14.5px;
+}
+
+.param-name {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--accent);
+  background: var(--accent-light);
+  padding: 1px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+  align-self: start;
+  margin-top: 2px;
+}
+
+.param-desc { color: var(--text-secondary); line-height: 1.6; }
+
+/* ── Note box ── */
+.note {
+  background: #fffbeb;
+  border-left: 3px solid #f59e0b;
+  border-radius: 0 6px 6px 0;
+  padding: 0.75rem 1rem;
+  margin: 1rem 0;
+  font-size: 14px;
+  color: #78350f;
+}
+
+.note strong { font-weight: 600; }
+
+/* ── Code block ── */
+.code-block {
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 0.75rem 0 1.75rem;
+  border: 1px solid var(--border-code);
+  font-family: var(--font-mono);
+}
+
+.code-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0 0 14px;
+  background: var(--bg-code-header);
+  border-bottom: 1px solid var(--border-code);
+  min-height: 40px;
+}
+
+.lang-badge {
+  font-size: 11px;
+  font-family: var(--font-ui);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--lang-badge-color);
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-right: 12px;
+}
+
+/* ── Glass pill switcher ── */
+.pill-switcher {
+  display: flex;
+  align-items: center;
+  background: transparent;
+  border: 1px solid var(--pill-border);
+  border-radius: 20px;
+  padding: 3px;
+  gap: 2px;
+}
+
+.pill-btn {
+  font-size: 11px;
+  font-family: var(--font-ui);
+  font-weight: 500;
+  color: var(--pill-text);
+  background: transparent;
+  border: none;
+  border-radius: 16px;
+  padding: 3px 11px;
+  cursor: pointer;
+  transition: color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+  white-space: nowrap;
+  letter-spacing: 0.01em;
+}
+
+.pill-btn.active {
+  color: var(--pill-text-active);
+  background: var(--pill-bg-active);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255,255,255,0.08);
+}
+
+.pill-btn:hover:not(.active) {
+  color: var(--pill-text-active);
+  background: var(--pill-bg-active);
+  opacity: 0.5;
+}
+
+/* ── Icon-only copy button ── */
+.copy-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  color: var(--copy-icon-color);
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s;
+  flex-shrink: 0;
+}
+
+.copy-btn:hover { color: var(--copy-icon-hover); background: rgba(128,128,128,0.1); }
+.copy-btn.copied { color: #2da44e; }
+
+.code-content { background: var(--bg-code); }
+
+.code-view { display: none; }
+.code-view.active { display: block; }
+
+/* Reset the global code{} rule inside code blocks so it doesn't
+   apply background/padding/font to Shiki's <code> wrapper */
+.code-block code {
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+  font-size: inherit;
+  font-family: inherit;
+  letter-spacing: inherit;
+  color: inherit;
+}
+
+/* ── Scrollbar theming ── */
+/* Tells the browser to use a dark-on-dark scrollbar in dark mode */
+[data-theme="dark"] .code-block pre {
+  color-scheme: dark;
+}
+[data-theme="light"] .code-block pre {
+  color-scheme: light;
+}
+
+/* Shared pre styles — identical across both lang and custom views */
+/* Edit font-family, font-size, line-height, letter-spacing here */
+pre.shiki,
+.code-view pre {
+  margin: 0;
+  padding: 1.1rem 1.25rem;
+  overflow-x: auto;
+  font-family: 'Lucida Console', Lucida Console, monospace;
+  font-size: 12px;
+  line-height: 1.4;
+  background: transparent !important;
+  tab-size: 4;
+}
+
+
+/* ── Suppress placeholder colors in Syntax (lang) tab ── */
+/* The lang view renders the same customHtml but hides ph-* colors   */
+/* so only the .t-* language keyword colors show through             */
+.lang-view .ph-generic,
+.lang-view .ph-dir,
+.lang-view .ph-exec,
+.lang-view .ph-file,
+.lang-view .ph-var,
+.lang-view .ph-class,
+.lang-view .ph-fn,
+.lang-view .ph-type {
+  color: inherit;
+  background: transparent;
+  font-style: normal;
+  padding: 0;
+  border-radius: 0;
+}
+
+/* ── Custom highlight tokens — 8 LaTeX categories ── */
+/* Shared base style */
+.ph-generic, .ph-dir, .ph-exec, .ph-file,
+.ph-var, .ph-class, .ph-fn, .ph-type {
+  border-radius: 3px;
+  padding: 0 3px;
+  font-style: italic;
+}
+
+.ph-generic { color: var(--c-generic); background: var(--c-generic-bg); }
+.ph-dir     { color: var(--c-dir);     background: var(--c-dir-bg);     }
+.ph-exec    { color: var(--c-exec);    background: var(--c-exec-bg);    }
+.ph-file    { color: var(--c-file);    background: var(--c-file-bg);    }
+.ph-var     { color: var(--c-var);     background: var(--c-var-bg);     }
+.ph-class   { color: var(--c-class);   background: var(--c-class-bg);   }
+.ph-fn      { color: var(--c-fn);      background: var(--c-fn-bg);      }
+.ph-type    { color: var(--c-type);    background: var(--c-type-bg);    }
+
+/* Custom mode plain tokens */
+.t-kw  { color: var(--tok-kw); }
+.t-str { color: var(--tok-str); }
+.t-cmt { color: var(--tok-cmt); font-style: italic; }
+.t-typ { color: var(--tok-type); }
+.t-num { color: var(--tok-num); }
+.t-fn  { color: var(--tok-fn); }
+.t-slf { color: var(--tok-self); }
+
+/* Placeholder legend */
+.ph-legend {
+  display: none;
+  flex-wrap: wrap;
+  gap: 5px 14px;
+  padding: 8px 14px;
+  background: var(--bg-code-header);
+  border-top: 1px solid var(--border-code);
+}
+
+.ph-legend.visible { display: flex; }
+
+.ph-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-family: var(--font-ui);
+  color: var(--legend-text);
+}
+
+.ph-legend-swatch {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+
+/* ── Dark theme ── */
+[data-theme="dark"] {
+  --bg: #1e1e2e;
+  --bg-sidebar: #181825;
+  --bg-inline-code: #313244;
+
+  --text-primary: #cdd6f4;
+  --text-secondary: #a6adc8;
+  --text-muted: #6c7086;
+
+  --border: #313244;
+  --accent: #89b4fa;
+  --accent-light: #1e3a5f;
+
+  --bg-code: #1e1e2e;
+  --bg-code-header: #181825;
+  --border-code: #313244;
+  --lang-badge-color: #6c7086;
+  --pill-text: rgba(205, 214, 244, 0.45);
+  --pill-text-active: #cdd6f4;
+  --pill-bg-active: rgba(255, 255, 255, 0.12);
+  --pill-border: rgba(255, 255, 255, 0.1);
+  --copy-icon-color: rgba(108, 112, 134, 0.8);
+  --copy-icon-hover: #cdd6f4;
+  --legend-text: #6c7086;
+
+  /* Dark-mode token overrides — brightened for dark bg readability */
+  --c-generic: #ff6b6b;
+  --c-dir:     #06e7e7;
+  --c-exec:    #fc7ca0;
+  --c-file:    #a174fc;
+  --c-var:     #8ce99a;
+  --c-class:   #ffa94d;
+  --c-fn:      #ff7cfb;
+  --c-type:    #4dabf7;
+
+  --c-generic-bg:    #d01a14; /* bashGeneric  — RGB(208,26,20)   */
+  --c-dir-bg:        #00b8d4; /* directories  — Green            */
+  --c-exec-bg:       #cc0077; /* executables  — RGB(255,102,178) darkened for readability */
+  --c-file-bg:       #ac3400; /* fileNames    — NavyBlue         */
+  --c-var-bg:        #00a900; /* variables    — RGB(0,75,0)      */
+  --c-class-bg:      #c05f00; /* classes      — Orange darkened  */
+  --c-fn-bg:         #9b30d0; /* functions    — Orchid darkened  */
+  --c-type-bg:       #0000cc; /* types        — Blue             */
+
+  --c-generic-bg: rgba(255, 107, 107, 0.12);
+  --c-dir-bg:     rgba(105, 219, 211, 0.12);
+  --c-exec-bg:    rgba(255, 153, 196, 0.12);
+  --c-file-bg:    rgba(159, 116, 252, 0.12);
+  --c-var-bg:     rgba(140, 233, 154, 0.12);
+  --c-class-bg:   rgba(255, 169,  77, 0.12);
+  --c-fn-bg:      rgba(245, 139, 255, 0.12);
+  --c-type-bg:    rgba( 77, 171, 247, 0.12);
+  
+}
+
+a {
+  color: var(--accent);
+}
+
+/* ── Theme toggle button ── */
+.sidebar-footer {
+  padding: 1.5rem 1.5rem 0.5rem;
+  margin-top: auto;
+  border-top: 1px solid var(--border);
+}
+
+#theme-toggle {
+  font-family: var(--font-ui);
+  font-size: 14px;
+  color: var(--text-muted);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: color 0.12s, border-color 0.12s, background 0.12s;
+  width: 100%;
+}
+
+#theme-toggle:hover {
+  color: var(--text-primary);
+  border-color: var(--accent);
+  background: var(--accent-light);
+}
+
+[data-theme="dark"] .icon-light,
+[data-theme="light"] .icon-dark { display: none; }
+
+/* ── Sidebar home link ── */
+.sidebar-home-link {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  text-decoration: none;
+  color: inherit;
+  transition: opacity 0.12s;
+}
+.sidebar-home-link:hover { opacity: 0.7; }
+
+.sidebar-home-arrow {
+  font-size: 16px;
+  color: var(--text-muted);
+  line-height: 1;
+}
+
+.sidebar-section-title-link {
+  display: block;
+  font-family: var(--font-ui);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  text-decoration: none;
+  padding: 0.75rem 1.5rem 0.25rem;
+  transition: color 0.12s;
+}
+.sidebar-section-title-link:hover { color: var(--text-secondary); }
+.sidebar-section-title-link.active { color: var(--accent); }
+
+/* ── Landing page ── */
+body.landing {
+  display: block;
+}
+
+.landing-header {
+  display: flex;
+  justify-content: flex-end;
+  padding: 1.25rem 2rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.landing-header #theme-toggle {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text-muted);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 5px 12px;
+  cursor: pointer;
+  transition: color 0.12s, border-color 0.12s;
+}
+.landing-header #theme-toggle:hover { color: var(--text-primary); border-color: var(--accent); }
+
+.landing-main {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 4rem 2rem 6rem;
+}
+
+.landing-title {
+  font-size: 54px;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.2;
+  margin-bottom: 0.5rem;
+}
+
+.landing-subtitle {
+  font-size: 16px;
+  color: var(--text-muted);
+  font-weight: 300;
+  margin-bottom: 3rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--border);
+}
+
+/* ── Table of contents ── */
+.toc { display: flex; flex-direction: column; gap: 1.5rem; }
+
+.toc-chapter {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.toc-chapter-header {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  padding: 1rem 1.5rem;
+  background: var(--bg-sidebar);
+  border-bottom: 1px solid var(--border);
+  text-decoration: none;
+  transition: background 0.12s;
+}
+.toc-chapter-header:hover { background: var(--accent-light); }
+
+.toc-chapter-num {
+  font-family: var(--font-mono);
+  font-size: 18px;
+  color: var(--text-muted);
+}
+
+.toc-chapter-title {
+  font-family: var(--font-ui);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.toc-links {
+  padding: 0.5rem 0;
+  background: var(--bg);
+}
+
+.toc-link {
+  display: flex;
+  align-items: baseline;
+  padding: 0.4rem 1.5rem;
+  font-size: 15px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: color 0.12s, background 0.12s;
+}
+.toc-link:hover { color: var(--accent); background: var(--accent-light); }
+
+.toc-link-num {
+  font-family: var(--font-mono);
+  font-size: 15px;
+  color: var(--text-muted);
+  min-width: 2.5rem;
+}
+
+/* ── Inline param-name color variants (for description lists) ── */
+/* Override accent blue with the LaTeX category color             */
+.param-name.ph-generic-inline { color: var(--c-generic); background: var(--c-generic-bg); }
+.param-name.ph-var-inline     { color: var(--c-var);     background: var(--c-var-bg);     }
+.param-name.ph-type-inline    { color: var(--c-type);    background: var(--c-type-bg);    }
+.param-name.ph-class-inline   { color: var(--c-class);   background: var(--c-class-bg);   }
+.param-name.ph-fn-inline      { color: var(--c-fn);      background: var(--c-fn-bg);      }
+.param-name.ph-exec-inline    { color: var(--c-exec);    background: var(--c-exec-bg);    }
+.param-name.ph-file-inline    { color: var(--c-file);    background: var(--c-file-bg);    }
+.param-name.ph-dir-inline     { color: var(--c-dir);     background: var(--c-dir-bg);     }
+
+/* ── Shiki dual-theme CSS variable wiring ── */
+/* Only applied to .lang-view so .custom-view token colors are untouched  */
+
+/* Custom tab — set base text color to match Shiki output, no span overrides */
+[data-theme="light"] .custom-view pre { color: #24292e; }
+[data-theme="dark"]  .custom-view pre { color: #cdd6f4; }

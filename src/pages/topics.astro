@@ -1,0 +1,421 @@
+---
+import DocLayout from '../layouts/DocLayout.astro';
+import CodeBlock from '../components/CodeBlock.astro';
+
+// Key:
+//   ph-generic  → bashGeneric   RGB(208,26,20)    red
+//   ph-var      → variables     RGB(0,75,0)       dark green
+//   ph-type     → types         Blue
+//   ph-class    → classes       Orange
+//   ph-fn       → functions     Orchid
+//   ph-exec     → executables   RGB(255,102,178)  pink
+//   ph-file     → fileNames     NavyBlue
+//   ph-dir      → directories   Green
+
+// ── 4.1.1 Python ─────────────────────────────────────────────────────────────
+const pyPublisherCode =
+`self.[publisher_variable_name] = self.create_publisher([msg_type], "[topic_name]", [qos_size])`;
+
+const pyPublisherCustom =
+`<span class="t-slf">self</span>.[<span class="ph-var">publisher_variable_name</span>] = <span class="t-slf">self</span>.create_publisher([<span class="ph-type">msg_type</span>], "<span class="ph-generic">[topic_name]</span>", [<span class="ph-generic">qos_size</span>])`;
+
+// ── 4.1.1 C++ ────────────────────────────────────────────────────────────────
+const cppPublisherCode =
+`// ...
+public:
+//...
+    // Constructor
+    [node_class_name]() : Node("[node_name]") {
+
+    // Initialize publisher attribute
+    [publisher_variable_name] = this->create_publisher<[msg_type]>("[topic_name]", [qos_size]);
+    
+    }
+// ...
+private:
+
+    // Declare a pointer to the publisher attribute
+    rclcpp::Publisher<[msg_type]>::SharedPtr [publisher_variable_name];
+// ...`;
+
+const cppPublisherCustom =
+`<span class="t-cmt">// ...</span>
+<span class="t-kw">public</span>:
+<span class="t-cmt">//...</span>
+    <span class="t-cmt">// Constructor</span>
+    [<span class="ph-class">node_class_name</span>]() : Node("<span class="ph-generic">[node_name]</span>") {
+
+    <span class="t-cmt">// Initialize publisher attribute</span>
+    [<span class="ph-var">publisher_variable_name</span>] = <span class="t-kw">this</span>->create_publisher&lt;[<span class="ph-type">msg_type</span>]&gt;("<span class="ph-generic">[topic_name]</span>", [<span class="ph-generic">qos_size</span>]);
+    
+    }
+<span class="t-cmt">// ...</span>
+<span class="t-kw">private</span>:
+
+    <span class="t-cmt">// Declare a pointer to the publisher attribute</span>
+    rclcpp::Publisher&lt;[<span class="ph-type">msg_type</span>]&gt;::SharedPtr [<span class="ph-var">publisher_variable_name</span>];
+<span class="t-cmt">// ...</span>`;
+
+// ── 4.2 Python ───────────────────────────────────────────────────────────────
+const pyPublishCode =
+`# Create an object based on a message interface
+msg = [msg_type]()
+
+# Fill in the attributes of the message
+# msg.[message_variable_1] = ...
+# msg.[message_variable_2] = ...
+# etc ...
+
+# Publish message (can use self when within member functions of the node class)
+self.[publisher_variable_name].publish(msg)`;
+
+const pyPublishCustom =
+`<span class="t-cmt"># Create an object based on a message interface</span>
+msg = [<span class="ph-type">msg_type</span>]()
+
+<span class="t-cmt"># Fill in the attributes of the message</span>
+<span class="t-cmt"># msg.[<span class="ph-var">message_variable_1</span>] = ...</span>
+<span class="t-cmt"># msg.[<span class="ph-var">message_variable_2</span>] = ...</span>
+<span class="t-cmt"># etc ...</span>
+
+<span class="t-cmt"># Publish message (can use self when within member functions of the node class)</span>
+<span class="t-slf">self</span>.[<span class="ph-var">publisher_variable_name</span>].publish(msg)`;
+
+// ── 4.2 C++ ──────────────────────────────────────────────────────────────────
+const cppPublishCode =
+`// Create an object based on a message interface
+// auto is used for convenience, but specific data type can be used depending on message
+auto msg = [msg_type]();
+
+// Fill in the attributes of the message
+// msg.[message_variable_1] = ...
+// msg.[message_variable_2] = ...
+// etc ...
+
+// Publish message (within member functions of the node class)
+[publisher_variable_name]->publish(msg);`;
+
+const cppPublishCustom =
+`<span class="t-cmt">// Create an object based on a message interface</span>
+<span class="t-cmt">// auto is used for convenience, but specific data type can be used depending on message</span>
+<span class="t-kw">auto</span> msg = [<span class="ph-type">msg_type</span>]();
+
+<span class="t-cmt">// Fill in the attributes of the message</span>
+<span class="t-cmt">// msg.[<span class="ph-var">message_variable_1</span>] = ...</span>
+<span class="t-cmt">// msg.[<span class="ph-var">message_variable_2</span>] = ...</span>
+<span class="t-cmt">// etc ...</span>
+
+<span class="t-cmt">// Publish message (within member functions of the node class)</span>
+[<span class="ph-var">publisher_variable_name</span>]->publish(msg);`;
+
+// ── 4.3 Python ───────────────────────────────────────────────────────────────
+const pySubscriberCode =
+`#...
+self.[subscriber_variable_name] = self.create_subscription([msg_type], "[topic_name]", self.[receive_callback_function], [qos_size])
+
+# Callback function called when message is received (must be in the same class)
+def [receive_callback_function](self, msg: [msg_type]):
+
+    # Access the message and do what you wish with it   
+#...`;
+
+const pySubscriberCustom =
+`<span class="t-cmt">#...</span>
+<span class="t-slf">self</span>.[<span class="ph-var">subscriber_variable_name</span>] = <span class="t-slf">self</span>.create_subscription([<span class="ph-type">msg_type</span>], "<span class="ph-generic">[topic_name]</span>", <span class="t-slf">self</span>.[<span class="ph-fn">receive_callback_function</span>], [<span class="ph-generic">qos_size</span>])
+
+<span class="t-cmt"># Callback function called when message is received (must be in the same class)</span>
+<span class="t-kw">def</span> [<span class="ph-fn">receive_callback_function</span>](<span class="t-slf">self</span>, msg: [<span class="ph-type">msg_type</span>]):
+
+    <span class="t-cmt"># Access the message and do what you wish with it</span>   
+<span class="t-cmt">#...</span>`;
+
+// ── 4.3 C++ ──────────────────────────────────────────────────────────────────
+const cppSubscriberCode =
+`// ...
+public:
+
+    // Constructor
+    [node_class_name]() : Node("[node_name]") {
+
+        // Initialize subscriber attribute
+        [subscriber_variable_name] = this->create_subscription<[msg_type]>("[topic_name]", [qos_size], std::bind(&[node_class_name]::[receive_callback_function], this, std::placeholders::_1));
+
+    }
+// ...
+private:
+
+    // Callback function gets called when message is received
+    // Pointer to msg as argument
+    void [receive_callback_function](const std::shared_ptr<[msg_type]> msg) {
+
+        // Access the message and do what you wish with it 
+
+    }
+
+    // Declare subscriber attribute
+    rclcpp::Subscription<[msg_type]>::SharedPtr [subscriber_variable_name];
+
+//...`;
+
+const cppSubscriberCustom =
+`<span class="t-cmt">// ...</span>
+<span class="t-kw">public</span>:
+
+    <span class="t-cmt">// Constructor</span>
+    [<span class="ph-class">node_class_name</span>]() : Node("<span class="ph-generic">[node_name]</span>") {
+
+        <span class="t-cmt">// Initialize subscriber attribute</span>
+        [<span class="ph-var">subscriber_variable_name</span>] = <span class="t-kw">this</span>->create_subscription&lt;[<span class="ph-type">msg_type</span>]&gt;("<span class="ph-generic">[topic_name]</span>", [<span class="ph-generic">qos_size</span>], std::bind(&amp;[<span class="ph-class">node_class_name</span>]::[<span class="ph-fn">receive_callback_function</span>], <span class="t-kw">this</span>, std::placeholders::_1));
+
+    }
+<span class="t-cmt">// ...</span>
+<span class="t-kw">private</span>:
+
+    <span class="t-cmt">// Callback function gets called when message is received</span>
+    <span class="t-cmt">// Pointer to msg as argument</span>
+    <span class="t-kw">void</span> [<span class="ph-fn">receive_callback_function</span>](<span class="t-kw">const</span> std::shared_ptr&lt;[<span class="ph-type">msg_type</span>]&gt; msg) {
+
+        <span class="t-cmt">// Access the message and do what you wish with it</span> 
+
+    }
+
+    <span class="t-cmt">// Declare subscriber attribute</span>
+    rclcpp::Subscription&lt;[<span class="ph-type">msg_type</span>]&gt;::SharedPtr [<span class="ph-var">subscriber_variable_name</span>];
+
+<span class="t-cmt">//...</span>`;
+
+// ── 4.4 Introspection ────────────────────────────────────────────────────────
+const topicTypeCustom =
+`ros2 topic type /[<span class="ph-generic">topic_name</span>]`;
+
+const topicInfoCustom =
+`ros2 topic info /[<span class="ph-generic">topic_name</span>] -v`;
+
+const ifaceShowCustom =
+`ros2 interface show [<span class="ph-generic">msg_type</span>]`;
+
+const interfaceStructureCode =
+`[data_type] [message_variable_1]
+[data_type] [message_variable_2]
+[data_type] [message_variable_3]`;
+
+const interfaceStructureCustom =
+`[<span class="ph-type">data_type</span>] [<span class="ph-var">message_variable_1</span>]
+[<span class="ph-type">data_type</span>] [<span class="ph-var">message_variable_2</span>]
+[<span class="ph-type">data_type</span>] [<span class="ph-var">message_variable_3</span>]`;
+
+const pubCustom =
+`ros2 topic pub -r [<span class="ph-generic">pub_frequency</span>] /[<span class="ph-generic">topic_name</span>] [<span class="ph-generic">msg_type</span>] "{[<span class="ph-var">message_variable_1</span>]: [<span class="ph-generic">value_1</span>], [<span class="ph-var">message_variable_2</span>]:[<span class="ph-generic">value_2</span>], [...]}"`;
+
+const echoCustom =
+`ros2 topic echo /[<span class="ph-generic">topic_name</span>]`;
+
+const hzCustom =
+`ros2 topic hz /[<span class="ph-generic">topic_name</span>]`;
+
+const bwCustom =
+`ros2 topic bw /[<span class="ph-generic">topic_name</span>]`;
+
+const remapCustom =
+`ros2 run [<span class="ph-generic">package_name</span>] /[<span class="ph-exec">executable_node_name</span>] --ros-args -r /[<span class="ph-generic">original_topic_name</span>]:=/[<span class="ph-generic">new_topic_name</span>]`;
+
+const remapInstanceCustom =
+`ros2 run [<span class="ph-generic">package_name</span>] /[<span class="ph-exec">executable_node_name</span>] --ros-args -r __node:=[<span class="ph-generic">instance_name</span>] /[<span class="ph-generic">original_topic_name</span>]:=/[<span class="ph-generic">new_topic_name</span>]`;
+
+const bagRecordCustom =
+`ros2 bag record -o [<span class="ph-generic">recording_name</span>] /[<span class="ph-generic">topic_name</span>]`;
+
+const bagRecordAllCustom =
+`ros2 bag record -o [<span class="ph-generic">recording_name</span>] -a`;
+
+const bagInfoCustom =
+`ros2 bag info [<span class="ph-generic">recording_name</span>]`;
+
+const bagPlayCustom =
+`ros2 bag play -r [<span class="ph-generic">recording_name</span>]`;
+---
+
+<DocLayout title="Chapter 1 — Topics, Publishers & Subscribers" activeSection="topics">
+
+  <h1 class="doc-title">Topics, Publishers &amp; Subscribers</h1>
+  <p class="doc-subtitle">Chapter 4</p>
+  <!-- ══════════════════════════════════════════════════════════ 4.1 Publishers -->
+  <h2 class="section-heading" id="publishers">
+    4.1 Publishers
+  </h2>
+
+  <h3 class="subsection-heading">4.1.1 Creating a Publisher Node</h3>
+  <p>Create a new node for the appropriate language in your workspace (see <strong>Section 1 (Creating Node)</strong>). Include the following code snippets <strong>in the constructor of your node class to create a publisher.</strong></p>
+
+  <div class="param-list">
+    <div class="param-item">
+      <code class="param-name ph-var-inline">[publisher_variable_name]</code>
+      <span class="param-desc">The name of the member variable that will store the publisher attribute.</span>
+    </div>
+    <div class="param-item">
+      <code class="param-name ph-type-inline">[msg_type]</code>
+      <span class="param-desc">The interface message type that is published — see <strong>Section X (Custom Interfaces)</strong> for more on interfaces.</span>
+    </div>
+    <div class="param-item">
+      <code class="param-name ph-generic-inline">[topic_name]</code>
+      <span class="param-desc">The name of the topic the data is published to (string, must start with letter). This is what will show up when introspecting topics.</span>
+    </div>
+    <div class="param-item">
+      <code class="param-name ph-generic-inline">[qos_size]</code>
+      <span class="param-desc">Number of messages to store in the queue before they are dropped out from topic (integer from 1 to 10, 10 is best but more data intensive).</span>
+    </div>
+  </div>
+
+  <CodeBlock code={pyPublisherCode} lang="python" customHtml={pyPublisherCustom} showLegend={true} />
+
+  <CodeBlock code={cppPublisherCode} lang="cpp" customHtml={cppPublisherCustom} showLegend={true} />
+
+  <!-- ════════════════════════════════════════════════ 4.2 Publishing Messages -->
+  <h3 class="subsection-heading">4.1.2 Publishing Messages</h3>
+
+  <p>See <strong>Section X (Using Interfaces)</strong> for proper formatting of <code class="param-name ph-type-inline">[msg_type]</code>. The msg variable name for the message is arbitrary, it can be anything sensible.</p>
+
+  <CodeBlock code={pyPublishCode} lang="python" customHtml={pyPublishCustom} showLegend={true} />
+
+  <CodeBlock code={cppPublishCode} lang="cpp" customHtml={cppPublishCustom} showLegend={true} />
+
+  <!-- ══════════════════════════════════════════════════════════ 4.3 Subscribers -->
+  <h2 class="section-heading" id="subscribers">
+    4.2 Subscribers
+  </h2>
+
+  <h3 class="subsection-heading">4.2.1 Creating a Subscriber Node &amp; Receive Messages</h3>
+  <p>Create a new node for the appropriate language in your workspace (see <strong>Section 1 (Creating Node)</strong>). Include the following code snippets <strong>in the constructor of your node class to create a subscriber.</strong></p>
+
+  <div class="param-list">
+    <div class="param-item">
+      <code class="param-name ph-var-inline">[subscriber_variable_name]</code>
+      <span class="param-desc">The name of the member variable that will store the subscriber attribute.</span>
+    </div>
+    <div class="param-item">
+      <code class="param-name ph-type-inline">[msg_type]</code>
+      <span class="param-desc">The interface message type of the topic that is subscribed to — see <strong>Section X (Custom Interfaces)</strong> for more on interfaces.</span>
+    </div>
+    <div class="param-item">
+      <code class="param-name ph-generic-inline">[topic_name]</code>
+      <span class="param-desc">The name of the topic the data is subscribed to (string, must start with letter).</span>
+    </div>
+    <div class="param-item">
+      <code class="param-name ph-fn-inline">[receive_callback_function]</code>
+      <span class="param-desc">A callback member function that is called when a message is received. The message is passed as argument to the callback function.</span>
+    </div>
+    <div class="param-item">
+      <code class="param-name ph-generic-inline">[qos_size]</code>
+      <span class="param-desc">Number of messages to store in the queue before they are dropped out from topic.</span>
+    </div>
+  </div>
+
+  <CodeBlock code={pySubscriberCode} lang="python" customHtml={pySubscriberCustom} showLegend={true} />
+
+  <CodeBlock code={cppSubscriberCode} lang="cpp" customHtml={cppSubscriberCustom} showLegend={true} />
+
+  <!-- ════════════════════════════════════════════════ 4.3 Introspecting Topics -->
+  <h2 class="section-heading" id="introspection">
+    4.3 Introspecting Topics
+  </h2>
+
+  <h3 class="subsection-heading">4.3.1 View Current Topics</h3>
+  <CodeBlock code="ros2 topic list" lang="bash" />
+
+  <h3 class="subsection-heading">4.3.2 View Info for a Specific Topic</h3>
+  <p><strong>View the Message Type:</strong></p>
+  <CodeBlock code="ros2 topic type /[topic_name]" lang="bash" customHtml={topicTypeCustom} showLegend={true} />
+
+  <p><strong>View the Message Type and Number of Nodes Associated with Topic:</strong><br />
+  You can exclude the verbose argument <code>-v</code> if you don't need info about the node names, QoS profiles and endpoint details.</p>
+  <CodeBlock code="ros2 topic info /[topic_name] -v" lang="bash" customHtml={topicInfoCustom} showLegend={true} />
+
+  <h3 class="subsection-heading">4.3.3 View Message Variable Types of a Specific Topic</h3>
+  <p>This will show the individual variables and their corresponding data types given a specific <code class="param-name ph-generic-inline">[msg_type]</code>.</p>
+  <CodeBlock code="ros2 interface show [msg_type]" lang="bash" customHtml={ifaceShowCustom} showLegend={true} />
+
+  <p>This will display the data structure of the message interface:</p>
+  <CodeBlock code={interfaceStructureCode} lang="text" customHtml={interfaceStructureCustom} showLegend={true} />
+  <p><strong>See Section X (Interface Structure)</strong> for more on how message interfaces are formatted.</p>
+
+  <h3 class="subsection-heading">4.3.4 Creating an Impromptu Publisher to a Topic in Terminal</h3>
+
+  <div class="param-list">
+    <div class="param-item">
+      <code class="param-name ph-generic-inline">[pub_frequency]</code>
+      <span class="param-desc">Number of messages published per second.</span>
+    </div>
+    <div class="param-item">
+      <code class="param-name ph-var-inline">[message_variable_n]</code>
+      <span class="param-desc">A message variable within a message interface — see <strong>Section X (Custom Interfaces)</strong> for more on interfaces.</span>
+    </div>
+    <div class="param-item">
+      <code class="param-name ph-generic-inline">[value_i]</code>
+      <span class="param-desc">Input the value of the message variables here (it must match the data type of its corresponding message variable).</span>
+    </div>
+  </div>
+
+  <p><strong>NOTE: You may add as many message variables as there are in the message interface you are using.</strong> If you omit variable(s), they will be treated as None.</p>
+
+  <CodeBlock
+    code={`ros2 topic pub -r [pub_frequency] /[topic_name] [msg_type] "{[message_variable_1]: [value_1], [message_variable_2]:[value_2], [...]}"`}
+    lang="bash"
+    customHtml={pubCustom}
+    showLegend={true}
+  />
+
+  <p><strong>Example: Publishing a String at 100 Hz</strong></p>
+  <CodeBlock code={`ros2 topic pub -r 100 /sensor example_interfaces/msg/String "{data: 'Some string data'}"`} lang="bash" />
+
+  <h3 class="subsection-heading">4.3.5 Creating an Impromptu Subscriber to a Topic in Terminal</h3>
+  <CodeBlock code="ros2 topic echo /[topic_name]" lang="bash" customHtml={echoCustom} showLegend={true} />
+
+  <h3 class="subsection-heading">4.3.6 View Frequency of Messages Published to a Specific Topic</h3>
+  <CodeBlock code="ros2 topic hz /[topic_name]" lang="bash" customHtml={hzCustom} showLegend={true} />
+
+  <h3 class="subsection-heading">4.3.7 View Bandwidth of Topic</h3>
+  <CodeBlock code="ros2 topic bw /[topic_name]" lang="bash" customHtml={bwCustom} showLegend={true} />
+
+  <h3 class="subsection-heading">4.3.8 Renaming (Remapping) Topics of a Publisher at Runtime</h3>
+  <p>To use an existing publisher node to <strong>publish to another topic</strong>, you must first rename the publisher node:</p>
+  <CodeBlock
+    code="ros2 run [package_name] /[executable_node_name] --ros-args -r /[original_topic_name]:=/[new_topic_name]"
+    lang="bash"
+    customHtml={remapCustom}
+    showLegend={true}
+  />
+  <p><code class="param-name ph-generic-inline">[original_topic_name]</code> must match that in the original node script.</p>
+
+  <p>You may also want to rename <em>both the node's name &amp; its topic</em> by using:</p>
+  <CodeBlock
+    code="ros2 run [package_name] /[executable_node_name] --ros-args -r __node:=[instance_name] /[original_topic_name]:=/[new_topic_name]"
+    lang="bash"
+    customHtml={remapInstanceCustom}
+    showLegend={true}
+  />
+  <p>where <code class="param-name ph-exec-inline">[executable_node_name]</code> is the executable name of the node, and <code class="param-name ph-generic-inline">[instance_name]</code> is the name of this specific instance of the node.</p>
+
+  <h3 class="subsection-heading">4.3.9 Recording Topics Using Bags</h3>
+
+  <p>It is good practice to create a directory for bags to record and save topics.</p>
+  <CodeBlock code="mkdir bags" lang="bash" />
+
+  <p><strong>Recording a Certain Topic</strong> — in your bags directory, run the following:</p>
+  <CodeBlock code="ros2 bag record -o [recording_name] /[topic_name]" lang="bash" customHtml={bagRecordCustom} showLegend={true} />
+  <p>This will save the recording into a directory named <code class="param-name ph-generic-inline">[recording_name]</code> within <code>/bags</code>.</p>
+
+  <p><strong>Recording All Topics</strong> — in your bags directory, run the following:</p>
+  <CodeBlock code="ros2 bag record -o [recording_name] -a" lang="bash" customHtml={bagRecordAllCustom} showLegend={true} />
+  <p>This will save the recording into a directory named <code class="param-name ph-generic-inline">[recording_name]</code> within <code>/bags</code>.</p>
+
+  <p><strong>View Info About Recording</strong> — in your bags directory, run the following:</p>
+  <CodeBlock code="ros2 bag info [recording_name]" lang="bash" customHtml={bagInfoCustom} showLegend={true} />
+
+  <p><strong>Playing Back a Bags Recording</strong> — in your bags directory, run the following:</p>
+  <CodeBlock code="ros2 bag play -r [recording_name]" lang="bash" customHtml={bagPlayCustom} showLegend={true} />
+
+  <h3 class="subsection-heading">4.3.10 Visualize Topics Using RQt Plot</h3>
+  <p>Start RQt Plot using:</p>
+  <CodeBlock code="ros2 run rqt_plot rqt_plot" lang="bash" />
+
+</DocLayout>

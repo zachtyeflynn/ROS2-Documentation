@@ -1,0 +1,114 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  activeSection?: string;
+}
+const { title = 'ROS 2 Documentation', activeSection = '' } = Astro.props;
+ 
+const nav = [
+  {
+    section: '1. Preamble',
+    id: 'preamble',
+    href: '/preamble',
+    links: []
+  },
+  {
+    section: '2. ROS 2 Setup',
+    id: 'setup',
+    href: '/setup',
+    links: [
+      { href: '/setup#installation',    label: '2.1 Installation' },
+      { href: '/setup#setup-environment',   label: '2.2 Setup Development Environment' },
+      { href: '/setup#updating-packages', label: '2.3 Updating ROS 2 Packages' },
+    ]
+  },
+  {
+    section: '3. Packages & Nodes',
+    id: 'packages',
+    href: '/packages',
+    links: [
+      { href: '/packages#creating-packages',    label: '3.1 Creating Packages' },
+      { href: '/packages#building-packages',   label: '3.2 Building Packages' },
+      { href: '/packages#creating-nodes', label: '3.3 Creating Nodes' },
+      { href: '/packages#running-nodes', label: '3.4 Running Nodes' },
+      { href: '/packages#introspecting-nodes', label: '3.5 Introspecting Nodes' },
+      { href: '/packages#configuring-packages', label: '3.6 Configuring Packages' },
+    ]
+  },
+  {
+    section: '4. Topics, Publishers & Subscribers',
+    id: 'topics',
+    href: '/topics',
+    links: [
+      { href: '/topics#publishers',    label: '4.1 Publishers' },
+      { href: '/topics#subscribers',   label: '4.2 Subscribers' },
+      { href: '/topics#introspection', label: '4.3 Introspecting Topics' },
+    ]
+  }
+];
+---
+ 
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{title}</title>
+  <!-- global.css is imported in the frontmatter so Vite can watch and cache-bust it -->
+  <script is:inline>
+    const saved = localStorage.getItem('theme');
+    if (saved) document.documentElement.dataset.theme = saved;
+    else if (window.matchMedia('(prefers-color-scheme: dark)').matches)
+      document.documentElement.dataset.theme = 'dark';
+  </script>
+</head>
+<body>
+  <nav class="sidebar" aria-label="Documentation Navigation">
+    <div class="sidebar-logo">
+      <a href="/" class="sidebar-home-link" aria-label="Back To Home">
+        <span class="sidebar-home-arrow">←</span>
+        <div>
+          <h1>ROS 2 Documentation</h1>
+          <p>Zachary Flynn, 2026</p>
+        </div>
+      </a>
+    </div>
+ 
+    {nav.map(group => (
+      <div class="sidebar-section">
+        <a href={group.href} class={`sidebar-section-title-link ${activeSection === group.id ? 'active' : ''}`}>
+          {group.section}
+        </a>
+        {group.links.map(link => (
+          <a href={link.href} class="sidebar-link">{link.label}</a>
+        ))}
+      </div>
+    ))}
+ 
+    <div class="sidebar-footer">
+      <button id="theme-toggle" aria-label="Toggle light/dark mode">
+        <span class="icon-light">☀ Light</span>
+        <span class="icon-dark">☾ Dark</span>
+      </button>
+    </div>
+  </nav>
+ 
+  <main>
+    <div class="content-body">
+      <slot />
+    </div>
+  </main>
+ 
+  <script>
+    const toggle = document.getElementById('theme-toggle');
+    toggle?.addEventListener('click', () => {
+      const html = document.documentElement;
+      const next = html.dataset.theme === 'dark' ? 'light' : 'dark';
+      html.dataset.theme = next;
+      localStorage.setItem('theme', next);
+    });
+  </script>
+</body>
+</html>
