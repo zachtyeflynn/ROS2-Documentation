@@ -322,7 +322,7 @@ const cppExecutionLoopCustom =
 
     // Start execution on a seperate thread
     std::thread{
-        std::bind(&<span class="ph-class">[node_class_name]</span>::<span class="ph-fn">[handle_execution_function]</span>, this, std::placeholders::_1), goal  }.detach();
+        std::bind(&&lt;<span class="ph-class">[node_class_name]</span>&gt;::<span class="ph-fn">[handle_execution_function]</span>, this, std::placeholders::_1), goal  }.detach();
 }
 
 void <span class="ph-fn">[handle_execution_function]</span>(const std::shared_ptr&lt;rclcpp_action::ServerGoalHandle&lt;<span class="ph-type">[action_type]</span>&gt;&gt; goal) {
@@ -514,7 +514,7 @@ void [client_callback_function](rclcpp_action::ClientGoalHandle<[action_type]>::
             
     auto goal_handle = future.get();
     // Do what you need on the response from the server
-    // ...
+    # ...
 
 }`;
 
@@ -535,10 +535,11 @@ void <span class="ph-fn">[client_callback_function]</span>(rclcpp_action::Client
 <DocLayout title="Actions" activeSection="actions">
 
   <h1 class="doc-title">Actions</h1>
+  <p class="doc-subtitle">Chapter 6</p>
 
-  <h2 class="section-heading" id="action-servers">4.1 Action Servers</h2>
+  <h2 class="section-heading" id="action-servers">6.1 Action Servers</h2>
 
-  <h3 class="subsection-heading">Creating Action Servers</h3>
+  <h3 class="subsection-heading">6.1.1 Creating Action Servers</h3>
   <p>Create a new node for the appropriate language in your workspace. Include the following code snippets <strong>in the constructor of your node class to create a server.</strong></p>
 
   <div class="param-list">
@@ -568,50 +569,48 @@ void <span class="ph-fn">[client_callback_function]</span>(rclcpp_action::Client
     </div>
   </div>
 
-  <h4 class="subsubsection-heading">Python</h4>
+  <h4 class="subsection-heading">6.1.1.1 Python</h4>
   <CodeBlock code={pyActionServerInitCode} lang="python" customHtml={pyActionServerInitCustom} showLegend={true} />
 
-  <hr class="section-divider" />
-
-  <h4 class="subsubsection-heading">C++</h4>
+  <h4 class="subsection-heading">6.1.1.2 C++</h4>
   <CodeBlock code={cppActionServerInitCode} lang="cpp" customHtml={cppActionServerInitCustom} showLegend={true} />
 
-  <h3 class="subsection-heading">Handling Action Client Requests</h3>
+  <h3 class="subsection-heading">6.1.2 Handling Action Client Requests</h3>
   <p>This is the first callback function that will be executed once a request is received. This is mainly used to verify whether the goal of the action is feasible and thus can be executed safely.</p>
   <blockquote>
     <strong>uuid:</strong> A unique identifier for a specific goal request (16 byte value). This is used to determine which action client sent the request, and can be used to perform queuing or prioritized scheduling.
   </blockquote>
 
-  <h4 class="subsubsection-heading">Python</h4>
+  <h4 class="subsection-heading">6.1.2.1 Python</h4>
   <CodeBlock code={pyGoalReqCode} lang="python" customHtml={pyGoalReqCustom} />
 
-  <h4 class="subsubsection-heading">C++</h4>
+  <h4 class="subsection-heading">6.1.2.2 C++</h4>
   <CodeBlock code={cppGoalReqCode} lang="cpp" customHtml={cppGoalReqCustom} />
 
-  <h3 class="subsection-heading">Handling Cancel Requests</h3>
+  <h3 class="subsection-heading">6.1.3 Handling Cancel Requests</h3>
   <p>This will be called if ever an action client sends a cancel request. This function is meant to be used to <strong>evaluate whether cancellation is feasible</strong>. The execution function <code class="ph-fn-inline">[handle_execution_function]</code> is where the action is truly canceled, while <code class="ph-fn-inline">[action_cancel_callback_function]</code> only forwards the cancellation request to the execution function.</p>
 
-  <h4 class="subsubsection-heading">Python</h4>
+  <h4 class="subsection-heading">6.1.3.1 Python</h4>
   <CodeBlock code={pyCancelReqCode} lang="python" customHtml={pyCancelReqCustom} />
 
-  <h4 class="subsubsection-heading">C++</h4>
+  <h4 class="subsection-heading">6.1.3.2 C++</h4>
   <CodeBlock code={cppCancelReqCode} lang="cpp" customHtml={cppCancelReqCustom} />
 
-  <h3 class="subsection-heading">Executing Actions, Providing Feedback &amp; Returning Results</h3>
+  <h3 class="subsection-heading">6.1.4 Executing Actions, Providing Feedback &amp; Returning Results</h3>
   <p><code class="ph-fn-inline">[action_accepted_callback_function]</code> is called once the action request is accepted. This function is used to start the execution of the action.</p>
   <p><code class="ph-fn-inline">[handle_execution_function]</code>: the member variable that will run on a separate thread which actually runs the action.</p>
 
-  <h4 class="subsubsection-heading">Python</h4>
+  <h4 class="subsection-heading">6.1.4.1 Python</h4>
   <p>In RCLPy, there is only one function needed for <code class="ph-fn-inline">[action_accepted_callback_function]</code> &amp; <code class="ph-fn-inline">[handle_execution_function]</code>; execution is handled automatically in an asynchronous manner.</p>
   <CodeBlock code={pyExecutionLoopCode} lang="python" customHtml={pyExecutionLoopCustom} />
 
-  <h4 class="subsubsection-heading">C++</h4>
+  <h4 class="subsection-heading">6.1.4.2 C++</h4>
   <CodeBlock code={cppExecutionLoopCode} lang="cpp" customHtml={cppExecutionLoopCustom} />
 
 
-  <h2 class="section-heading" id="action-clients">4.2 Action Clients</h2>
+  <h2 class="section-heading" id="action-clients">6.2 Action Clients</h2>
 
-  <h3 class="subsection-heading">Creating a Client</h3>
+  <h3 class="subsection-heading">6.2.1 Creating a Client</h3>
   <p>Create a new node for the appropriate language in your workspace. Include the following code snippets <strong>in the constructor of your node class to create a client.</strong></p>
 
   <div class="param-list">
@@ -629,40 +628,40 @@ void <span class="ph-fn">[client_callback_function]</span>(rclcpp_action::Client
     </div>
   </div>
 
-  <h4 class="subsubsection-heading">Python</h4>
+  <h4 class="subsection-heading">6.2.1.1 Python</h4>
   <CodeBlock code={pyActionClientInitCode} lang="python" customHtml={pyActionClientInitCustom} showLegend={true} />
 
-  <h4 class="subsubsection-heading">C++</h4>
+  <h4 class="subsection-heading">6.2.1.2 C++</h4>
   <CodeBlock code={cppActionClientInitCode} lang="cpp" customHtml={cppActionClientInitCustom} showLegend={true} />
 
-  <h3 class="subsection-heading">Checking Whether an Action Server is Available (If Server is Operational)</h3>
-  <p><code class="ph-generic-inline">[check_period]</code> is the amount of time (in seconds) at which the node checks whether the action server is available. This returns either True or False.</p>
+  <h3 class="subsection-heading">6.2.2 Checking Whether an Action Server is Available (If Server is Operational)</h3>
+  <p><code class="ph-generic-inline">[check_period]</code> is the amount of time (in seconds) at which the node checks whether the action server is available. This returns either <code class="path-inline">True</code> or <code class="path-inline">False</code>.</p>
 
-  <h4 class="subsubsection-heading">Python</h4>
+  <h4 class="subsection-heading">6.2.2.1 Python</h4>
   <CodeBlock code={pyWaitActionCode} lang="python" customHtml={pyWaitActionCustom} />
 
-  <hr class="section-divider" />
-
-  <h4 class="subsubsection-heading">C++</h4>
+  <h4 class="subsection-heading">6.2.2.2 C++</h4>
   <CodeBlock code={cppWaitActionCode} lang="cpp" customHtml={cppWaitActionCustom} />
 
-  <h3 class="subsection-heading">Sending an Asynchronous Request from a Client to a Server</h3>
+  <h3 class="subsection-heading">6.2.3 Sending an Asynchronous Request from a Client to a Server</h3>
   <p>A node sending an asynchronous request can continue performing operations until a response is received. <strong>It is advised but not necessary to wrap the following in a function (that can be called when you want to call an action).</strong> Include the following code into your node class.</p>
   <p><code class="ph-fn-inline">[client_callback_function]</code>: a callback function which is called when a goal response message is received from a server.</p>
 
-  <h4 class="subsubsection-heading">Python</h4>
+  <h4 class="subsection-heading">6.2.3.1 Python</h4>
   <CodeBlock code={pySendGoalCode} lang="python" customHtml={pySendGoalCustom} />
 
-  <h4 class="subsubsection-heading">C++</h4>
+  <h4 class="subsection-heading">6.2.3.2 C++</h4>
   <CodeBlock code={cppSendGoalCode} lang="cpp" customHtml={cppSendGoalCustom} />
 
-  <h3 class="subsection-heading">Receiving an Asynchronous Response</h3>
+  <h3 class="subsection-heading">6.2.4 Receiving an Asynchronous Response</h3>
   <p>Create the <code class="ph-fn-inline">[client_callback_function]</code> as a node class member.</p>
 
-  <h4 class="subsubsection-heading">Python</h4>
+  <h4 class="subsection-heading">6.2.4.1 Python</h4>
   <CodeBlock code={pyResponseCode} lang="python" customHtml={pyResponseCustom} />
 
-  <h4 class="subsubsection-heading">C++</h4>
+  <h4 class="subsection-heading">6.2.4.2 C++</h4>
   <CodeBlock code={cppResponseCode} lang="cpp" customHtml={cppResponseCustom} />
 
 </DocLayout>
+
+```

@@ -66,6 +66,15 @@
   --content-max: 1000px;
 }
 
+code.path-inline {
+  background: transparent;
+  padding: 0;
+}
+
+[data-theme="dark"] .sidebar {
+  color-scheme: dark;
+}
+
 html { font-size: 16px; scroll-behavior: smooth; }
 
 body {

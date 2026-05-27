@@ -105,7 +105,7 @@ sudo apt dist-upgrade`;
 
   <CodeBlock code={verifyEigenCode} lang="bash" />
 
-  <p>If there is nothing, you can install Eigen3 using:</p>
+  <p>If Eigen3 is not yet installed, perform the following:</p>
 
   <CodeBlock code={installEigenCode} lang="bash" />
 
@@ -158,7 +158,7 @@ sudo apt dist-upgrade`;
 
   <CodeBlock code={buildWorkspaceCode} lang="bash" />
 
-  <p><strong>NOTE: you must always be in the workspace directory <code>~/[directory_to_workspace]/[workspace_name]</code> when building workspaces</strong>.</p>
+  <p><strong>NOTE: you must always be in the workspace directory <strong><code class="path-inline">~/<span class="ph-dir">[directory_to_workspace]</span>/<span class="ph-generic">[workspace_name]</span></code></strong>.</strong></p>
 
   <h3 class="subsection-heading">2.2.3 Creating Symbolic Links to Source Code</h3>
   <p>It is sometimes useful to have a separate directory to store source code to keep it neatly organized (or to store on the cloud, like GitHub), but also have the packages that we need within our workspace. Or, it is also possible that one script is shared between workspaces and packages. We can thus create symbolic links between our separate directory to our workspaces.</p>
@@ -166,11 +166,11 @@ sudo apt dist-upgrade`;
   <div class="param-list">
     <div class="param-item">
       <code class="param-name ph-dir-inline">[source_directory]</code>
-      <span class="param-desc">the original, <strong>absolute</strong> directory of the source code.</span>
+      <span class="param-desc">The original, <strong>absolute</strong> directory of the source code.</span>
     </div>
     <div class="param-item">
       <code class="param-name ph-dir-inline">[target_directory]</code>
-      <span class="param-desc">the <strong>absolute</strong> directory where you want to create a symbolic link to the source code.</span>
+      <span class="param-desc">The <strong>absolute</strong> directory where you want to create a symbolic link to the source code.</span>
     </div>
   </div>
 
@@ -186,8 +186,11 @@ sudo apt dist-upgrade`;
   <CodeBlock code={linkDirsCode} lang="bash" customHtml={linkDirsCustom} showLegend={true} />
 
   <h3 class="subsection-heading">2.2.4 Sourcing Installed Packages</h3>
-  <p>Every time you wish to use a package installed within a workspace, you will need to source the setup.bash file located in the /<code class="param-name ph-generic-inline">[workspace_name]</code>/install directory.</p>
-  <p>Every time you open a terminal, you must run the following from your workspace directory:</p>
+<p>
+  Every time you wish to use a package installed within a workspace, you will need to source the <strong><code class="path-inline">setup.bash</code></strong> file located in the 
+  <strong><code class="path-inline">~/<span class="ph-dir">[directory_to_workspace]</span>/<span class="ph-generic">[workspace_name]</span>/install</code></strong> directory.
+</p>
+<p>Every time you open a terminal, you must run the following from your workspace directory:</p>
 
   <CodeBlock code={sourceLocalWorkspaceCode} lang="bash" />
 
@@ -204,7 +207,7 @@ sudo apt dist-upgrade`;
   <p><strong>NOTE: when working in different workspaces, you will need to change this bash command to the appropriate workspace. If not, you will be sourcing the wrong workspace.</strong></p>
 
   <h3 class="subsection-heading">2.2.5 Opening VSCode in Workspace</h3>
-  <p>Open VSCode in your workspace directory <code>~/[directory_to_workspace]/[workspace_name]</code>.</p>
+  <p>Open VSCode in your workspace directory <strong><code class="path-inline">~/<span class="ph-dir">[directory_to_workspace]</span>/<span class="ph-generic">[workspace_name]</span></code></strong>.</p>
 
   <CodeBlock code={openVscodeCode} lang="bash" customHtml={openVscodeCustom} showLegend={true} />
 

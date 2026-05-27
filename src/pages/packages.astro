@@ -122,7 +122,7 @@ class [node_class_name] : public rclcpp::Node {
     public:
 
         // Constructor, get access parent members
-        [node_class_name]() : Node("[node_name]") {
+        [node_class_name]() : Node("[node_name]"") {
         
             // Write message in terminal (optional)
             RCLCPP_INFO(this->get_logger(), "Node instantiated.");
@@ -189,17 +189,16 @@ int main(int argc, char **argv) {
 const chmodNodeCode = `chmod +x [node_file_name].py`;
 const chmodNodeCustom = `chmod +x <span class="ph-file">[node_file_name]</span>.py`;
 
-const setupPyEntryCode = `#...
-# Add a node executable for each node script, denoted as [...], commas necessary
+const setupPyEntryCode = `# Add a node executable for each node script, denoted as [...], commas necessary
 entry_points = {
     'console_scripts': {
     "[executable_node_name] = [package_name].[node_file_name]:main",
     [...]
     }
 }
-#...`;
+`;
 
-const setupPyEntryCustom = `#...
+const setupPyEntryCustom = `
 # Add a node executable for each node script, denoted as [...], commas necessary
 entry_points = {
     'console_scripts': {
@@ -207,10 +206,9 @@ entry_points = {
     <span class="ph-generic">[...]</span>
     }
 }
-#...`;
+`;
 
-const cmakeListsNodeCode = `//...
-// Do this for every node executable
+const cmakeListsNodeCode = `// Do this for every node executable
 add_executable([executable_node_name] src/[node_file_name].cpp)
 ament_target_dependencies([executable_node_name] rclcpp)
 
@@ -219,9 +217,9 @@ install(TARGETS
     [executable_node_name]
     [...]
     DESTINATION lib/\${PROJECT_NAME})
-// ...`;
+`;
 
-const cmakeListsNodeCustom = `//...
+const cmakeListsNodeCustom = `
 // Do this for every node executable
 add_executable(<span class="ph-exec">[executable_node_name]</span> src/<span class="ph-file">[node_file_name]</span>.cpp)
 ament_target_dependencies(<span class="ph-exec">[executable_node_name]</span> rclcpp)
@@ -231,7 +229,7 @@ install(TARGETS
     <span class="ph-exec">[executable_node_name]</span>
     <span class="ph-exec">[...]</span>
     DESTINATION lib/\${PROJECT_NAME})
-// ...`;
+`;
 
 const runStandardRosCode = `ros2 run [package_name] [executable_node_name]`;
 const runStandardRosCustom = `ros2 run <span class="ph-generic">[package_name]</span> <span class="ph-exec">[executable_node_name]</span>`;
@@ -264,12 +262,9 @@ find_package([package_name])`;
   <h2 class="section-heading" id="creating-packages">
     3.1 Creating Packages
   </h2>
-  <p>Make sure to create ROS packages in the <code>/src</code> directory of an appropriate workspace.</p>
+  <p>Make sure to create ROS packages in the <strong><code class="path-inline">/src</code></strong> directory of an appropriate workspace.</p>
 
   <CodeBlock code={cdSrcCode} lang="bash" customHtml={cdSrcCustom} showLegend={true} />
-
-  <p>You may add additional dependencies in the command after <code>rclpy</code>/<code>rclcpp</code>, or you may add these later on in the <code>package.xml</code> file (under <code>&lt;depend&gt;</code>).</p>
-  <p>For C++, you also need to <strong>modify the CMakeLists.txt file</strong> (under <code>find_package</code>) found within the newly created package.</p>
 
   <h3 class="subsection-heading">3.1.1 Python</h3>
   <CodeBlock code={createPythonPkgCode} lang="bash" customHtml={createPythonPkgCustom} showLegend={true} />
@@ -280,7 +275,7 @@ find_package([package_name])`;
   <h2 class="section-heading" id="building-packages">
     3.2 Building Packages
   </h2>
-  <p><strong>NOTE: always build packages in the <code class="param-name ph-generic-inline">[workspace]</code> directory (not in <code class="param-name ph-generic-inline">[workspace]</code>/src directory)</strong>.</p>
+  <p><strong>NOTE: always build packages within the base directory of any workspace (never in <strong><code class="path-inline">/src</code></strong>).</strong></p>
 
   <CodeBlock code={cdWorkspaceCode} lang="bash" customHtml={cdWorkspaceCustom} showLegend={true} />
 
@@ -289,66 +284,92 @@ find_package([package_name])`;
 
   <h3 class="subsection-heading">3.2.2 Build Selected Package(s)</h3>
   <CodeBlock code={buildSelectCode} lang="bash" customHtml={buildSelectCustom} showLegend={true} />
-  <p>Include as many packages as needed, indicated by <code class="param-name ph-generic-inline">[...]</code>, simply by adding a space between entries.</p>
+  <p>Include as many packages as needed simply by adding a space between all required entries.</p>
 
   <h3 class="subsection-heading">3.2.3 Build Specific Package and its Dependencies</h3>
-  <p>Ensure that all <strong>custom</strong> ROS 2 packages dependencies are included in your workspace.</p>
+  <p>Ensure that all of the dependencies needed for all packages are included within your workspace before building.</p>
   <CodeBlock code={buildUpToCode} lang="bash" customHtml={buildUpToCustom} showLegend={true} />
 
   <h2 class="section-heading" id="creating-nodes">
     3.3 Creating Nodes
   </h2>
 
+  <div class="param-list">
+    <div class="param-item">
+      <code class="param-name ph-generic-inline">[node_name]</code>
+      <span class="param-desc">The default name of this node that will show up while introspecting using the terminal.</span>
+    </div>
+    <div class="param-item">
+      <code class="param-name ph-file-inline">[node_file_name]</code>
+      <span class="param-desc">The name of the file which encodes a node.</span>
+    </div>
+  </div>
+  
   <h3 class="subsection-heading">3.3.1 Python</h3>
-  <p>For Python packages, create the following Python file under the directory:<br /><code>~/[directory_to_workspace]/[workspace_name]/src/[package_name]/[package_name]</code>.</p>
+  <p>For Python packages, create the following Python file under the directory: <strong><code class="path-inline">~/<span class="ph-dir">[directory_to_workspace]</span>/<span class="ph-generic">[workspace_name]</span>/src/<span class="ph-generic">[package_name]</span>/<span class="ph-generic">[package_name]</span></code></strong>.</p>
 
   <CodeBlock code={touchPythonNodeCode} lang="bash" customHtml={touchPythonNodeCustom} showLegend={true} />
 
   <p>The following is an object-oriented programming template for a node in Python:</p>
   <CodeBlock code={pythonNodeTemplateCode} lang="python" customHtml={pythonNodeTemplateCustom} showLegend={true} />
-  <p><code class="param-name ph-generic-inline">[node_name]</code> will be what shows up for this specific node when introspecting nodes using the terminal.</p>
 
   <h3 class="subsection-heading" id="node-creation-cpp">3.3.2 C++</h3>
-  <p>For C++ packages, create the following C++ file under the directory:<br /><code>~/[directory_to_workspace]/[workspace_name]/src/[package_name]/src</code>.</p>
+  <p>For C++ packages, create the following C++ file under the directory:<br /> <strong><code class="path-inline">~/<span class="ph-dir">[directory_to_workspace]</span>/<span class="ph-generic">[workspace_name]</span>/src/<span class="ph-generic">[package_name]</span>/src</code></strong>.</p>
 
   <CodeBlock code={touchCppNodeCode} lang="bash" customHtml={touchCppNodeCustom} showLegend={true} />
 
   <p>The following is an object-oriented programming template for a node in C++:</p>
   <CodeBlock code={cppNodeTemplateCode} lang="cpp" customHtml={cppNodeTemplateCustom} showLegend={true} />
-  <p><code class="param-name ph-generic-inline">[node_name]</code> will be what shows up for this specific node when introspecting nodes using the terminal.</p>
 
   <h2 class="section-heading" id="running-nodes">
     3.4 Running Nodes
   </h2>
 
   <h3 class="subsection-heading">Running Nodes Within a Package Directory (Python Only)</h3>
-  <p>Run the following command within the directory of the node script you wish to run, this is typically <code>~/[directory_to_workspace]/[workspace_name]/src/[package_name]/[package_name]</code>.</p>
+  <p>Run the following command within the directory of the node script you wish to run, this is typically <strong><code class="path-inline">~/<span class="ph-dir">[directory_to_workspace]</span>/<span class="ph-generic">[workspace_name]</span>/src/<span class="ph-generic">[package_name]</span>/<span class="ph-generic">[package_name]</span></code></strong>.</p>
 
   <CodeBlock code={chmodNodeCode} lang="bash" customHtml={chmodNodeCustom} showLegend={true} />
 
   <h3 class="subsection-heading">3.4.1 Running From Workspace (Installing Executable Nodes)</h3>
-  <p><code class="param-name ph-exec-inline">[executable_node_name]</code>: the name you will use when running the node from the terminal or in launch scripts. You may choose any name; it does not have to be the same as <code class="param-name ph-file-inline">[node_file_name]</code>.</p>
+
+  <div class="param-list">
+    <div class="param-item">
+      <code class="param-name ph-exec-inline">[executable_node_name]</code>
+      <span class="param-desc">The name you will use when running the node from the terminal or in launch scripts. You may choose any name; it does not have to be the same as <code class="param-name ph-file-inline">[node_file_name]</code>.</span>
+    </div>
+  </div>
 
   <h4 class="subsection-heading">3.4.1.1 Configuring the Installation of Python Node</h4>
-  <p>You must modify the <code>entry_points</code> dictionary found within the <code>setup.py</code> file (which is in the package where your node is located) and add the following:</p>
+  <p>You must modify the <strong><code class="path-inline">entry_points</code></strong> dictionary found within the <strong><code class="path-inline">setup.py</code></strong> file (which is in the package where your node is located) and add the following:</p>
 
   <CodeBlock code={setupPyEntryCode} lang="python" customHtml={setupPyEntryCustom} showLegend={true} />
   <p><strong>NOTE: there must be commas between any two executable lines.</strong></p>
-  <p><code class="param-name ph-fn-inline">main</code> is standard as it is the name of the function which runs the node, however, this depends on your specific implementation.</p>
+
+    <div class="param-list">
+    <div class="param-item">
+      <code class="param-name ph-fn-inline">main</code>
+      <span class="param-desc">is standard as it is the name of the function which runs the node, however, this depends on your specific implementation.</span>
+    </div>
+  </div>
 
   <h4 class="subsection-heading">3.4.1.2 Configuring the Installation of C++ Node</h4>
-  <p>You must modify the <code>CMakeLists.txt</code> file within the C++ package with the following code (<strong>it should be the second to last line before the <code>ament_package()</code> function</strong>).</p>
+  <p>You must modify the <strong><code class="path-inline">CMakeLists.txt</code></strong> file within the C++ package with the following code (<strong>it should be the second to last line before the <strong><code class="path-inline">ament_packages()</code></strong> function</strong>).</p>
 
   <CodeBlock code={cmakeListsNodeCode} lang="cmake" customHtml={cmakeListsNodeCustom} showLegend={true} />
 
   <h4 class="subsection-heading">3.4.1.3 Running Python &amp; C++ Nodes from Workspace</h4>
-  <p><strong>NOTE: always make sure you build packages in the workspace directory</strong><br />(i.e. <code>~/[directory_to_workspace]/[workspace_name]</code>).</p>
-  <p><code class="param-name ph-generic-inline">[package_name]</code> is the package where the node you want to run is located.</p>
+  <p><strong>NOTE: always make sure you build packages in the workspace directory</strong><br />(i.e. <strong><code class="path-inline">~/<span class="ph-dir">[directory_to_workspace]</span>/<span class="ph-generic">[workspace_name]</span></code></strong>).</p>
+  
+  <div class="param-list">
+    <div class="param-item">
+      <code class="param-name ph-generic-inline">[package_name]</code>
+      <span class="param-desc">is the package where the node you want to run is located.</span>
+    </div>
+  </div>
 
   <CodeBlock code={buildSelectCode} lang="bash" customHtml={buildSelectCustom} showLegend={true} />
 
   <p><strong>Always source your workspace to access the updates to the packages:</strong></p>
-  <CodeBlock code={buildAllCode} lang="bash" /> {/* Reusing colcon build shorthand snippet contextually if needed or custom */}
   <CodeBlock code="source install/setup.bash" lang="bash" />
 
   <p>Run a single node using the following:</p>
@@ -356,11 +377,11 @@ find_package([package_name])`;
 
   <h4 class="subsection-heading">3.4.1.4 Shortcut for Running Python Nodes Without Rebuilding</h4>
   <p>This allows you to edit your Python nodes without having to build its package every time.</p>
-  <p>The executable will be located in the <code>/src</code> directory of your workspace, and not in the <code>/install</code> directory.</p>
+  <p>The executable will be located in the <strong><code class="path-inline">/src</code></strong> directory of your workspace, and not in the <code class="path-inline">/install</code> directory.</p>
   <p>You just have to build your Python package once by using:</p>
 
   <CodeBlock code={symlinkBuildCode} lang="bash" customHtml={symlinkBuildCustom} showLegend={true} />
-  <p><strong>NOTE: always make sure you build packages in the workspace directory</strong><br />(i.e. <code>~/[directory_to_workspace]/[workspace_name]</code>).</p>
+  <p><strong>NOTE: always make sure you build packages in the workspace directory</strong><br />(i.e. <strong><code class="path-inline">~/<span class="ph-dir">[directory_to_workspace]</span>/<span class="ph-generic">[workspace_name]</span></code></strong>).</p>
 
   <p>Then source your workspace:</p>
   <CodeBlock code="source install/setup.bash" lang="bash" />
@@ -372,13 +393,6 @@ find_package([package_name])`;
   <p>When using:</p>
   <CodeBlock code={spinSnippetCode} lang="cpp" />
   <p>you can stop a node that is spinning by using the keyboard shortcut <strong>CTRL+C</strong> in the terminal which is running the node.</p>
-
-  <h3 class="subsection-heading">3.6 Building Packages with Dependencies</h3>
-  <p>This will build the selected package, as well as any other package within your workspace that is listed as a dependency within the main package. <strong>Always build in your workspace directory</strong>.</p>
-
-  <CodeBlock code={buildSelectCode} lang="bash" customHtml={buildSelectCustom} showLegend={true} />
-  <p>Don't forget to always source your workspace after building:</p>
-  <CodeBlock code="source install/setup.bash" lang="bash" />
 
   <h2 class="section-heading" id="introspecting-nodes">
     3.5 Introspecting Nodes
@@ -401,9 +415,18 @@ find_package([package_name])`;
   <div class="text-center" style="text-align: center; margin: 0.5rem 0;">or</div>
   <CodeBlock code={remapLongCode} lang="bash" customHtml={remapLongCustom} showLegend={true} />
 
-  <p><code class="param-name ph-exec-inline">[executable_node_name]</code>: executable name of the node as defined in <code>setup.py</code> or <code>CMakeLists.txt</code>.</p>
-  <p><code class="param-name ph-generic-inline">[instance_name]</code>: specific name of the node instance you want to remap to. It will show up under this name when introspecting nodes.</p>
+  <div class="param-list">
+    <div class="param-item">
+      <code class="param-name ph-exec-inline">[executable_node_name]</code>
+      <span class="param-desc">The executable name of the node as defined in <strong><code class="path-inline">setup.py</code></strong> or <strong><code class="path-inline">CMakeLists.txt</code></strong>.</span>
+    </div>
+    <div class="param-item">
+      <code class="param-name ph-generic-inline">[instance_name]</code>
+      <span class="param-desc">The specific name of the node instance you want to remap to. It will show up under this name when introspecting nodes.</span>
+    </div>
+  </div>
 
+<!--
   <h2 class="section-heading" id="configuring-packages">
     3.6 Configuring Packages &amp; Other Features
   </h2>
@@ -417,5 +440,7 @@ find_package([package_name])`;
   <p>You may add several nodes under the target function.</p>
 
   <h3 class="subsection-heading">3.6.2 Including Header Files</h3>
+
+-->
 
 </DocLayout>

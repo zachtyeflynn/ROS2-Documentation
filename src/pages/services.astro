@@ -42,13 +42,13 @@ self.<span class="ph-var">[server_variable_name]</span> = self.create_service(<s
 def <span class="ph-fn">[server_callback_function]</span>(self, request: <span class="ph-type">[srv_type]</span>.Request, response: <span class="ph-type">[srv_type]</span>.Response):
 
     # Access the request message variables and formulate response
-    # ... = request.[request_variable_1]
-    # ... = request.[request_variable_2]
+    # ... = request.<span class="ph-var">[request_variable_1]</span>
+    # ... = request.<span class="ph-var">[request_variable_2]</span>
     # ...
 
     # Insert data into the response message's attributes
-    # response.[response_variable_1] = ...
-    # response.[response_variable_2] = ...
+    # response.<span class="ph-var">[response_variable_1]</span> = ...
+    # response.<span class="ph-var">[response_variable_2]</span> = ...
     # ...
     
     # Send response
@@ -88,28 +88,28 @@ private:
 
 const cppServerConstructorCustom = 
 `// ...
-public:
+<span class="t-kw">public</span>:
 
     // Constructor
     <span class="ph-class">[node_class_name]</span>() : Node("<span class="ph-generic">[node_name]</span>") {
 
         // Initialize server attribute
-        <span class="ph-var">[server_variable_name]</span> = this->create_service&lt;<span class="ph-type">[srv_type]</span>&gt;("<span class="ph-generic">[service_name]</span>", std::bind(&<span class="ph-class">[node_class_name]</span>::<span class="ph-fn">[server_callback_function]</span>, this, std::placeholders::_1, std::placeholders::_2));
+        <span class="ph-var">[server_variable_name]</span> = this->create_service&lt;<span class="ph-type">[srv_type]</span>&gt;("<span class="ph-generic">[service_name]</span>", std::bind(&amp;<span class="ph-class">[node_class_name]</span>::<span class="ph-fn">[server_callback_function]</span>, this, std::placeholders::_1, std::placeholders::_2));
 
     }
 // ...
-private:
+<span class="t-kw">private</span>:
 
     void <span class="ph-fn">[server_callback_function]</span>(const std::shared_ptr&lt;<span class="ph-type">[srv_type]</span>::Request&gt; request, const std::shared_ptr&lt;<span class="ph-type">[srv_type]</span>::Response&gt; response) {
 
         // Access the request message variables and formulate response
-        // ... = request -> [request_variable_1];
-        // ... = request -> [request_variable_2];
+        // ... = request -&gt; <span class="ph-var">[request_variable_1]</span>;
+        // ... = request -&gt; <span class="ph-var">[request_variable_2]</span>;
         // ...
 
         // Insert data into the response message's attributes
-        // response -> [response_variable_1] = ...
-        // response -> [response_variable_2] = ...
+        // response -&gt; <span class="ph-var">[response_variable_1]</span> = ...
+        // response -&gt; <span class="ph-var">[response_variable_2]</span> = ...
         // ... 
 
     }
@@ -148,7 +148,7 @@ rclcpp::Client<[srv_type]>::SharedPtr [client_variable_name];
 
 const cppClientInitCustom = 
 `// ...
-public:
+<span class="t-kw">public</span>:
 
     // Constructor
     <span class="ph-class">[node_class_name]</span>() : Node("<span class="ph-generic">[node_name]</span>") {
@@ -157,19 +157,16 @@ public:
 
     }
 // ...
-private:
+<span class="t-kw">private</span>:
 // ...
 
 // Declare a pointer to the client attribute
 rclcpp::Client&lt;<span class="ph-type">[srv_type]</span>&gt;::SharedPtr <span class="ph-var">[client_variable_name]</span>;
 // ...`;
 
-const pyWaitServiceCode = 
-`# Use self. inside member functions
+const pyWaitServiceCode = `# Use self. inside member functions
 self.[client_variable_name].wait_for_service([check_period])`;
-
-const pyWaitServiceCustom = 
-`# Use self. inside member functions
+const pyWaitServiceCustom = `# Use self. inside member functions
 self.<span class="ph-var">[client_variable_name]</span>.wait_for_service(<span class="ph-generic">[check_period]</span>)`;
 
 const cppWaitServiceCode = 
@@ -182,7 +179,7 @@ const cppWaitServiceCustom =
 `//IMPORTANT: Include to use shortened second notation
 using namespace std::chrono_literals;
 // ...
-<span class="ph-var">[client_variable_name]</span>->wait_for_service([check_period]s)`;
+<span class="ph-var">[client_variable_name]</span>-&gt;wait_for_service(<span class="ph-generic">[check_period]</span>s)`;
 
 const pyAsyncRequestCode = 
 `# IMPORTANT: Import partial from functools to pass on request message to callback function
@@ -234,7 +231,7 @@ auto request = std::make_shared&lt;<span class="ph-type">[srv_type]</span>::Requ
 // ... Include message you want to send into the request object's attributes
 
 // Send request
-<span class="ph-var">[client_variable_name]</span>->async_send_request(request, std::bind(&<span class="ph-class">[node_class_name]</span>::<span class="ph-fn">[client_callback_function]</span>, this, std::placeholders::_1));`;
+<span class="ph-var">[client_variable_name]</span>-&gt;async_send_request(request, std::bind(&amp;<span class="ph-class">[node_class_name]</span>::<span class="ph-fn">[client_callback_function]</span>, this, std::placeholders::_1));`;
 
 const pyAsyncResponseCode = 
 `def [client_callback_function](self, future, request):
@@ -318,9 +315,6 @@ const runRemapClientCustom = `ros2 run <span class="ph-generic">[package_name]</
 
 const runRemapDualCode = `ros2 run [package_name] /[executable_node_name] --ros-args -r __node:=[instance_name] -r [original_service_name]:=[new_service_name]`;
 const runRemapDualCustom = `ros2 run <span class="ph-generic">[package_name]</span> /<span class="ph-exec">[executable_node_name]</span> --ros-args -r __node:=<span class="ph-generic">[instance_name]</span> -r <span class="ph-generic">[original_service_name]</span>:=<span class="ph-generic">[new_service_name]</span>`;
-
-const findPackageCode = `// If adding in more dependencies
-find_package([package_name])`;
 ---
 
 <DocLayout title="Services, Servers &amp; Clients" activeSection="services">
@@ -328,13 +322,10 @@ find_package([package_name])`;
   <h1 class="doc-title">Services, Servers &amp; Clients</h1>
   <p class="doc-subtitle">Chapter 5</p>
 
-  <h2 class="section-heading" id="servers">
-    5.1 Servers
-  </h2>
+  <h2 class="section-heading" id="servers">5.1 Servers</h2>
 
-    <h3 class="subsection-heading">5.1.1 Creating a Server</h3>
-
-  <p>Create a new node for the appropriate language in your workspace (see <a href="/packages#creating-nodes">Section 2.3</a>). Include the following code snippets <strong>in the constructor of your node class to create a server.</strong></p>
+  <h3 class="subsection-heading">5.1.1 Creating a Server</h3>
+  <p>Create a new node for the appropriate language in your workspace (see <a href="/packages#creating-nodes">Section 3.3</a>). Include the following code snippets <strong>in the constructor of your node class to create a server.</strong></p>
 
   <div class="param-list">
     <div class="param-item">
@@ -343,7 +334,7 @@ find_package([package_name])`;
     </div>
     <div class="param-item">
       <code class="param-name ph-type-inline">[srv_type]</code>
-      <span class="param-desc">the interface service type which the server &amp; clients use (see <a href="#dependencies">Section 5.4</a> for more on interfaces).</span>
+      <span class="param-desc">the interface service type which the server &amp; clients use (see <a href="/interfaces">Section 7.</a> for more on interfaces).</span>
     </div>
     <div class="param-item">
       <code class="param-name ph-generic-inline">[service_name]</code>
@@ -363,11 +354,10 @@ find_package([package_name])`;
   <CodeBlock code={cppServerConstructorCode} lang="cpp" customHtml={cppServerConstructorCustom} showLegend={true} />
   <p>The callback function <strong>must have pointers to the request and response messages.</strong> The response message is sent by modifying the data at the address of the pointer.</p>
 
-  <h2 class="section-heading" id="clients">
-    5.2 Clients
-  </h2>
 
-  <h3 class="subsection-heading">Creating a Client</h3>
+  <h2 class="section-heading" id="clients">5.2 Clients</h2>
+
+  <h3 class="subsection-heading">5.2.1 Creating a Client</h3>
   <p>Include the following code snippets <strong>in the constructor of your node class to create a client.</strong></p>
 
   <div class="param-list">
@@ -385,74 +375,73 @@ find_package([package_name])`;
     </div>
   </div>
 
-  <h4 class="subsection-heading">Python</h4>
+  <h4 class="subsection-heading">5.2.1.1 Python</h4>
   <CodeBlock code={pyClientInitCode} lang="python" customHtml={pyClientInitCustom} showLegend={true} />
 
-  <h4 class="subsection-heading">C++</h4>
+  <h4 class="subsection-heading">5.2.1.2 C++</h4>
   <CodeBlock code={cppClientInitCode} lang="cpp" customHtml={cppClientInitCustom} showLegend={true} />
 
-  <h3 class="subsection-heading">Checking Whether a Service is Available</h3>
-  <p><code class="param-name ph-generic-inline">[check_period]</code> is the amount of time (in seconds) at which the node checks whether the service is available. This returns either <code>True</code> or <code>False</code>.</p>
+  <h3 class="subsection-heading">5.2.2 Checking Whether a Service is Available</h3>
+  <p><code class="param-name ph-generic-inline">[check_period]</code> is the amount of time (in seconds) at which the node checks whether the service is available. This returns either <code class="path-inline">True</code> or <code class="path-inline">False</code>.</p>
 
-  <h4 class="subsection-heading">Python</h4>
+  <h4 class="subsection-heading">5.2.2.1 Python</h4>
   <CodeBlock code={pyWaitServiceCode} lang="python" customHtml={pyWaitServiceCustom} showLegend={true} />
 
-  <h4 class="subsection-heading">C++</h4>
+  <h4 class="subsection-heading">5.2.2.2 C++</h4>
   <CodeBlock code={cppWaitServiceCode} lang="cpp" customHtml={cppWaitServiceCustom} showLegend={true} />
 
-  <h3 class="subsection-heading">Sending an Asynchronous Request</h3>
+  <h3 class="subsection-heading">5.2.3 Sending an Asynchronous Request</h3>
   <p>A node sending an asynchronous request can continue performing operations until a response is received. <strong>It is advised but not necessary to wrap the following in a function</strong> that can be executed whenever you want to invoke the service.</p>
   <p><code class="param-name ph-fn-inline">[client_callback_function]</code>: a callback function which is called when a response message is received from a server (see section below).</p>
 
-  <h4 class="subsection-heading">Python</h4>
+  <h4 class="subsection-heading">5.2.3.1 Python</h4>
   <CodeBlock code={pyAsyncRequestCode} lang="python" customHtml={pyAsyncRequestCustom} showLegend={true} />
 
-  <h4 class="subsection-heading">C++</h4>
+  <h4 class="subsection-heading">5.2.3.2 C++</h4>
   <CodeBlock code={cppAsyncRequestCode} lang="cpp" customHtml={cppAsyncRequestCustom} showLegend={true} />
 
-  <h3 class="subsection-heading" id="asynch-response">Receiving an Asynchronous Response</h3>
+  <h3 class="subsection-heading" id="asynch-response">5.2.4 Receiving an Asynchronous Response</h3>
   <p>Create the <code class="param-name ph-fn-inline">[client_callback_function]</code> as a node class member.</p>
 
-  <h4 class="subsection-heading">Python</h4>
+  <h4 class="subsection-heading">5.2.4.1 Python</h4>
   <CodeBlock code={pyAsyncResponseCode} lang="python" customHtml={pyAsyncResponseCustom} showLegend={true} />
 
-  <h4 class="subsection-heading" id="receiving-response-cpp">C++</h4>
+  <h4 class="subsection-heading" id="receiving-response-cpp">5.2.4.2 C++</h4>
   <CodeBlock code={cppAsyncResponseCode} lang="cpp" customHtml={cppAsyncResponseCustom} showLegend={true} />
 
-  <h2 class="section-heading" id="introspection">
-    5.3 Introspecting Services
-  </h2>
 
-  <h3 class="subsection-heading">View Available Services</h3>
+  <h2 class="section-heading" id="introspection">5.3 Introspecting Services</h2>
+
+  <h3 class="subsection-heading">5.3.1 View Available Services</h3>
   <CodeBlock code={serviceListCode} lang="bash" />
 
-  <h3 class="subsection-heading">View Data Type of a Specific Service</h3>
+  <h3 class="subsection-heading">5.3.2 View Data Type of a Specific Service</h3>
   <p>This will return the <code class="param-name ph-type-inline">[srv_type]</code> of a service.</p>
   <CodeBlock code={serviceTypeCode} lang="bash" customHtml={serviceTypeCustom} showLegend={true} />
 
-  <h3 class="subsection-heading">View Request &amp; Response Layout Structures</h3>
+  <h3 class="subsection-heading">5.3.3 View Request &amp; Response Layout Structures</h3>
   <p>This shows the structured data configurations of the request and response fields:</p>
   <CodeBlock code={interfaceShowTemplateCode} lang="yaml" customHtml={interfaceShowTemplateCustom} />
   <p>Execute the lookup via terminal using:</p>
   <CodeBlock code={interfaceShowCode} lang="bash" customHtml={interfaceShowCustom} showLegend={true} />
 
-  <h3 class="subsection-heading">Impromptu Client Call of a Specific Service</h3>
+  <h3 class="subsection-heading">5.3.4 Impromptu Client Call of a Specific Service</h3>
   <p>You must provide the request variables structural breakdown as a inline dictionary block string layout.</p>
   <CodeBlock code={serviceCallCode} lang="bash" customHtml={serviceCallCustom} showLegend={true} />
   <p><code class="param-name ph-generic-inline">[value_i]</code>: input the targeted value here (must match the structural type expected by its corresponding variable schema).</p>
   <p><strong>NOTE: if you omit any request variables, they will revert to their default fallback values (null for numeric fields, false for bool strings, or empty structural arrays).</strong></p>
 
-  <h3 class="subsection-heading">Rename (Remap) a Service at Runtime</h3>
+  <h3 class="subsection-heading">5.3.5 Rename (Remap) a Service at Runtime</h3>
 
-  <h4 class="subsection-heading">Server Nodes</h4>
+  <h4 class="subsection-heading">5.3.5.1 Server Nodes</h4>
   <p>Change the structural path name of the service provided by a specific setup server execution node:</p>
   <CodeBlock code={runRemapServerCode} lang="bash" customHtml={runRemapServerCustom} showLegend={true} />
 
-  <h4 class="subsection-heading">Client Nodes</h4>
+  <h4 class="subsection-heading">5.3.5.2 Client Nodes</h4>
   <p>Change the name path targets seeked by active operational node interface callers:</p>
   <CodeBlock code={runRemapClientCode} lang="bash" customHtml={runRemapClientCustom} showLegend={true} />
 
-  <h4 class="subsection-heading">Renaming a Service &amp; its Associated Node</h4>
+  <h4 class="subsection-heading">5.3.5.3 Renaming a Service &amp; its Associated Node</h4>
   <p>You can dynamically bind structural node definitions and interface definitions simultaneously:</p>
   <CodeBlock code={runRemapDualCode} lang="bash" customHtml={runRemapDualCustom} showLegend={true} />
   <p>This structural override logic targets both running servers and client layers. Note that <code class="param-name ph-generic-inline">[original_service_name]</code> parameters must accurately align with internal configuration scripts to route cleanly.</p>
