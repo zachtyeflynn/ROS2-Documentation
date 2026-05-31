@@ -2,22 +2,38 @@
 import DocLayout from '../layouts/DocLayout.astro';
 import CodeBlock from '../components/CodeBlock.astro';
 
-// --- 4.5.1 Creating Launch Files ---
+// Key:
+//   ph-generic  → bashGeneric    RGB(208,26,20)    red
+//   ph-var      → variables      RGB(0,75,0)       dark green
+//   ph-type     → types          Blue
+//   ph-class    → classes        Orange
+//   ph-fn       → functions      Orchid
+//   ph-exec     → executables    RGB(255,102,178)  pink
+//   ph-file     → fileNames      NavyBlue
+//   ph-dir      → directories    Green
+
+// ── 9.1 Creating Launch Files ────────────────────────────────────────────────
 const launchDirCode = `[launch_file_directory] = ~/.../[package_name]/launch`;
 const launchDirCustom = `<span class="ph-dir">[launch_file_directory]</span> = ~/.../<span class="ph-generic">[package_name]</span>/launch`;
 
-const mkdirLaunchCode = `mkdir launch`;
-const touchLaunchCode = `cd launch\ntouch [launch_file_name].launch.[extension_type]`;
-const touchLaunchCustom = `cd launch\ntouch <span class="ph-file">[launch_file_name]</span>.launch.<span class="ph-generic">[extension_type]</span>`;
+const touchLaunchCode = 
+`cd launch
+touch [launch_file_name].launch.[extension_type]`;
+const touchLaunchCustom = 
+`cd launch
+touch <span class="ph-file">[launch_file_name]</span>.launch.<span class="ph-generic">[extension_type]</span>`;
 
-// --- 4.5.2 Python Launch Files: Arguments ---
+// ── 9.2 Python Launch Files ──────────────────────────────────────────────────
 const pyDeclareArgCode = `[return_argument_name] = DeclareLaunchArgument("[argument_name]", default_value="[argument_default_value]")`;
 const pyDeclareArgCustom = `<span class="ph-var">[return_argument_name]</span> = DeclareLaunchArgument("<span class="ph-generic">[argument_name]</span>", default_value="<span class="ph-generic">[argument_default_value]</span>")`;
 
-const pyInvokeArgCode = `[argument_variable_name] = LaunchConfiguration("[argument_name]")\n# Pass [argument_variable_name] as a proxy for the argument`;
-const pyInvokeArgCustom = `<span class="ph-var">[argument_variable_name]</span> = LaunchConfiguration("<span class="ph-generic">[argument_name]</span>")\n# Pass [argument_variable_name] as a proxy for the argument`;
+const pyInvokeArgCode = 
+`[argument_variable_name] = LaunchConfiguration("[argument_name]")
+# Pass [argument_variable_name] as a proxy for the argument`;
+const pyInvokeArgCustom = 
+`<span class="ph-var">[argument_variable_name]</span> = LaunchConfiguration("<span class="ph-generic">[argument_name]</span>")
+<span class="t-cmt"># Pass [argument_variable_name] as a proxy for the argument</span>`;
 
-// --- Python Launch Files: Launching Nodes ---
 const pyLaunchNodeCode = 
 `[node_variable_name] = Node(
     package="[package_name]",
@@ -31,16 +47,15 @@ const pyLaunchNodeCode =
     ],
     ros_arguments=["[ROS_args]", "[...]"]
 )`;
-
 const pyLaunchNodeCustom = 
 `<span class="ph-var">[node_variable_name]</span> = Node(
     package="<span class="ph-generic">[package_name]</span>",
     executable="<span class="ph-exec">[executable_node_name]</span>",
-    name="<span class="ph-generic">[node_name]</span>", # What appears during introspection
+    name="<span class="ph-generic">[node_name]</span>", <span class="t-cmt"># What appears during introspection</span>
     parameters=[
         {"<span class="ph-generic">[parameter_name_1]</span>": <span class="ph-generic">[value_1]</span>,
         "<span class="ph-generic">[parameter_name_2]</span>": <span class="ph-generic">[value_2]</span>,
-        # ...
+        <span class="t-cmt"># ...</span>
         }
     ],
     ros_arguments=["<span class="ph-generic">[ROS_args]</span>", "<span class="ph-generic">[...]</span>"]
@@ -57,7 +72,6 @@ const pyIncludeParamsCode =
             [params_pkg]
         ],
 )`;
-
 const pyIncludeParamsCustom = 
 `<span class="ph-var">[params_pkg]</span> = FindPackageShare("<span class="ph-generic">[params_package_name]</span>")
 <span class="ph-var">[params_file]</span> = PathJoinSubstitution([<span class="ph-var">[params_pkg]</span> , "config", "<span class="ph-file">[YAML_file_name]</span>.yaml"])
@@ -65,7 +79,7 @@ const pyIncludeParamsCustom =
 <span class="ph-var">[node_variable_name]</span> = Node(
     <span class="ph-generic">[...]</span>,
         parameters=[
-            {<span class="ph-generic">[...]</span>}, # Can include other parameters in parallel here
+            {<span class="ph-generic">[...]</span>}, <span class="t-cmt"># Can include other parameters in parallel here</span>
             <span class="ph-var">[params_pkg]</span>
         ],
 )`;
@@ -75,7 +89,6 @@ const pyNamespaceCode =
     [...], 
     namespace="[namespace]",
 )`;
-
 const pyNamespaceCustom = 
 `<span class="ph-var">[node_variable_name]</span> = Node(
     <span class="ph-generic">[...]</span>, 
@@ -90,7 +103,6 @@ const pyRemapCode =
         [...]
     ]
 )`;
-
 const pyRemapCustom = 
 `<span class="ph-var">[node_variable_name]</span> = Node(
     <span class="ph-generic">[...]</span>, 
@@ -112,7 +124,6 @@ const pyIncludeLaunchCode =
         # ...
     }.items()
 )`;
-
 const pyIncludeLaunchCustom = 
 `<span class="ph-var">[launch_pkg]</span> = FindPackageShare("<span class="ph-generic">[launch_package_name]</span>")
 <span class="ph-var">[launch_file]</span> = PathJoinSubstitution([<span class="ph-var">[launch_pkg]</span> , "launch", "<span class="ph-file">[launch_file_name]</span>.launch.<span class="ph-generic">[extension_type]</span>"])
@@ -122,12 +133,11 @@ const pyIncludeLaunchCustom =
     launch_arguments={
         "<span class="ph-generic">[argument_name_1]</span>": <span class="ph-generic">[value_1]</span>,
         "<span class="ph-generic">[argument_name_2]</span>": <span class="ph-generic">[value_2]</span>,
-        # ...
+        <span class="t-cmt"># ...</span>
     }.items()
 )`;
 
-// --- Python Launch Files: Full Structure ---
-const pyFullLaunchCode = 
+const pyFullStructCode = 
 `from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
@@ -175,7 +185,7 @@ def generate_launch_description():
         [return_argument_name], [node_variable_name], [return_launch_file]
     ])`;
 
-const pyFullLaunchCustom = 
+const pyFullStructCustom = 
 `from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
@@ -186,27 +196,27 @@ from launch_ros.substitutions import FindPackageShare
 
 def generate_launch_description():
 
-    # Arguments
+    <span class="t-cmt"># Arguments</span>
     <span class="ph-var">[return_argument_name]</span> = DeclareLaunchArgument("<span class="ph-generic">[argument_name]</span>", default_value="<span class="ph-generic">[argument_default_value]</span>")
     <span class="ph-var">[argument_variable_name]</span> = LaunchConfiguration("<span class="ph-generic">[argument_name]</span>")
-    # ...
+    <span class="t-cmt"># ...</span>
     
-    # Launching nodes
+    <span class="t-cmt"># Launching nodes</span>
     <span class="ph-var">[node_variable_name]</span> = Node(
         package="<span class="ph-generic">[package_name]</span>",
         executable="<span class="ph-exec">[executable_node_name]</span>",
         name="<span class="ph-generic">[node_name]</span>",
         parameters=[
             {"<span class="ph-generic">[parameter_name_1]</span>": <span class="ph-generic">[value_1]</span>,
-            "<span class="ph-generic">[parameter_name_2]</span>": <span class="ph-var">[argument_variable_name]</span>, # Example: argument as node parameter
-            # ...
+            "<span class="ph-generic">[parameter_name_2]</span>": <span class="ph-var">[argument_variable_name]</span>, <span class="t-cmt"># Example: argument as node parameter</span>
+            <span class="t-cmt"># ...</span>
             }
         ],
         ros_arguments=["<span class="ph-generic">[ROS_args]</span>", "<span class="ph-generic">[...]</span>"]
     )
-    # ...
+    <span class="t-cmt"># ...</span>
 
-    # Other launch files
+    <span class="t-cmt"># Other launch files</span>
     <span class="ph-var">[launch_pkg]</span> = FindPackageShare("<span class="ph-generic">[launch_package_name]</span>")
     <span class="ph-var">[launch_file]</span> = PathJoinSubstitution([<span class="ph-var">[launch_pkg]</span> , "launch", "<span class="ph-file">[launch_file_name]</span>.launch.<span class="ph-generic">[extension_type]</span>"])
     <span class="ph-var">[return_launch_file]</span> = IncludeLaunchDescription(
@@ -214,17 +224,17 @@ def generate_launch_description():
         launch_arguments={
             "<span class="ph-generic">[argument_name_1]</span>": <span class="ph-generic">[value_1]</span>,
             "<span class="ph-generic">[argument_name_2]</span>": <span class="ph-generic">[value_2]</span>,
-            # ...
+            <span class="t-cmt"># ...</span>
         }.items()
     )
     
-    # IMPORTANT: return ALL ARGUMENTS, NODES and OTHER LAUNCH FILES
+    <span class="t-cmt"># IMPORTANT: return ALL ARGUMENTS, NODES and OTHER LAUNCH FILES</span>
     return LaunchDescription([
         <span class="ph-var">[return_argument_name]</span>, <span class="ph-var">[node_variable_name]</span>, <span class="ph-var">[return_launch_file]</span>
     ])`;
 
-// --- 4.6 YAML Launch Files ---
-const yamlFullLaunchCode = 
+// ── 9.3 YAML Launch Files ────────────────────────────────────────────────────
+const yamlFullStructCode = 
 `launch:
 
     # Arguments
@@ -235,73 +245,72 @@ const yamlFullLaunchCode =
 
     # Launching nodes
     - node:
-    pkg: "[package_name]"
-    exec: "[executable_node_name]"
-    name: "[node_name]"
-    parameters:
-        - name: [parameter_name_1]
-          value: "[value_1]"
-        - name: [parameter_name_2]
-          value:  "$(var [argument_name])" # Example: argument as node parameter
+        pkg: "[package_name]"
+        exec: "[executable_node_name]"
+        name: "[node_name]"
+        parameters:
+            - name: [parameter_name_1]
+              value: "[value_1]"
+            - name: [parameter_name_2]
+              value:  "$(var [argument_name])" # Example: argument as node parameter
+            # ...
+        args: "--ros-args [ROS_args] [...]"
         # ...
-    args: "--ros-args [ROS_args] [...]"
-    # ...
 
     # Other launch files
-    - include
+    - include:
         file: "$(path-join $(find-pkg-share [other_package_name]) launch [other_launch_file].launch.[extension_type])"
         arg:
             - name: [argument_name_1]
               value: "[argument_value_1]"
             - name: [argument_name_2]
               value: "[argument_value_2]"
-              # ...`;
+            # ...`;
 
-const yamlFullLaunchCustom = 
+const yamlFullStructCustom = 
 `launch:
 
-    # Arguments
+    <span class="t-cmt"># Arguments</span>
     - arg:
         name: <span class="ph-generic">[argument_name]</span>
         default: "<span class="ph-generic">[argument_default_value]</span>"
-    # ...
+    <span class="t-cmt"># ...</span>
 
-    # Launching nodes
+    <span class="t-cmt"># Launching nodes</span>
     - node:
-    pkg: "<span class="ph-generic">[package_name]</span>"
-    exec: "<span class="ph-exec">[executable_node_name]</span>"
-    name: "<span class="ph-generic">[node_name]</span>"
-    parameters:
-        - name: <span class="ph-generic">[parameter_name_1]</span>
-          value: "<span class="ph-generic">[value_1]</span>"
-        - name: <span class="ph-generic">[parameter_name_2]</span>
-          value:  "$(var <span class="ph-generic">[argument_name]</span>)" # Example: argument as node parameter
-        # ...
-    args: "--ros-args <span class="ph-generic">[ROS_args]</span> <span class="ph-generic">[...]</span>"
-    # ...
+        pkg: "<span class="ph-generic">[package_name]</span>"
+        exec: "<span class="ph-exec">[executable_node_name]</span>"
+        name: "<span class="ph-generic">[node_name]</span>"
+        parameters:
+            - name: <span class="ph-generic">[parameter_name_1]</span>
+              value: "<span class="ph-generic">[value_1]</span>"
+            - name: <span class="ph-generic">[parameter_name_2]</span>
+              value:  "$(var <span class="ph-generic">[argument_name]</span>)" <span class="t-cmt"># Example: argument as node parameter</span>
+            <span class="t-cmt"># ...</span>
+        args: "--ros-args <span class="ph-generic">[ROS_args]</span> <span class="ph-generic">[...]</span>"
+        <span class="t-cmt"># ...</span>
 
-    # Other launch files
-    - include
+    <span class="t-cmt"># Other launch files</span>
+    - include:
         file: "$(path-join $(find-pkg-share <span class="ph-generic">[other_package_name]</span>) launch <span class="ph-generic">[other_launch_file]</span>.launch.<span class="ph-generic">[extension_type]</span>)"
         arg:
             - name: <span class="ph-generic">[argument_name_1]</span>
               value: "<span class="ph-generic">[argument_value_1]</span>"
             - name: <span class="ph-generic">[argument_name_2]</span>
               value: "<span class="ph-generic">[argument_value_2]</span>"
-              # ...`;
+            <span class="t-cmt"># ...</span>`;
 
-const yamlInvokeArgCode = `_:"$(var [argument_name])"`;
-const yamlInvokeArgCustom = `_:"$(var <span class="ph-generic">[argument_name]</span>)"`;
+const yamlInvokeArgCode = `"$(var [argument_name])"`;
+const yamlInvokeArgCustom = `"$(var <span class="ph-generic">[argument_name]</span>)"`;
 
 const yamlIncludeParamsCode = 
 `- node:
     # ...
     rosparam:
         file: "$(path-join $(find-pkg-share [params_package_name]) config [YAML_file_name].yaml)"`;
-
 const yamlIncludeParamsCustom = 
 `- node:
-    # ...
+    <span class="t-cmt"># ...</span>
     rosparam:
         file: "$(path-join $(find-pkg-share <span class="ph-generic">[params_package_name]</span>) config <span class="ph-file">[YAML_file_name]</span>.yaml)"`;
 
@@ -309,10 +318,9 @@ const yamlNamespaceCode =
 `- node:
     # ...
     namespace: [namespace]`;
-
 const yamlNamespaceCustom = 
 `- node:
-    # ...
+    <span class="t-cmt"># ...</span>
     namespace: <span class="ph-generic">[namespace]</span>`;
 
 const yamlRemapCode = 
@@ -322,17 +330,17 @@ const yamlRemapCode =
         - from: [old_topic_or_service_name]
           to: [new_topic_or_service_name]
         # ...`;
-
 const yamlRemapCustom = 
 `- node:
-    # ...
+    <span class="t-cmt"># ...</span>
     remap:
         - from: <span class="ph-generic">[old_topic_or_service_name]</span>
           to: <span class="ph-generic">[new_topic_or_service_name]</span>
-        # ...`;
+        <span class="t-cmt"># ...</span>`;
 
-// --- 4.7 XML Launch Files ---
-const xmlFullLaunchCode = 
+
+// ── 9.4 XML Launch Files ─────────────────────────────────────────────────────
+const xmlFullStructCode = 
 `<launch>
 
     <arg name="[argument_name]" default="[argument_default_value]"/>
@@ -340,227 +348,217 @@ const xmlFullLaunchCode =
         <param name="[parameter_name_1]" value="[value_1]"/>
         <param name="[parameter_name_2]" value="$(var [argument_name])"/>
         </node>
-    <include file="$(find-pkg-share [other_package_name]) /launch/[other_launch_file].launch.[extension_type])">
+    <include file="$(find-pkg-share [other_package_name]) /launch/[other_launch_file].launch.[extension_type]">
         <arg name="[argument_name_1]" value="[argument_value_1]"/>
         <arg name="[argument_name_2]" value="[argument_value_2]"/>
         </include>
     </launch>`;
 
-const xmlFullLaunchCustom = 
-`&lt;launch&gt;
+const xmlFullStructCustom = 
+`<launch>
 
-    &lt;!-- Arguments --&gt;
-    &lt;arg name="<span class="ph-generic">[argument_name]</span>" default="<span class="ph-generic">[argument_default_value]</span>"/&gt;
-    &lt;!-- ... --&gt;
+    <span class="t-cmt">&lt;!-- Arguments --&gt;</span>
+    <arg name="<span class="ph-generic">[argument_name]</span>" default="<span class="ph-generic">[argument_default_value]</span>"/>
+    <span class="t-cmt">&lt;!-- ... --&gt;</span>
 
-    &lt;!-- Launching nodes --&gt;
-    &lt;node pkg="<span class="ph-generic">[package_name]</span>" exec="<span class="ph-exec">[executable_node_name]</span>" name="<span class="ph-generic">[node_name]</span>" args="--ros-args <span class="ph-generic">[ROS_args]</span> <span class="ph-generic">[...]</span>"&gt;
-        &lt;param name="<span class="ph-generic">[parameter_name_1]</span>" value="<span class="ph-generic">[value_1]</span>"/&gt;
-        &lt;param name="<span class="ph-generic">[parameter_name_2]</span>" value="$(var <span class="ph-generic">[argument_name]</span>)"/&gt;
-        &lt;!-- ... --&gt;
-    &lt;/node&gt;
-    &lt;!-- ... --&gt;
+    <span class="t-cmt">&lt;!-- Launching nodes --&gt;</span>
+    <node pkg="<span class="ph-generic">[package_name]</span>" exec="<span class="ph-exec">[executable_node_name]</span>" name="<span class="ph-generic">[node_name]</span>" args="--ros-args <span class="ph-generic">[ROS_args]</span> <span class="ph-generic">[...]</span>">
+        <param name="<span class="ph-generic">[parameter_name_1]</span>" value="<span class="ph-generic">[value_1]</span>"/>
+        <param name="<span class="ph-generic">[parameter_name_2]</span>" value="$(var <span class="ph-generic">[argument_name]</span>)"/>
+        <span class="t-cmt">&lt;!-- ... --&gt;</span>
+    </node>
+    <span class="t-cmt">&lt;!-- ... --&gt;</span>
 
-    &lt;!-- Other launch files --&gt;
-    &lt;include file="$(find-pkg-share <span class="ph-generic">[other_package_name]</span>) /launch/<span class="ph-generic">[other_launch_file]</span>.launch.<span class="ph-generic">[extension_type]</span>)"&gt;
-        &lt;arg name="<span class="ph-generic">[argument_name_1]</span>" value="<span class="ph-generic">[argument_value_1]</span>"/&gt;
-        &lt;arg name="<span class="ph-generic">[argument_name_2]</span>" value="<span class="ph-generic">[argument_value_2]</span>"/&gt;
-        &lt;!-- ... --&gt;
-    &lt;/include&gt;
-    &lt;!-- ... --&gt;
+    <span class="t-cmt">&lt;!-- Other launch files --&gt;</span>
+    <include file="$(find-pkg-share <span class="ph-generic">[other_package_name]</span>) /launch/<span class="ph-generic">[other_launch_file]</span>.launch.<span class="ph-generic">[extension_type]</span>">
+        <arg name="<span class="ph-generic">[argument_name_1]</span>" value="<span class="ph-generic">[argument_value_1]</span>"/>
+        <arg name="<span class="ph-generic">[argument_name_2]</span>" value="<span class="ph-generic">[argument_value_2]</span>"/>
+        <span class="t-cmt">&lt;!-- ... --&gt;</span>
+    </include>
+    <span class="t-cmt">&lt;!-- ... --&gt;</span>
     
-&lt;/launch&gt;`;
-
-const xmlInvokeArgCode = `_:"$(var [argument_name])"`;
-const xmlInvokeArgCustom = `_:"$(var <span class="ph-generic">[argument_name]</span>)"`;
+</launch>`;
 
 const xmlIncludeParamsCode = 
-`<node pkg="[package_name]" exec="[executable_node_name]" [...]">
+`<node pkg="[package_name]" exec="[executable_node_name]" [...]>
     <param from="$(path-join $(find-pkg-share [params_package_name]) config [YAML_file_name].yaml)"/>
 </node>`;
-
 const xmlIncludeParamsCustom = 
-`&lt;node pkg="<span class="ph-generic">[package_name]</span>" exec="<span class="ph-exec">[executable_node_name]</span>" <span class="ph-generic">[...]</span>"&gt;
-    &lt;param from="$(path-join $(find-pkg-share <span class="ph-generic">[params_package_name]</span>) config <span class="ph-file">[YAML_file_name]</span>.yaml)"/&gt;
-&lt;/node&gt;`;
+`<node pkg="<span class="ph-generic">[package_name]</span>" exec="<span class="ph-exec">[executable_node_name]</span>" <span class="ph-generic">[...]</span>>
+    <param from="$(path-join $(find-pkg-share <span class="ph-generic">[params_package_name]</span>) config <span class="ph-file">[YAML_file_name]</span>.yaml)"/>
+</node>`;
 
 const xmlNamespaceCode = 
 `<node [...] namespace="[namespace]">
     [...]
 </node>`;
-
 const xmlNamespaceCustom = 
-`&lt;node <span class="ph-generic">[...]</span> namespace="<span class="ph-generic">[namespace]</span>"&gt;
+`<node <span class="ph-generic">[...]</span> namespace="<span class="ph-generic">[namespace]</span>">
     <span class="ph-generic">[...]</span>
-&lt;/node&gt;`;
+</node>`;
 
 const xmlRemapCode = 
 `<node [...]>
     <param [...]/>
     <remap from="[old_topic_or_service_name]" to="[new_topic_or_service_name]"/>
 </node>`;
-
 const xmlRemapCustom = 
-`&lt;node <span class="ph-generic">[...]</span>&gt;
-    &lt;param <span class="ph-generic">[...]</span>/&gt;
-    &lt;!-- ... --&gt;
-    &lt;remap from="<span class="ph-generic">[old_topic_or_service_name]</span>" to="<span class="ph-generic">[new_topic_or_service_name]</span>"/&gt;
-&lt;/node&gt;`;
+`<node <span class="ph-generic">[...]</span>>
+    <param <span class="ph-generic">[...]</span>/>
+    <span class="t-cmt">&lt;!-- ... --&gt;</span>
+    <remap from="<span class="ph-generic">[old_topic_or_service_name]</span>" to="<span class="ph-generic">[new_topic_or_service_name]</span>"/>
+</node>`;
 
-// --- 4.8 Configuring & Running Launch Files ---
+
+// ── 9.5 Configuring Launch Executables ───────────────────────────────────────
 const cmakeInstallCode = 
 `install(DIRECTORY
   launch
   DESTINATION share/\${PROJECT_NAME}
 )`;
 
-const runYamlLaunchCode = `ros2 launch [package_yaml] [file_name_python].launch.yaml`;
-const runYamlLaunchCustom = `ros2 launch <span class="ph-generic">[package_yaml]</span> <span class="ph-file">[file_name_python]</span>.launch.yaml`;
+// ── 9.6 Running Launch Scripts ───────────────────────────────────────────────
+const runYamlCode = `ros2 launch [package_yaml] [file_name_python].launch.yaml`;
+const runYamlCustom = `ros2 launch <span class="ph-generic">[package_yaml]</span> <span class="ph-file">[file_name_python]</span>.launch.yaml`;
 
-const runXmlLaunchCode = `ros2 launch [package_name] [file_name_xml].launch.xml`;
-const runXmlLaunchCustom = `ros2 launch <span class="ph-generic">[package_name]</span> <span class="ph-file">[file_name_xml]</span>.launch.xml`;
+const runXmlCode = `ros2 launch [package_name] [file_name_xml].launch.xml`;
+const runXmlCustom = `ros2 launch <span class="ph-generic">[package_name]</span> <span class="ph-file">[file_name_xml]</span>.launch.xml`;
 
-const runPyLaunchCode = `ros2 launch [package_name] [file_name_python].launch.py`;
-const runPyLaunchCustom = `ros2 launch <span class="ph-generic">[package_name]</span> <span class="ph-file">[file_name_python]</span>.launch.py`;
+const runPyCode = `ros2 launch [package_name] [file_name_python].launch.py`;
+const runPyCustom = `ros2 launch <span class="ph-generic">[package_name]</span> <span class="ph-file">[file_name_python]</span>.launch.py`;
 
-const runArgLaunchCode = `ros2 launch [package_name] [file_name].launch.[extension_type] [arg]:=[value] [...]`;
-const runArgLaunchCustom = `ros2 launch <span class="ph-generic">[package_name]</span> <span class="ph-file">[file_name]</span>.launch.<span class="ph-generic">[extension_type]</span> <span class="ph-generic">[arg]</span>:=<span class="ph-generic">[value]</span> <span class="ph-generic">[...]</span>`;
+const runArgsCode = `ros2 launch [package_name] [file_name].launch.[extension_type] [arg]:=[value] [...]`;
+const runArgsCustom = `ros2 launch <span class="ph-generic">[package_name]</span> <span class="ph-file">[file_name]</span>.launch.<span class="ph-generic">[extension_type]</span> <span class="ph-generic">[arg]</span>:=<span class="ph-generic">[value]</span> <span class="ph-generic">[...]</span>`;
 ---
 
-<DocLayout title="Launch Files" activeSection="launch-files">
+<DocLayout title="Launch Files" activeSection="launch">
 
-  <h1 class="doc-title">Launch Files</h1>
+  <h1 class="doc-title" id="launch">ROS 2 Launch Files</h1>
+  <p class="doc-subtitle">Chapter 9</p>
 
-  <h2 class="section-heading" id="creating-launch-files">4.4 Creating Launch Files</h2>
-  <p>Launch files live in the /launch directory of a package. They are used to launch many nodes from within that package all at once. <strong>It is also possible to link launch files from other packages so that multiple nodes from different packages can all be run at once</strong>.</p>
-  
+  <h2 class="section-heading" id="creating-launch-files">9.1 Creating Launch Files</h2>
+  <p>Launch files live in the <code>/launch</code> directory of a package. They are used to launch many nodes from within that package all at once. <strong>It is also possible to link launch files from other packages so that multiple nodes from different packages can all be run at once</strong>.</p>
   <p>Your YAML parameter files should thus be located at:</p>
-  <CodeBlock code={launchDirCode} lang="bash" customHtml={launchDirCustom} />
 
-  <p>If there is no launch/ directory, create it within ~/ ... /[package_name] by using:</p>
-  <CodeBlock code={mkdirLaunchCode} lang="bash" />
+  <CodeBlock code={launchDirCode} lang="bash" customHtml={launchDirCustom} showLegend={true} />
 
-  <p>Enter the /launch directory and create the launch file.</p>
-  <div class="param-list">
-    <div class="param-item">
-      <code class="param-name ph-generic-inline">[extension_type]</code>
-      <span class="param-desc">: .py for Python, .xml for XML or .yaml for YAML.</span>
-    </div>
-  </div>
-  <CodeBlock code={touchLaunchCode} lang="bash" customHtml={touchLaunchCustom} />
+  <p>If there is no <code>launch/</code> directory, create it within ~/.../<code class="ph-generic">[package_name]</code> by using:</p>
+
+  <CodeBlock code="mkdir launch" lang="bash" />
+
+  <p>Enter the <code>/launch</code> directory and create the launch file.</p>
+  <p><code class="ph-generic">[extension_type]</code>: <code>.py</code> for Python, <code>.xml</code> for XML or <code>.yaml</code> for YAML.</p>
+
+  <CodeBlock code={touchLaunchCode} lang="bash" customHtml={touchLaunchCustom} showLegend={true} />
 
   <p>XML and YAML launch files are simplest, but lack the low-level access to general launch features and the scripting abilities of Python launch files.</p>
-  <blockquote>
-    <strong>NOTE:</strong> launch files must have <code>.launch.</code> to be recognized during colcon build.
-  </blockquote>
+  <p><strong>NOTE: launch files must have <code>.launch.</code> to be recognized during colcon build.</strong></p>
 
 
-  <h2 class="section-heading" id="python-launch-files">4.5 Python Launch Files</h2>
-  <p>Ensure that you import the proper packages into your Python launch script. <strong>See Section 4.5.4</strong> for specifics.</p>
+  <h2 class="section-heading" id="python-launch-files">9.2 Python Launch Files</h2>
+  <p>Ensure that you import the proper packages into your Python launch script. <strong>See Section 9.2.4 (Full Structure)</strong> for specifics.</p>
 
-  <h3 class="subsection-heading">Launch Arguments</h3>
+  <h3 class="subsection-heading">9.2.1 Launch Arguments</h3>
   <p>Arguments allow us to pass values at launch time via the command line. They can be used to change which nodes are run, change the values of parameters within those nodes, etc.</p>
-  
-  <h4 class="subsubsection-heading">Declaring Arguments</h4>
-  <p>You will have to return the variable <code class="ph-var-inline">[return_argument_name]</code> at the end of the launch function (<strong>See Section 4.5.4</strong>).</p>
-  <CodeBlock code={pyDeclareArgCode} lang="python" customHtml={pyDeclareArgCustom} />
 
-  <h4 class="subsubsection-heading">Invoking Arguments</h4>
-  <p>Arguments can be invoked within the launch file by using the <code>LaunchConfiguration()</code> function, which can be done in place or by declaring <code class="ph-var-inline">[argument_variable_name]</code> as a reference.</p>
-  <CodeBlock code={pyInvokeArgCode} lang="python" customHtml={pyInvokeArgCustom} />
+  <h4 class="subsection-heading">9.2.1.1 Declaring Arguments</h4>
+  <p>You will have to return the variable <code class="ph-var">[return_argument_name]</code> at the end of the launch function.</p>
+  <CodeBlock code={pyDeclareArgCode} lang="python" customHtml={pyDeclareArgCustom} showLegend={true} />
 
-  <h3 class="subsection-heading">Launching Nodes</h3>
-  <p>You will have to return the variable <code class="ph-var-inline">[node_variable_name]</code> at the end of the launch function (<strong>See Section 4.5.4</strong>).</p>
+  <h4 class="subsection-heading">9.2.1.2 Invoking Arguments</h4>
+  <p>Arguments can be invoked within the launch file by using the <code>LaunchConfiguration()</code> function, which can be done in place or by declaring <code class="ph-var">[argument_variable_name]</code> as a reference.</p>
+  <CodeBlock code={pyInvokeArgCode} lang="python" customHtml={pyInvokeArgCustom} showLegend={true} />
+
+  <h3 class="subsection-heading">9.2.2 Launching Nodes</h3>
+  <p>You will have to return the variable <code class="ph-var">[node_variable_name]</code> at the end of the launch function.</p>
   <CodeBlock code={pyLaunchNodeCode} lang="python" customHtml={pyLaunchNodeCustom} showLegend={true} />
-  <blockquote>
-    <strong>NOTE:</strong> Only package and executable are essential to launching a node, all other aspects are optional.
-  </blockquote>
 
-  <h4 class="subsubsection-heading">Including Parameter Files</h4>
-  <p>Instead of hardcoding parameters within launch scripts, we can simply link a YAML file for these parameters. <strong><code class="ph-generic-inline">[params_package_name]</code> can be different from <code class="ph-generic-inline">[package_name]</code></strong> (you can use parameter files from other packages within your workspace).</p>
+  <p><strong>NOTE: Only package and executable are essential to launching a node, all other aspects are optional</strong>.</p>
+
+  <h4 class="subsection-heading">9.2.2.1 Including Parameter Files</h4>
+  <p>Instead of hardcoding parameters within launch scripts, we can simply link a YAML file for these parameters. <strong><code class="ph-generic">[params_package_name]</code> can be different from <code class="ph-generic">[package_name]</code></strong> (you can use parameter files from other packages within your workspace).</p>
   <p>In Python, you must reference the path to the parameters file through a variable and pass it to the parameters block when launching a node.</p>
-  <CodeBlock code={pyIncludeParamsCode} lang="python" customHtml={pyIncludeParamsCustom} />
+  <CodeBlock code={pyIncludeParamsCode} lang="python" customHtml={pyIncludeParamsCustom} showLegend={true} />
 
-  <h4 class="subsubsection-heading">Namespaces</h4>
-  <p>Namespaces allows you to add the <code class="ph-generic-inline">/[namespace]</code> prefix to everything associated with the node being launched: <strong>node names, topics, services, actions, parameters</strong>.</p>
-  <CodeBlock code={pyNamespaceCode} lang="python" customHtml={pyNamespaceCustom} />
+  <h4 class="subsection-heading">9.2.2.2 Namespaces</h4>
+  <p>Namespaces allows you to add the <code>/<span class="ph-generic">[namespace]</span></code> prefix to everything associated with the node being launched: <strong>node names, topics, services, actions, parameters</strong>.</p>
+  <CodeBlock code={pyNamespaceCode} lang="python" customHtml={pyNamespaceCustom} showLegend={true} />
 
-  <h4 class="subsubsection-heading">Remapping</h4>
+  <h4 class="subsection-heading">9.2.2.3 Remapping</h4>
   <p>You can remap the topic or service names used by the node. You must be specific as to which name you would like to remap.</p>
-  <CodeBlock code={pyRemapCode} lang="python" customHtml={pyRemapCustom} />
+  <CodeBlock code={pyRemapCode} lang="python" customHtml={pyRemapCustom} showLegend={true} />
 
-  <h3 class="subsection-heading">Including Other Launch Files</h3>
-  <p>You may link other launch files, which will run in parallel to this launch file. This launch file may be from another package (<code class="ph-generic-inline">[other_launch_file]</code> may be different from <code class="ph-generic-inline">[launch_file]</code>).</p>
-  <p>You will have to return the variable <code class="ph-var-inline">[return_launch_file]</code> at the end of the launch function (<strong>See Section 4.5.4</strong>).</p>
-  <CodeBlock code={pyIncludeLaunchCode} lang="python" customHtml={pyIncludeLaunchCustom} />
+  <h3 class="subsection-heading">9.2.3 Including Other Launch Files</h3>
+  <p>You may link other launch files, which will run in parallel to this launch file. This launch file may be from another package (<code class="ph-generic">[other_launch_file]</code> may be different from <code class="ph-generic">[launch_file]</code>).</p>
+  <p>You will have to return the variable <code class="ph-var">[return_launch_file]</code> at the end of the launch function.</p>
+  <CodeBlock code={pyIncludeLaunchCode} lang="python" customHtml={pyIncludeLaunchCustom} showLegend={true} />
 
-  <h3 class="subsection-heading">Full Structure</h3>
-  <CodeBlock code={pyFullLaunchCode} lang="python" customHtml={pyFullLaunchCustom} showLegend={true} />
+  <h3 class="subsection-heading" id="full-python-script">9.2.4 Full Structure</h3>
+  <CodeBlock code={pyFullStructCode} lang="python" customHtml={pyFullStructCustom} showLegend={true} />
 
 
-  <h2 class="section-heading" id="yaml-launch-files">4.6 YAML Launch Files</h2>
+  <h2 class="section-heading" id="yaml-launch-files">9.3 YAML Launch Files</h2>
 
-  <h3 class="subsection-heading">Full Structure</h3>
-  <CodeBlock code={yamlFullLaunchCode} lang="yaml" customHtml={yamlFullLaunchCustom} showLegend={true} />
+  <h3 class="subsection-heading">9.3.1 Full Structure</h3>
+  <CodeBlock code={yamlFullStructCode} lang="yaml" customHtml={yamlFullStructCustom} showLegend={true} />
 
-  <h3 class="subsection-heading">Invoking Arguments</h3>
+  <h3 class="subsection-heading">9.3.2 Invoking Arguments</h3>
   <p>Arguments can be invoked within the launch file using the <code>$(var )</code> operator.</p>
-  <CodeBlock code={yamlInvokeArgCode} lang="yaml" customHtml={yamlInvokeArgCustom} />
+  <CodeBlock code={yamlInvokeArgCode} lang="yaml" customHtml={yamlInvokeArgCustom} showLegend={true} />
 
-  <h3 class="subsection-heading">Including Parameter Files</h3>
-  <CodeBlock code={yamlIncludeParamsCode} lang="yaml" customHtml={yamlIncludeParamsCustom} />
+  <h3 class="subsection-heading">9.3.3 Including Parameter Files</h3>
+  <CodeBlock code={yamlIncludeParamsCode} lang="yaml" customHtml={yamlIncludeParamsCustom} showLegend={true} />
 
-  <h3 class="subsection-heading">Namespaces</h3>
-  <CodeBlock code={yamlNamespaceCode} lang="yaml" customHtml={yamlNamespaceCustom} />
+  <h3 class="subsection-heading">9.3.4 Namespaces</h3>
+  <CodeBlock code={yamlNamespaceCode} lang="yaml" customHtml={yamlNamespaceCustom} showLegend={true} />
 
-  <h3 class="subsection-heading">Remapping</h3>
-  <CodeBlock code={yamlRemapCode} lang="yaml" customHtml={yamlRemapCustom} />
+  <h3 class="subsection-heading">9.3.5 Remapping</h3>
+  <CodeBlock code={yamlRemapCode} lang="yaml" customHtml={yamlRemapCustom} showLegend={true} />
 
 
-  <h2 class="section-heading" id="xml-launch-files">4.7 XML Launch Files</h2>
+  <h2 class="section-heading" id="xml-launch-files">9.4 XML Launch Files</h2>
 
-  <h3 class="subsection-heading">Full Structure</h3>
-  <CodeBlock code={xmlFullLaunchCode} lang="xml" customHtml={xmlFullLaunchCustom} showLegend={true} />
+  <h3 class="subsection-heading">9.4.1 Full Structure</h3>
+  <CodeBlock code={xmlFullStructCode} lang="xml" customHtml={xmlFullStructCustom} showLegend={true} />
 
-  <h3 class="subsection-heading">Invoking Arguments</h3>
+  <h3 class="subsection-heading">9.4.2 Invoking Arguments</h3>
   <p>Arguments can be invoked within the launch file using the <code>$(var )</code> operator.</p>
-  <CodeBlock code={xmlInvokeArgCode} lang="xml" customHtml={xmlInvokeArgCustom} />
+  <CodeBlock code={yamlInvokeArgCode} lang="xml" customHtml={yamlInvokeArgCustom} showLegend={true} />
 
-  <h3 class="subsection-heading">Including Parameter Files</h3>
+  <h3 class="subsection-heading">9.4.3 Including Parameter Files</h3>
   <p>Unlike Python and YAML, including a parameter file is done within the parameter block:</p>
-  <CodeBlock code={xmlIncludeParamsCode} lang="xml" customHtml={xmlIncludeParamsCustom} />
+  <CodeBlock code={xmlIncludeParamsCode} lang="xml" customHtml={xmlIncludeParamsCustom} showLegend={true} />
 
-  <h3 class="subsection-heading">Namespaces</h3>
-  <CodeBlock code={xmlNamespaceCode} lang="xml" customHtml={xmlNamespaceCustom} />
+  <h3 class="subsection-heading">9.4.4 Namespaces</h3>
+  <CodeBlock code={xmlNamespaceCode} lang="xml" customHtml={xmlNamespaceCustom} showLegend={true} />
 
-  <h3 class="subsection-heading">Remapping</h3>
+  <h3 class="subsection-heading">9.4.5 Remapping</h3>
   <p>Remapping is done within its own block, parallel to the parameter block.</p>
-  <CodeBlock code={xmlRemapCode} lang="xml" customHtml={xmlRemapCustom} />
+  <CodeBlock code={xmlRemapCode} lang="xml" customHtml={xmlRemapCustom} showLegend={true} />
 
 
-  <h2 class="section-heading" id="configuring-running-launch-files">4.8 Configuring &amp; Running Launch Files</h2>
-
-  <h3 class="subsection-heading">Configuring Launch Executables</h3>
-  <p>Add the following code to your package's CMakeLists.txt (before <code>ament_packages</code>):</p>
+  <h2 class="section-heading" id="configuring-running-launch-files">9.5 Configuring Launch Executables</h2>
+  <p>Add the following code to your package's <code>CMakeLists.txt</code> (before <code>ament_packages</code>):</p>
   <CodeBlock code={cmakeInstallCode} lang="cmake" />
-  <p>This will install all launch files found within your launch/ directory of your package.</p>
+  <p>This will install all launch files found within your <code>launch/</code> directory of your package.</p>
 
-  <h2 class="section-heading" id="running-launch-scripts">4.9 Running Launch Scripts</h2>
-  
-  <h4 class="subsubsection-heading">Launching with Default Arguments</h4>
+
+  <h2 class="section-heading" id="running-launch-scripts">9.6 Running Launch Scripts</h2>
+
+  <h3 class="subsection-heading">9.6.1 Launching with Default Arguments</h3>
   <p>Once you have built a package and sourced your workspace, you can launch by using the following commands. Default argument values will be used.</p>
-  
-  <h5>YAML</h5>
-  <CodeBlock code={runYamlLaunchCode} lang="bash" customHtml={runYamlLaunchCustom} />
 
-  <h5>XML</h5>
-  <CodeBlock code={runXmlLaunchCode} lang="bash" customHtml={runXmlLaunchCustom} />
+  <h4 class="subsection-heading">9.6.1.1 YAML</h4>
+  <CodeBlock code={runYamlCode} lang="bash" customHtml={runYamlCustom} showLegend={true} />
 
-  <h5>Python</h5>
-  <CodeBlock code={runPyLaunchCode} lang="bash" customHtml={runPyLaunchCustom} />
+  <h4 class="subsection-heading">9.6.1.2 XML</h4>
+  <CodeBlock code={runXmlCode} lang="bash" customHtml={runXmlCustom} showLegend={true} />
 
-  <h4 class="subsubsection-heading">Launching with Arguments</h4>
-  <CodeBlock code={runArgLaunchCode} lang="bash" customHtml={runArgLaunchCustom} />
+  <h4 class="subsection-heading">9.6.1.3 Python</h4>
+  <CodeBlock code={runPyCode} lang="bash" customHtml={runPyCustom} showLegend={true} />
+
+  <h3 class="subsection-heading">9.6.2 Launching with Arguments</h3>
+  <CodeBlock code={runArgsCode} lang="bash" customHtml={runArgsCustom} showLegend={true} />
   <p>You may include as many arguments as you wish to pass, as long as they are separated by spaces.</p>
 
 </DocLayout>

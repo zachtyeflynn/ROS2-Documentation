@@ -14,8 +14,7 @@ import CodeBlock from '../components/CodeBlock.astro';
 
 // ── 5.1 Creating a Server ───────────────────────────────────────────────────
 const pyServerConstructorCode = 
-`#...
-self.[server_variable_name] = self.create_service([srv_type], "[service_name]", self.[server_callback_function])
+`self.[server_variable_name] = self.create_service([srv_type], "[service_name]", self.[server_callback_function])
 
 # Callback function which handles requests and sends back a response
 def [server_callback_function](self, request: [srv_type].Request, response: [srv_type].Response):
@@ -31,12 +30,10 @@ def [server_callback_function](self, request: [srv_type].Request, response: [srv
     # ...
     
     # Send response
-    return response 
-#...`;
+    return response `;
 
 const pyServerConstructorCustom = 
-`#...
-self.<span class="ph-var">[server_variable_name]</span> = self.create_service(<span class="ph-type">[srv_type]</span>, "<span class="ph-generic">[service_name]</span>", self.<span class="ph-fn">[server_callback_function]</span>)
+`self.<span class="ph-var">[server_variable_name]</span> = self.create_service(<span class="ph-type">[srv_type]</span>, "<span class="ph-generic">[service_name]</span>", self.<span class="ph-fn">[server_callback_function]</span>)
 
 # Callback function which handles requests and sends back a response
 def <span class="ph-fn">[server_callback_function]</span>(self, request: <span class="ph-type">[srv_type]</span>.Request, response: <span class="ph-type">[srv_type]</span>.Response):
@@ -52,24 +49,25 @@ def <span class="ph-fn">[server_callback_function]</span>(self, request: <span c
     # ...
     
     # Send response
-    return response 
-#...`;
+    return response`;
 
 const cppServerConstructorCode = 
-`// ...
-public:
+`public:
 
     // Constructor
     [node_class_name]() : Node("[node_name]") {
 
         // Initialize server attribute
-        [server_variable_name] = this->create_service<[srv_type]>("[service_name]", std::bind(&[node_class_name]::[server_callback_function], this, std::placeholders::_1, std::placeholders::_2));
+        [server_variable_name] = this->create_service<[srv_type]>("[service_name]"", 
+                    std::bind(&[node_class_name]::[server_callback_function], 
+                    this, std::placeholders::_1, std::placeholders::_2));
 
     }
-// ...
+
 private:
 
-    void [server_callback_function](const std::shared_ptr<[srv_type]::Request> request, const std::shared_ptr<[srv_type]::Response> response) {
+    void [server_callback_function](const std::shared_ptr<[srv_type]::Request> request, 
+                const std::shared_ptr<[srv_type]::Response> response) {
 
         // Access the request message variables and formulate response
         // ... = request -> [request_variable_1];
@@ -87,20 +85,22 @@ private:
     rclcpp::Service<[srv_type]>::SharedPtr [server_variable_name];`;
 
 const cppServerConstructorCustom = 
-`// ...
-<span class="t-kw">public</span>:
+`<span class="t-kw">public</span>:
 
     // Constructor
     <span class="ph-class">[node_class_name]</span>() : Node("<span class="ph-generic">[node_name]</span>") {
 
         // Initialize server attribute
-        <span class="ph-var">[server_variable_name]</span> = this->create_service&lt;<span class="ph-type">[srv_type]</span>&gt;("<span class="ph-generic">[service_name]</span>", std::bind(&amp;<span class="ph-class">[node_class_name]</span>::<span class="ph-fn">[server_callback_function]</span>, this, std::placeholders::_1, std::placeholders::_2));
+        <span class="ph-var">[server_variable_name]</span> = this->create_service&lt;<span class="ph-type">[srv_type]</span>&gt;("<span class="ph-generic">[service_name]</span>", 
+                    std::bind(&amp;<span class="ph-class">[node_class_name]</span>::<span class="ph-fn">[server_callback_function]</span>, 
+                    this, std::placeholders::_1, std::placeholders::_2));
 
     }
-// ...
+
 <span class="t-kw">private</span>:
 
-    void <span class="ph-fn">[server_callback_function]</span>(const std::shared_ptr&lt;<span class="ph-type">[srv_type]</span>::Request&gt; request, const std::shared_ptr&lt;<span class="ph-type">[srv_type]</span>::Response&gt; response) {
+    void <span class="ph-fn">[server_callback_function]</span>(const std::shared_ptr&lt;<span class="ph-type">[srv_type]</span>::Request&gt; request,
+                const std::shared_ptr&lt;<span class="ph-type">[srv_type]</span>::Response&gt; response) {
 
         // Access the request message variables and formulate response
         // ... = request -&gt; <span class="ph-var">[request_variable_1]</span>;
@@ -119,36 +119,28 @@ const cppServerConstructorCustom =
 
 // ── 5.2 Clients ──────────────────────────────────────────────────────────────
 const pyClientInitCode = 
-`# ..
-self.[client_variable_name] = self.create_client([srv_type], "[service_name]")
-# ..`;
+`self.[client_variable_name] = self.create_client([srv_type], "[service_name]")`;
 
 const pyClientInitCustom = 
-`# ..
-self.<span class="ph-var">[client_variable_name]</span> = self.create_client(<span class="ph-type">[srv_type]</span>, "<span class="ph-generic">[service_name]</span>")
-# ..`;
+`self.<span class="ph-var">[client_variable_name]</span> = self.create_client(<span class="ph-type">[srv_type]</span>, "<span class="ph-generic">[service_name]</span>")`;
 
 const cppClientInitCode = 
-`// ...
-public:
+`public:
 
     // Constructor
-    [node_class_name]() : Node("[node_name]") {
+    [node_class_name]() : Node("[node_name]"") {
 
-        [client_variable_name] = this->create_client<[srv_type]>("[service_name]");
+        [client_variable_name] = this->create_client<[srv_type]>("[service_name]"");
 
     }
-// ...
+
 private:
-// ...
 
 // Declare a pointer to the client attribute
-rclcpp::Client<[srv_type]>::SharedPtr [client_variable_name];
-// ...`;
+rclcpp::Client<[srv_type]>::SharedPtr [client_variable_name];`;
 
 const cppClientInitCustom = 
-`// ...
-<span class="t-kw">public</span>:
+`<span class="t-kw">public</span>:
 
     // Constructor
     <span class="ph-class">[node_class_name]</span>() : Node("<span class="ph-generic">[node_name]</span>") {
@@ -156,13 +148,11 @@ const cppClientInitCustom =
         <span class="ph-var">[client_variable_name]</span> = this->create_client&lt;<span class="ph-type">[srv_type]</span>&gt;("<span class="ph-generic">[service_name]</span>");
 
     }
-// ...
+
 <span class="t-kw">private</span>:
-// ...
 
 // Declare a pointer to the client attribute
-rclcpp::Client&lt;<span class="ph-type">[srv_type]</span>&gt;::SharedPtr <span class="ph-var">[client_variable_name]</span>;
-// ...`;
+rclcpp::Client&lt;<span class="ph-type">[srv_type]</span>&gt;::SharedPtr <span class="ph-var">[client_variable_name]</span>;`;
 
 const pyWaitServiceCode = `# Use self. inside member functions
 self.[client_variable_name].wait_for_service([check_period])`;
@@ -172,7 +162,7 @@ self.<span class="ph-var">[client_variable_name]</span>.wait_for_service(<span c
 const cppWaitServiceCode = 
 `//IMPORTANT: Include to use shortened second notation
 using namespace std::chrono_literals;
-// ...
+
 [client_variable_name]->wait_for_service([check_period]s)`;
 
 const cppWaitServiceCustom = 
@@ -184,8 +174,6 @@ using namespace std::chrono_literals;
 const pyAsyncRequestCode = 
 `# IMPORTANT: Import partial from functools to pass on request message to callback function
 from functools import partial
-
-# ...
 
 # Get request object
 request = [srv_type].Request()
@@ -201,8 +189,6 @@ future.add_done_callback(partial(self.[client_callback_function], request = requ
 const pyAsyncRequestCustom = 
 `# IMPORTANT: Import partial from functools to pass on request message to callback function
 from functools import partial
-
-# ...
 
 # Get request object
 request = <span class="ph-type">[srv_type]</span>.Request()
@@ -250,8 +236,6 @@ const pyAsyncResponseCustom =
 const cppAsyncResponseCode = 
 `private:
 
-// ...
-
 void [client_callback_function](rclcpp::Client<[srv_type]>::SharedFuture future) {
             
     auto response = future.get();
@@ -262,8 +246,6 @@ void [client_callback_function](rclcpp::Client<[srv_type]>::SharedFuture future)
 
 const cppAsyncResponseCustom = 
 `private:
-
-// ...
 
 void <span class="ph-fn">[client_callback_function]</span>(rclcpp::Client&lt;<span class="ph-type">[srv_type]</span>&gt;::SharedFuture future) {
             
@@ -419,8 +401,8 @@ const runRemapDualCustom = `ros2 run <span class="ph-generic">[package_name]</sp
   <p>This will return the <code class="param-name ph-type-inline">[srv_type]</code> of a service.</p>
   <CodeBlock code={serviceTypeCode} lang="bash" customHtml={serviceTypeCustom} showLegend={true} />
 
-  <h3 class="subsection-heading">5.3.3 View Request &amp; Response Layout Structures</h3>
-  <p>This shows the structured data configurations of the request and response fields:</p>
+  <h3 class="subsection-heading">5.3.3 View Request &amp; Response Structures of a Service</h3>
+  <p>This will show the data types of the request and response variables in the following way:</p>
   <CodeBlock code={interfaceShowTemplateCode} lang="yaml" customHtml={interfaceShowTemplateCustom} />
   <p>Execute the lookup via terminal using:</p>
   <CodeBlock code={interfaceShowCode} lang="bash" customHtml={interfaceShowCustom} showLegend={true} />
@@ -434,16 +416,19 @@ const runRemapDualCustom = `ros2 run <span class="ph-generic">[package_name]</sp
   <h3 class="subsection-heading">5.3.5 Rename (Remap) a Service at Runtime</h3>
 
   <h4 class="subsection-heading">5.3.5.1 Server Nodes</h4>
-  <p>Change the structural path name of the service provided by a specific setup server execution node:</p>
+  <p>Change the name of the service provided by a server node:</p>
   <CodeBlock code={runRemapServerCode} lang="bash" customHtml={runRemapServerCustom} showLegend={true} />
 
   <h4 class="subsection-heading">5.3.5.2 Client Nodes</h4>
-  <p>Change the name path targets seeked by active operational node interface callers:</p>
+  <p>Change the name of the service seeked by a client node:</p>
   <CodeBlock code={runRemapClientCode} lang="bash" customHtml={runRemapClientCustom} showLegend={true} />
 
-  <h4 class="subsection-heading">5.3.5.3 Renaming a Service &amp; its Associated Node</h4>
-  <p>You can dynamically bind structural node definitions and interface definitions simultaneously:</p>
+  <h4 class="subsection-heading">5.3.5.3 Renaming a Service &amp; Renaming an Associated Node</h4>
+  <p>You may also want to rename both the node’s name & its service by using:</p>
   <CodeBlock code={runRemapDualCode} lang="bash" customHtml={runRemapDualCustom} showLegend={true} />
-  <p>This structural override logic targets both running servers and client layers. Note that <code class="param-name ph-generic-inline">[original_service_name]</code> parameters must accurately align with internal configuration scripts to route cleanly.</p>
+  <code class="param-name ph-generic-inline">[executable_node_name]</code>: executable name of the node as defined in setup.py or CMakeLists.txt.
 
+  <p><code class="param-name ph-generic-inline">[instance_name]</code>: specific name of the node instance you want to remap to. It will show up under this name when introspecting nodes.</p>
+
+  <p>This applies to both servers and clients. <code class="param-name ph-generic-inline">[original_topic_name]</code> must match that in the original node script.</p>
 </DocLayout>

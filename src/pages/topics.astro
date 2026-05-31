@@ -21,9 +21,8 @@ const pyPublisherCustom =
 
 // ── 4.1.1 C++ ────────────────────────────────────────────────────────────────
 const cppPublisherCode =
-`// ...
-public:
-//...
+`public:
+
     // Constructor
     [node_class_name]() : Node("[node_name]") {
 
@@ -31,17 +30,17 @@ public:
     [publisher_variable_name] = this->create_publisher<[msg_type]>("[topic_name]", [qos_size]);
     
     }
-// ...
+
 private:
 
     // Declare a pointer to the publisher attribute
     rclcpp::Publisher<[msg_type]>::SharedPtr [publisher_variable_name];
-// ...`;
+`;
 
 const cppPublisherCustom =
-`<span class="t-cmt">// ...</span>
+`
 <span class="t-kw">public</span>:
-<span class="t-cmt">//...</span>
+
     <span class="t-cmt">// Constructor</span>
     <span class="ph-class">[node_class_name]</span>() : Node("<span class="ph-generic">[node_name]</span>") {
 
@@ -49,12 +48,12 @@ const cppPublisherCustom =
     <span class="ph-var">[publisher_variable_name]</span> = <span class="t-kw">this</span>-&gt;create_publisher&lt;<span class="ph-type">[msg_type]</span>&gt;("<span class="ph-generic">[topic_name]</span>", <span class="ph-generic">[qos_size]</span>);
     
     }
-<span class="t-cmt">// ...</span>
+
 <span class="t-kw">private</span>:
 
     <span class="t-cmt">// Declare a pointer to the publisher attribute</span>
     rclcpp::Publisher&lt;<span class="ph-type">[msg_type]</span>&gt;::SharedPtr <span class="ph-var">[publisher_variable_name]</span>;
-<span class="t-cmt">// ...</span>`;
+`;
 
 // ── 4.2 Python ───────────────────────────────────────────────────────────────
 const pyPublishCode =
@@ -110,38 +109,33 @@ const cppPublishCustom =
 
 // ── 4.3 Python ───────────────────────────────────────────────────────────────
 const pySubscriberCode =
-`#...
-self.[subscriber_variable_name] = self.create_subscription([msg_type], "[topic_name]", self.[receive_callback_function], [qos_size])
+`self.[subscriber_variable_name] = self.create_subscription([msg_type], "[topic_name]", self.[receive_callback_function], [qos_size])
 
 # Callback function called when message is received (must be in the same class)
 def [receive_callback_function](self, msg: [msg_type]):
 
-    # Access the message and do what you wish with it   
-#...`;
+    # Access the message and do what you wish with it`;
 
 const pySubscriberCustom =
-`<span class="t-cmt">#...</span>
-<span class="t-slf">self</span>.<span class="ph-var">[subscriber_variable_name]</span> = <span class="t-slf">self</span>.create_subscription(<span class="ph-type">[msg_type]</span>, "<span class="ph-generic">[topic_name]</span>", <span class="t-slf">self</span>.<span class="ph-fn">[receive_callback_function]</span>, <span class="ph-generic">[qos_size]</span>)
+`<span class="t-slf">self</span>.<span class="ph-var">[subscriber_variable_name]</span> = <span class="t-slf">self</span>.create_subscription(<span class="ph-type">[msg_type]</span>, "<span class="ph-generic">[topic_name]</span>", <span class="t-slf">self</span>.<span class="ph-fn">[receive_callback_function]</span>, <span class="ph-generic">[qos_size]</span>)
 
 <span class="t-cmt"># Callback function called when message is received (must be in the same class)</span>
 <span class="t-kw">def</span> <span class="ph-fn">[receive_callback_function]</span>(<span class="t-slf">self</span>, msg: <span class="ph-type">[msg_type]</span>):
 
-    <span class="t-cmt"># Access the message and do what you wish with it</span>   
-<span class="t-cmt">#...</span>`;
+    <span class="t-cmt"># Access the message and do what you wish with it</span>   `;
 
 // ── 4.3 C++ ──────────────────────────────────────────────────────────────────
 const cppSubscriberCode =
-`// ...
-public:
+`public:
 
     // Constructor
-    [node_class_name]() : Node("[node_name]") {
+    [node_class_name]() : Node("[node_name]"") {
 
         // Initialize subscriber attribute
-        [subscriber_variable_name] = this->create_subscription<[msg_type]>("[topic_name]", [qos_size], std::bind(&[node_class_name]::[receive_callback_function], this, std::placeholders::_1));
+        [subscriber_variable_name] = this->create_subscription<[msg_type]>("[topic_name]"", [qos_size], std::bind(&[node_class_name]::[receive_callback_function], this, std::placeholders::_1));
 
     }
-// ...
+
 private:
 
     // Callback function gets called when message is received
@@ -153,9 +147,7 @@ private:
     }
 
     // Declare subscriber attribute
-    rclcpp::Subscription<[msg_type]>::SharedPtr [subscriber_variable_name];
-
-//...`;
+    rclcpp::Subscription<[msg_type]>::SharedPtr [subscriber_variable_name];`;
 
 const cppSubscriberCustom =
 `<span class="t-cmt">// ...</span>
@@ -345,7 +337,7 @@ const bagPlayCustom = `ros2 bag play <span class="ph-generic">[recording_name]</
     </div>
     <div class="param-item">
       <code class="param-name ph-var-inline">[message_variable_n]</code>
-      <span class="param-desc">A message variable within a message interface — see <strong>Section X (Custom Interfaces)</strong> for more on interfaces.</span>
+      <span class="param-desc">A message variable within a message interface — see <a href="/interfaces">Section 7.</a> for more on interfaces.</span>
     </div>
     <div class="param-item">
       <code class="param-name ph-generic-inline">[value_i]</code>

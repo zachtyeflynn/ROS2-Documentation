@@ -92,47 +92,54 @@ const documentationLinks = [
 </DocLayout>
 
 <style>
+  /* Translated from LaTeX tabularray constraints:
+    width=10in, \footnotesize, vlines, hlines, 
+    X[c,m] (centered horizontally/vertically), 
+    row{1}={font=\bfseries, bg=gray!10}, hline{2}={1.2pt} 
+  */
+
   .table-container {
+    display: flex;
+    justify-content: center; /* Centers the 5.5in table */
     overflow-x: auto;
     margin: 2rem 0;
-    border-radius: 6px;
   }
 
   .doc-table {
     width: 100%;
+    max-width: 10.5in; /* Maps to width=5.5in */
     border-collapse: collapse;
-    text-align: left;
-    font-size: 0.95rem;
+    font-size: 0.85rem; /* Maps roughly to \footnotesize */
+    border: 1px solid #000000; /* Outer bounding box */
+    color: #000000; 
   }
 
-  /* Structural Grid Borders */
+  /* Target all cells to apply vlines, hlines, and X[c,m] alignment */
   .doc-table th, 
   .doc-table td {
-    padding: 0.75rem 1rem;
-    border: 1px solid #cbd5e1; /* Default slate border color */
+    border: 1px solid #000000; /* Maps to vlines, hlines */
+    padding: 8px 12px; /* Maps to rowsep = 4pt + standard colsep */
+    text-align: center; /* Maps to X[c] (horizontal center) */
+    vertical-align: middle; /* Maps to X[m] (vertical middle) */
+    word-wrap: break-word; /* Allows flexible column wrapping like X */
   }
 
-  /* Header Styling */
+  /* Header Styling mapped to row{1} and hline{2} */
   .doc-table th {
-    background-color: #f1f5f9;
-    font-weight: 700;
+    background-color: #e7e7e7; /* Maps to bg=gray!10 */
+    font-weight: bold; /* Maps to font=\bfseries */
+    border-bottom: 2px solid #000000; /* Maps to hline{2} = {1.2pt} */
   }
 
-  /* Alternate row background coloring for readability */
-  .doc-table tbody tr:nth-child(even) {
-    background-color: #f8fafc;
-  }
-
-  /* Theme adjustments for dark-mode compatibility if needed */
-  :global([data-theme="dark"]) .doc-table th {
-    background-color: #1e293b;
-    color: #f8fafc;
-  }
+  /* Dark mode overrides if needed by your Astro theme */
+  :global([data-theme="dark"]) .doc-table,
   :global([data-theme="dark"]) .doc-table th,
   :global([data-theme="dark"]) .doc-table td {
-    border-color: #334155;
+    border-color: #949494;
+    color: #a6adc8;
   }
-  :global([data-theme="dark"]) .doc-table tbody tr:nth-child(even) {
-    background-color: #0f172a;
+  :global([data-theme="dark"]) .doc-table th {
+    background-color: #222230;
+    border-bottom-color: #949494;
   }
 </style>

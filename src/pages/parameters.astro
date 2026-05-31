@@ -2,21 +2,30 @@
 import DocLayout from '../layouts/DocLayout.astro';
 import CodeBlock from '../components/CodeBlock.astro';
 
-// --- 4.3.1 Creating YAML Parameter Files ---
+// Key:
+//   ph-generic  → bashGeneric    RGB(208,26,20)    red
+//   ph-var      → variables      RGB(0,75,0)       dark green
+//   ph-type     → types          Blue
+//   ph-class    → classes        Orange
+//   ph-fn       → functions      Orchid
+//   ph-exec     → executables    RGB(255,102,178)  pink
+//   ph-file     → fileNames      NavyBlue
+//   ph-dir      → directories    Green
+
+// ── 8.2.1 Creating YAML Parameter Files ──────────────────────────────────────
 const yamlDirCode = `[YAML_parameters_directory] = ~/.../[package_name]/config`;
 const yamlDirCustom = `<span class="ph-dir">[YAML_parameters_directory]</span> = ~/.../<span class="ph-generic">[package_name]</span>/config`;
 
-const mkdirCode = `mkdir config`;
-const touchCode = 
+const touchYamlCode = 
 `cd config
 touch [YAML_file_name].yaml`;
-const touchCustom = 
+const touchYamlCustom = 
 `cd config
 touch <span class="ph-file">[YAML_file_name]</span>.yaml`;
 
-// --- 4.3.2 Defining Parameters Within YAML File ---
+// ── 8.2.2 Defining Parameters Within YAML File ───────────────────────────────
 const yamlDefCode = 
-`[node_name]
+`[node_name]:
 
     # Always include this line
     ros__parameters:
@@ -32,29 +41,30 @@ const yamlDefCode =
             # Result: accessed via [parameter_set].[parameter_name]`;
 
 const yamlDefCustom = 
-`<span class="ph-generic">[node_name]</span>
+`<span class="ph-generic">[node_name]</span>:
 
-    # Always include this line
+    <span class="t-cmt"># Always include this line</span>
     ros__parameters:
 
-        # Parameters go here
+        <span class="t-cmt"># Parameters go here</span>
         <span class="ph-generic">[parameter_name]</span>: <span class="ph-generic">[parameter_value]</span>
-        # Arrays are stored as [0, 0, 0, ...] with the proper data type
+        <span class="t-cmt"># Arrays are stored as [0, 0, 0, ...] with the proper data type</span>
 
-        # You can define nested parameters this way
+        <span class="t-cmt"># You can define nested parameters this way</span>
         <span class="ph-generic">[parameter_set]</span>:
         
             <span class="ph-generic">[parameter_name]</span>: <span class="ph-generic">[parameter_value]</span>
-            # Result: accessed via [parameter_set].[parameter_name]`;
+            <span class="t-cmt"># Result: accessed via [parameter_set].[parameter_name]</span>`;
 
-// --- 4.3.3 Declaring Parameters Within Nodes ---
-const pyDeclareCode = `self.declare_parameter("[parameter_name]", [default_value])`;
-const pyDeclareCustom = `self.declare_parameter("<span class="ph-generic">[parameter_name]</span>", <span class="ph-generic">[default_value]</span>)`;
+// ── 8.2.3 Declaring Parameters Within Nodes ──────────────────────────────────
+const pyDeclareCode = 
+`self.declare_parameter("[parameter_name]", [default_value])`;
+const pyDeclareCustom = 
+`self.declare_parameter("<span class="ph-generic">[parameter_name]</span>", <span class="ph-generic">[default_value]</span>)`;
 
 const cppDeclareCode = 
-`// ...
-public:
-//...
+`public:
+
     // Constructor
     [node_class_name]() : Node("[node_name]") {
 
@@ -62,27 +72,26 @@ public:
     this->declare_parameter<[parameter_type]>("[parameter_name]", [default_value]);
     
     }`;
-
 const cppDeclareCustom = 
-`// ...
-public:
-//...
-    // Constructor
+`public:
+
+    <span class="t-cmt">// Constructor</span>
     <span class="ph-class">[node_class_name]</span>() : Node("<span class="ph-generic">[node_name]</span>") {
 
-    // Declare parameter
-    this-&gt;declare_parameter&lt;<span class="ph-type">[parameter_type]</span>&gt;("<span class="ph-generic">[parameter_name]</span>", <span class="ph-generic">[default_value]</span>);
+    <span class="t-cmt">// Declare parameter</span>
+    this->declare_parameter<<span class="ph-type">[parameter_type]</span>>("<span class="ph-generic">[parameter_name]</span>", <span class="ph-generic">[default_value]</span>);
     
     }`;
 
-// --- 4.3.4 Reading Parameter Values Within Nodes ---
-const pyReadCode = `self.[parameter_variable] = self.get_parameter("[parameter_name]").value`;
-const pyReadCustom = `self.<span class="ph-var">[parameter_variable]</span> = self.get_parameter("<span class="ph-generic">[parameter_name]</span>").value`;
+// ── 8.2.4 Reading Parameter Values Within Nodes ──────────────────────────────
+const pyReadCode = 
+`self.[parameter_variable] = self.get_parameter("[parameter_name]").value`;
+const pyReadCustom = 
+`self.<span class="ph-var">[parameter_variable]</span> = self.get_parameter("<span class="ph-generic">[parameter_name]</span>").value`;
 
 const cppReadCode = 
-`// ...
-public:
-//...
+`public:
+
     // Constructor
     [node_class_name]() : Node("[node_name]") {
 
@@ -95,57 +104,53 @@ public:
         }
     
     }
-// ...
+
 private:
 
     // Declare the local copy of the parameter (with the proper data type)
-    [data_type] [parameter_variable];
-// ...`;
-
+    [data_type] [parameter_variable];`;
 const cppReadCustom = 
-`// ...
-public:
-//...
-    // Constructor
+`public:
+
+    <span class="t-cmt">// Constructor</span>
     <span class="ph-class">[node_class_name]</span>() : Node("<span class="ph-generic">[node_name]</span>") {
 
-        // Get parameter value
-        if (!this-&gt;get_parameter("<span class="ph-generic">[node_name]</span>", <span class="ph-var">[parameter_variable]</span>)) {
+        <span class="t-cmt">// Get parameter value</span>
+        if (!this->get_parameter("<span class="ph-generic">[parameter_name]</span>", <span class="ph-var">[parameter_variable]</span>)) {
 
-        // Do something if fetching parameter value fails
-        // Optional - simply use this->get_parameter if you don't care, it will revert to default parameter value as long as parameter was declared (see above)
+        <span class="t-cmt">// Do something if fetching parameter value fails</span>
+        <span class="t-cmt">// Optional - simply use this->get_parameter if you don't care, it will revert to default parameter value as long as parameter was declared (see above)</span>
 
         }
     
     }
-// ...
+
 private:
 
-    // Declare the local copy of the parameter (with the proper data type)
-    <span class="ph-type">[data_type]</span> <span class="ph-var">[parameter_variable]</span>;
-// ...`;
+    <span class="t-cmt">// Declare the local copy of the parameter (with the proper data type)</span>
+    <span class="ph-type">[data_type]</span> <span class="ph-var">[parameter_variable]</span>;`;
 
-// --- 4.3.5 Running Nodes with YAML Parameter Files ---
+// ── 8.2.5 Running Nodes with YAML Parameter Files ────────────────────────────
 const runYamlCode = `ros2 run [package_name] [executable_node_name] --ros-args --params-file [YAML_parameters_directory]/[YAML_file_name].yaml`;
 const runYamlCustom = `ros2 run <span class="ph-generic">[package_name]</span> <span class="ph-exec">[executable_node_name]</span> --ros-args --params-file <span class="ph-dir">[YAML_parameters_directory]</span>/<span class="ph-generic">[YAML_file_name]</span>.yaml`;
 
-// --- 4.4 Introspecting Parameters ---
-const paramListCode = `ros2 param list`;
-const nodeListCode = `ros2 node list`;
+// ── 8.3 Introspecting Parameters ─────────────────────────────────────────────
 const paramGetCode = `ros2 param get [node_name] [parameter_name]`;
 const paramGetCustom = `ros2 param get <span class="ph-generic">[node_name]</span> <span class="ph-generic">[parameter_name]</span>`;
+
 const paramSetCode = `ros2 param set [node_name] [parameter_name] [value]`;
 const paramSetCustom = `ros2 param set <span class="ph-generic">[node_name]</span> <span class="ph-generic">[parameter_name]</span> <span class="ph-generic">[value]</span>`;
 ---
 
-<DocLayout title="ROS 2 Parameters" activeSection="parameters">
+<DocLayout title="Parameters" activeSection="parameters">
 
-  <h1 class="doc-title">ROS 2 Parameters</h1>
+  <h1 class="doc-title" id="parameters">ROS 2 Parameters</h1>
+  <p class="doc-subtitle">Chapter 8</p>
 
-  <h2 class="section-heading" id="allowed-parameter-types">Allowed Parameter Types</h2>
-  
+  <h2 class="section-heading" id="allowed-parameter-types">8.1 Allowed Parameter Types</h2>
+
   <div class="table-container">
-    <table>
+    <table class="doc-table">
       <thead>
         <tr>
           <th>ROS 2 Parameter Type</th>
@@ -189,96 +194,129 @@ const paramSetCustom = `ros2 param set <span class="ph-generic">[node_name]</spa
     </table>
   </div>
 
-  <h2 class="section-heading" id="defining-loading-parameters">Defining &amp; Loading Parameters</h2>
 
-  <h3 class="subsection-heading">Creating YAML Parameter Files</h3>
+  <h2 class="section-heading" id="defining-loading-parameters">8.2 Defining &amp; Loading Parameters</h2>
+
+  <h3 class="subsection-heading">8.2.1 Creating YAML Parameter Files</h3>
   <p>By convention, parameter files live within a config/ directory of a package, and its parameters are used by the nodes used within this package. In other words, your YAML parameter files should be located at:</p>
-  
-  <CodeBlock code={yamlDirCode} lang="bash" customHtml={yamlDirCustom} />
 
-  <p>If there is no config/ directory, create it within ~/ ... /[package_name] by using:</p>
-  <CodeBlock code={mkdirCode} lang="bash" />
+  <CodeBlock code={yamlDirCode} lang="bash" customHtml={yamlDirCustom} showLegend={true} />
+
+  <p>If there is no config/ directory, create it within ~/.../<code class="ph-generic">[package_name]</code> by using:</p>
+
+  <CodeBlock code="mkdir config" lang="bash" />
 
   <p>Then go into the config/ directory and create a YAML script.</p>
-  <CodeBlock code={touchCode} lang="bash" customHtml={touchCustom} />
 
-  <h3 class="subsection-heading">Defining Parameters Within YAML File</h3>
+  <CodeBlock code={touchYamlCode} lang="bash" customHtml={touchYamlCustom} showLegend={true} />
+
+
+  <h3 class="subsection-heading">8.2.2 Defining Parameters Within YAML File</h3>
   <p>You can include as many parameters as needed for each node.</p>
-  
-  <CodeBlock code={yamlDefCode} lang="yaml" customHtml={yamlDefCustom} />
 
-  <blockquote>
-    <strong>NOTE:</strong> <code class="ph-generic-inline">[parameter_name]</code> must match those found in your Python/C++ scripts.
-  </blockquote>
+  <CodeBlock code={yamlDefCode} lang="yaml" customHtml={yamlDefCustom} showLegend={true} />
 
-  <h3 class="subsection-heading">Declaring Parameters Within Nodes</h3>
+  <p><strong>NOTE: <code class="ph-generic">[parameter_name]</code> must match those found in your Python/C++ scripts</strong>.</p>
+
+  <h3 class="subsection-heading">8.2.3 Declaring Parameters Within Nodes</h3>
   <p>Include the following within the constructor of your node class.</p>
+  <p><code class="ph-type">[parameter_type]</code>: the data type associated with the parameter (<strong>see Section 8.1</strong>).</p>
+  <p><code class="ph-generic">[parameter_name]</code>: The name of your parameter that will appear in the YAML files and when introspecting parameters.</p>
+  <p><code class="ph-generic">[default_value]</code>: the value that the parameter will retain if no value is loaded (must match the data type).</p>
 
-  <div class="param-list">
-    <div class="param-item">
-      <code class="param-name ph-type-inline">[parameter_type]</code>
-      <span class="param-desc">: the data type associated with the parameter.</span>
-    </div>
-    <div class="param-item">
-      <code class="param-name ph-generic-inline">[parameter_name]</code>
-      <span class="param-desc">: The name of your parameter that will appear in the YAML files and when introspecting parameters.</span>
-    </div>
-    <div class="param-item">
-      <code class="param-name ph-generic-inline">[default_value]</code>
-      <span class="param-desc">: the value that the parameter will retain if no value is loaded (must match the data type).</span>
-    </div>
-  </div>
+  <h4 class="subsection-heading">8.2.3.1 Python</h4>
+  <CodeBlock code={pyDeclareCode} lang="python" customHtml={pyDeclareCustom} showLegend={true} />
 
-  <h4 class="subsubsection-heading">Python</h4>
-  <CodeBlock code={pyDeclareCode} lang="python" customHtml={pyDeclareCustom} />
+  <h4 class="subsection-heading">8.2.3.2 C++</h4>
+  <CodeBlock code={cppDeclareCode} lang="cpp" customHtml={cppDeclareCustom} showLegend={true} />
 
-  <hr class="section-divider" />
-
-  <h4 class="subsubsection-heading">C++</h4>
-  <CodeBlock code={cppDeclareCode} lang="cpp" customHtml={cppDeclareCustom} />
-
-  <h3 class="subsection-heading">Reading Parameter Values Within Nodes</h3>
+  <h3 class="subsection-heading">8.2.4 Reading Parameter Values Within Nodes</h3>
   <p>Add this to the constructor of your node class.</p>
+  <p><code class="ph-var">[parameter_variable]</code>: a variable within the source code to which the parameter value is copied to. Use this to populate your node script with the appropriate parameters.</p>
+  <p><strong>NOTE: Always declare your parameters before reading their values in your scripts, not doing so is bad practice and could lead to bad side effects.</strong></p>
 
-  <div class="param-list">
-    <div class="param-item">
-      <code class="param-name ph-var-inline">[parameter_variable]</code>
-      <span class="param-desc">: a variable within the source code to which the parameter value is copied to. Use this to populate your node script with the appropriate parameters.</span>
-    </div>
-  </div>
+  <h4 class="subsection-heading">8.2.4.1 Python</h4>
+  <CodeBlock code={pyReadCode} lang="python" customHtml={pyReadCustom} showLegend={true} />
 
-  <blockquote>
-    <strong>NOTE:</strong> Always declare your parameters before reading their values in your scripts, not doing so is bad practice and could lead to bad side effects.
-  </blockquote>
+  <h4 class="subsection-heading">8.2.4.2 C++</h4>
+  <CodeBlock code={cppReadCode} lang="cpp" customHtml={cppReadCustom} showLegend={true} />
 
-  <h4 class="subsubsection-heading">Python</h4>
-  <CodeBlock code={pyReadCode} lang="python" customHtml={pyReadCustom} />
+  <h3 class="subsection-heading">8.2.5 Running Nodes with YAML Parameter Files</h3>
+  <CodeBlock code={runYamlCode} lang="bash" customHtml={runYamlCustom} showLegend={true} />
 
-  <hr class="section-divider" />
+  <p>You may include further arguments. <strong>See see <a href="/launch">Section 9.</a> for how to incorporate parameters into launch files</strong>.</p>
 
-  <h4 class="subsubsection-heading">C++</h4>
-  <CodeBlock code={cppReadCode} lang="cpp" customHtml={cppReadCustom} />
 
-  <h3 class="subsection-heading">Running Nodes with YAML Parameter Files</h3>
-  <CodeBlock code={runYamlCode} lang="bash" customHtml={runYamlCustom} />
-  <p>You may include further arguments.</p>
+  <h2 class="section-heading" id="introspecting-parameters">8.3 Introspecting Parameters</h2>
 
-  <h2 class="section-heading" id="introspecting-parameters">Introspecting Parameters</h2>
-
-  <h3 class="subsection-heading">List All Parameters</h3>
+  <h3 class="subsection-heading">8.3.1 List All Parameters</h3>
   <p>View all available parameters.</p>
-  <CodeBlock code={paramListCode} lang="bash" />
+  <CodeBlock code="ros2 param list" lang="bash" />
 
-  <h3 class="subsection-heading">Get Value of a Parameter</h3>
-  <p>Use the following to see what nodes are currently available (find the correct <code class="ph-generic-inline">[node_name]</code>):</p>
-  <CodeBlock code={nodeListCode} lang="bash" />
+  <h3 class="subsection-heading">8.3.2 Get Value of a Parameter</h3>
+  <p>Use the following to see what nodes are currently available (find the correct <code class="ph-generic">[node_name]</code>):</p>
+  <CodeBlock code="ros2 node list" lang="bash" />
 
   <p>Then find the parameters associated with one of these nodes by using:</p>
-  <CodeBlock code={paramGetCode} lang="bash" customHtml={paramGetCustom} />
+  <CodeBlock code={paramGetCode} lang="bash" customHtml={paramGetCustom} showLegend={true} />
 
-  <h3 class="subsection-heading">Set Value of a Parameter (Without YAML File)</h3>
+  <h3 class="subsection-heading">8.3.3 Set Value of a Parameter (Without YAML File)</h3>
   <p>Change the value associated with a certain parameter:</p>
-  <CodeBlock code={paramSetCode} lang="bash" customHtml={paramSetCustom} />
+  <CodeBlock code={paramSetCode} lang="bash" customHtml={paramSetCustom} showLegend={true} />
+
   <p>This does not change the default parameter value, just the current runtime value.</p>
 
 </DocLayout>
+
+<style>
+  /* Translated from LaTeX tabularray constraints:
+    width=10in, \footnotesize, vlines, hlines, 
+    X[c,m] (centered horizontally/vertically), 
+    row{1}={font=\bfseries, bg=gray!10}, hline{2}={1.2pt} 
+  */
+
+  .table-container {
+    display: flex;
+    justify-content: center; /* Centers the 5.5in table */
+    overflow-x: auto;
+    margin: 2rem 0;
+  }
+
+  .doc-table {
+    width: 100%;
+    max-width: 10.5in; /* Maps to width=5.5in */
+    border-collapse: collapse;
+    font-size: 0.85rem; /* Maps roughly to \footnotesize */
+    border: 1px solid #000000; /* Outer bounding box */
+    color: #000000; 
+  }
+
+  /* Target all cells to apply vlines, hlines, and X[c,m] alignment */
+  .doc-table th, 
+  .doc-table td {
+    border: 1px solid #000000; /* Maps to vlines, hlines */
+    padding: 8px 12px; /* Maps to rowsep = 4pt + standard colsep */
+    text-align: center; /* Maps to X[c] (horizontal center) */
+    vertical-align: middle; /* Maps to X[m] (vertical middle) */
+    word-wrap: break-word; /* Allows flexible column wrapping like X */
+  }
+
+  /* Header Styling mapped to row{1} and hline{2} */
+  .doc-table th {
+    background-color: #e7e7e7; /* Maps to bg=gray!10 */
+    font-weight: bold; /* Maps to font=\bfseries */
+    border-bottom: 2px solid #000000; /* Maps to hline{2} = {1.2pt} */
+  }
+
+  /* Dark mode overrides if needed by your Astro theme */
+  :global([data-theme="dark"]) .doc-table,
+  :global([data-theme="dark"]) .doc-table th,
+  :global([data-theme="dark"]) .doc-table td {
+    border-color: #949494;
+    color: #a6adc8;
+  }
+  :global([data-theme="dark"]) .doc-table th {
+    background-color: #222230;
+    border-bottom-color: #949494;
+  }
+</style>

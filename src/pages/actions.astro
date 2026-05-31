@@ -8,8 +8,6 @@ const pyActionServerInitCode =
 from rclpy.action import ActionServer
 from rclpy.action import CancelResponse, GoalResponse
 
-#...
-
 # In constructor
 self.[action_server_variable_name] = ActionServer(
             self,
@@ -24,9 +22,7 @@ const pyActionServerInitCustom =
 from rclpy.action import ActionServer
 from rclpy.action import CancelResponse, GoalResponse
 
-#...
-
-// In constructor
+# In constructor
 self.<span class="ph-var">[action_server_variable_name]</span> = ActionServer(
             self,
             <span class="ph-type">[action_type]</span>,
@@ -40,35 +36,29 @@ const cppActionServerInitCode =
 #include <rclcpp_action/rclcpp_action.hpp>
 #include <thread>
 
-// ...
-
 public:
 
     // Constructor
-    [node_class_name]() : Node("[node_name]") {
+    [node_class_name]() : Node("[node_name]"") {
 
         // Initialize action server attribute
-        [action_server_variable_name] = rclcpp_action::create_server<[action_type]>(this,
+        [action_server_variable_name] = rclcpp_action::create_server${'<'}[action_type]>(this,
             "[action_name]",
             std::bind(&[node_class_name]::[action_request_callback_function], this, std::placeholders::_1, std::placeholders::_2),
             std::bind(&[node_class_name]::[action_cancel_callback_function], this, std::placeholders::_1),
             std::bind(&[node_class_name]::[action_accepted_callback_function], this, std::placeholders::_1));
 
     }
-    
-// ...
 
 private:
 
     // Declare a pointer to the action server attribute
-    rclcpp_action::Server<[action_type]>::SharedPtr [action_server_variable_name];`;
+    rclcpp_action::Server${'<'}[action_type]>::SharedPtr [action_server_variable_name];`;
 
 const cppActionServerInitCustom = 
 `// Extra header for action servers
 #include &lt;rclcpp_action/rclcpp_action.hpp&gt;
 #include &lt;thread&gt;
-
-// ...
 
 public:
 
@@ -78,13 +68,11 @@ public:
         // Initialize action server attribute
         <span class="ph-var">[action_server_variable_name]</span> = rclcpp_action::create_server&lt;<span class="ph-type">[action_type]</span>&gt;(this,
             "<span class="ph-generic">[action_name]</span>",
-            std::bind(&<span class="ph-class">[node_class_name]</span>::<span class="ph-fn">[action_request_callback_function]</span>, this, std::placeholders::_1, std::placeholders::_2),
-            std::bind(&<span class="ph-class">[node_class_name]</span>::<span class="ph-fn">[action_cancel_callback_function]</span>, this, std::placeholders::_1),
-            std::bind(&<span class="ph-class">[node_class_name]</span>::<span class="ph-fn">[action_accepted_callback_function]</span>, this, std::placeholders::_1));
+            std::bind(&amp;<span class="ph-class">[node_class_name]</span>::<span class="ph-fn">[action_request_callback_function]</span>, this, std::placeholders::_1, std::placeholders::_2),
+            std::bind(&amp;<span class="ph-class">[node_class_name]</span>::<span class="ph-fn">[action_cancel_callback_function]</span>, this, std::placeholders::_1),
+            std::bind(&amp;<span class="ph-class">[node_class_name]</span>::<span class="ph-fn">[action_accepted_callback_function]</span>, this, std::placeholders::_1));
 
     }
-    
-// ...
 
 private:
 
@@ -97,23 +85,24 @@ const pyGoalReqCode =
 
     # Do something to determine whether the action can be executed
     
-    // Must return one of two options
+    # Must return one of two options
     return GoalResponse.ACCEPT
-    // ACCEPT: Accept goal and perform execution immediately
-    // REJECT: Reject goal, will not be executed`;
+    # ACCEPT: Accept goal and perform execution immediately
+    # REJECT: Reject goal, will not be executed`;
 
 const pyGoalReqCustom = 
 `def <span class="ph-fn">[action_request_callback_function]</span>(self, goal):
 
     # Do something to determine whether the action can be executed
     
-    // Must return one of two options
+    # Must return one of two options
     return GoalResponse.ACCEPT
-    // ACCEPT: Accept goal and perform execution immediately
-    // REJECT: Reject goal, will not be executed`;
+    # ACCEPT: Accept goal and perform execution immediately
+    # REJECT: Reject goal, will not be executed`;
 
 const cppGoalReqCode = 
-`rclcpp_action::GoalResponse [action_request_callback_function](const rclcpp_action::GoalUUID &uuid, const std::shared_ptr<[action_type]::Goal> goal) {
+`rclcpp_action::GoalResponse [action_request_callback_function](const rclcpp_action::GoalUUID &uuid, 
+            const std::shared_ptr${'<'}[action_type]::Goal> goal) {
 
     // Do something to determine whether the action can be executed
 
@@ -126,7 +115,8 @@ const cppGoalReqCode =
 }`;
 
 const cppGoalReqCustom = 
-`rclcpp_action::GoalResponse <span class="ph-fn">[action_request_callback_function]</span>(const rclcpp_action::GoalUUID &amp;uuid, const std::shared_ptr&lt;<span class="ph-type">[action_type]</span>::Goal&gt; goal) {
+`rclcpp_action::GoalResponse <span class="ph-fn">[action_request_callback_function]</span>(const rclcpp_action::GoalUUID &amp;uuid, 
+            const std::shared_ptr&lt;<span class="ph-type">[action_type]</span>::Goal&gt; goal) {
 
     // Do something to determine whether the action can be executed
 
@@ -144,23 +134,24 @@ const pyCancelReqCode =
 
     # Do something to determine whether the action can be executed
     
-    // Must return one of two options
+    # Must return one of two options
     return CancelResponse.ACCEPT
-    // ACCEPT: Accept cancellation and an attempt is made to immediately cancel execution
-    // REJECT: Decline cancellation request, execution will continue`;
+    # ACCEPT: Accept cancellation and an attempt is made to immediately cancel execution
+    # REJECT: Decline cancellation request, execution will continue`;
 
 const pyCancelReqCustom = 
 `def <span class="ph-fn">[action_cancel_callback_function]</span>(self, goal):
 
     # Do something to determine whether the action can be executed
     
-    // Must return one of two options
+    # Must return one of two options
     return CancelResponse.ACCEPT
-    // ACCEPT: Accept cancellation and an attempt is made to immediately cancel execution
-    // REJECT: Decline cancellation request, execution will continue`;
+    # ACCEPT: Accept cancellation and an attempt is made to immediately cancel execution
+    # REJECT: Decline cancellation request, execution will continue`;
 
 const cppCancelReqCode = 
-`rclcpp_action::CancelResponse [action_cancel_callback_function](const std::shared_ptr<rclcpp_action::ServerGoalHandle<[action_type]>> goal) {
+`rclcpp_action::CancelResponse [action_cancel_callback_function](
+            const std::shared_ptr${'<'}rclcpp_action::ServerGoalHandle${'<'}[action_type]>> goal) {
 
     // Do something to determine if the action can be cancelled
     // If cancel, cleanup and determine what is next
@@ -173,7 +164,8 @@ const cppCancelReqCode =
 }`;
 
 const cppCancelReqCustom = 
-`rclcpp_action::CancelResponse <span class="ph-fn">[action_cancel_callback_function]</span>(const std::shared_ptr&lt;rclcpp_action::ServerGoalHandle&lt;<span class="ph-type">[action_type]</span>&gt;&gt; goal) {
+`rclcpp_action::CancelResponse <span class="ph-fn">[action_cancel_callback_function]</span>(
+            const std::shared_ptr&lt;rclcpp_action::ServerGoalHandle&lt;<span class="ph-type">[action_type]</span>&gt;&gt; goal) {
 
     // Do something to determine if the action can be cancelled
     // If cancel, cleanup and determine what is next
@@ -213,7 +205,7 @@ async def [action_accepted_callback_function](self, goal):
                 goal.canceled() # Set this only if you can truly cancel action
                 return result
             
-            // Abort process if needed
+            # Abort process if needed
             if [abort_conditions]:
 
                 # Modify result.[result_variable_1] ...
@@ -255,7 +247,7 @@ async def <span class="ph-fn">[action_accepted_callback_function]</span>(self, g
                 goal.canceled() # Set this only if you can truly cancel action
                 return result
             
-            // Abort process if needed
+            # Abort process if needed
             if [abort_conditions]:
 
                 # Modify result.[result_variable_1] ...
@@ -271,18 +263,18 @@ async def <span class="ph-fn">[action_accepted_callback_function]</span>(self, g
         return result`;
 
 const cppExecutionLoopCode = 
-`void [action_accepted_callback_function](const std::shared_ptr<rclcpp_action::ServerGoalHandle<[action_type]>> goal) {
+`void [action_accepted_callback_function](const std::shared_ptr${'<'}rclcpp_action::ServerGoalHandle${'<'}[action_type]>> goal) {
 
     // Start execution on a seperate thread
     std::thread{
         std::bind(&[node_class_name]::[handle_execution_function], this, std::placeholders::_1), goal  }.detach();
 }
 
-void [handle_execution_function](const std::shared_ptr<rclcpp_action::ServerGoalHandle<[action_type]>> goal) {
+void [handle_execution_function](const std::shared_ptr${'<'}rclcpp_action::ServerGoalHandle${'<'}[action_type]>> goal) {
 
     // Define variables for the feedback and result of the action
-    auto result = std::make_shared<[action_type]::Result>();
-    auto feedback = std::make_shared<[action_type]::Feedback>();
+    auto result = std::make_shared${'<'}[action_type]::Result>();
+    auto feedback = std::make_shared${'<'}[action_type]::Feedback>();
 
     // While loop for execution based on the completion criteria
     while ([execution_conditions]) {
@@ -307,7 +299,7 @@ void [handle_execution_function](const std::shared_ptr<rclcpp_action::ServerGoal
 
             // Modify result.[result_variable_1] ...
             goal->abort(result);
-            return
+            return;
 
         }
     }
@@ -322,7 +314,7 @@ const cppExecutionLoopCustom =
 
     // Start execution on a seperate thread
     std::thread{
-        std::bind(&&lt;<span class="ph-class">[node_class_name]</span>&gt;::<span class="ph-fn">[handle_execution_function]</span>, this, std::placeholders::_1), goal  }.detach();
+        std::bind(&amp;<span class="ph-class">[node_class_name]</span>::<span class="ph-fn">[handle_execution_function]</span>, this, std::placeholders::_1), goal  }.detach();
 }
 
 void <span class="ph-fn">[handle_execution_function]</span>(const std::shared_ptr&lt;rclcpp_action::ServerGoalHandle&lt;<span class="ph-type">[action_type]</span>&gt;&gt; goal) {
@@ -335,16 +327,16 @@ void <span class="ph-fn">[handle_execution_function]</span>(const std::shared_pt
     while ([execution_conditions]) {
 
         // Perform checks on process, provide feedback to client, etc.
-        feedback->[feedback_variable_1] = ...
-        feedback->[feedback_variable_2] = ...
+        feedback-&gt;[feedback_variable_1] = ...
+        feedback-&gt;[feedback_variable_2] = ...
         // ...
-        goal->publish_feedback(feedback)
+        goal-&gt;publish_feedback(feedback)
 
         // Check and handle for cancellation
-        if (goal->is_canceling()) {
+        if (goal-&gt;is_canceling()) {
 
             // Modify result.[result_variable_1] ...
-            goal->canceled(result);
+            goal-&gt;canceled(result);
             return;
                 
         }
@@ -353,52 +345,46 @@ void <span class="ph-fn">[handle_execution_function]</span>(const std::shared_pt
         if (abort_conditions) {
 
             // Modify result.[result_variable_1] ...
-            goal->abort(result);
-            return
+            goal-&gt;abort(result);
+            return;
 
         }
     }
 
     // Once goal is acheived, return results using pointer
     // Modify result.[result_variable_1] ...
-    goal->succeed(result);
+    goal-&gt;succeed(result);
 }`;
 
 // --- 4.2.1 Creating Action Clients ---
 const pyActionClientInitCode = 
-`# ..
-from rclpy.action import ActionClient
-self.[client_variable_name] = ActionClient(self, [action_type], "[action_name]")
-# ..`;
+`from rclpy.action import ActionClient
+self.[client_variable_name] = ActionClient(self, [action_type], "[action_name]")`;
 
 const pyActionClientInitCustom = 
-`# ..
-from rclpy.action import ActionClient
-self.<span class="ph-var">[client_variable_name]</span> = ActionClient(self, <span class="ph-type">[action_type]</span>, "<span class="ph-generic">[action_name]</span>")
-# ..`;
+`from rclpy.action import ActionClient
+self.<span class="ph-var">[client_variable_name]</span> = ActionClient(self, <span class="ph-type">[action_type]</span>, "<span class="ph-generic">[action_name]</span>")`;
 
 const cppActionClientInitCode = 
-`// ...
-#include <rclcpp_action/rclcpp_action.hpp>
+`#include <rclcpp_action/rclcpp_action.hpp>
+
 public:
 
     // Constructor
-    [node_class_name]() : Node("[node_name]") {
+    [node_class_name]() : Node("[node_name]"") {
 
-        [client_variable_name] = rclcpp_action::create_client<[action_type]>(this, "[action_name]");
+        [client_variable_name] = rclcpp_action::create_client${'<'}[action_type]>(this, "[action_name]");
 
     }
-// ...
+
 private:
-// ...
 
 // Declare a pointer to the client attribute
-rclcpp_action::Client<[action_type]>::SharedPtr [client_variable_name];
-// ...`;
+rclcpp_action::Client${'<'}[action_type]>::SharedPtr [client_variable_name];`;
 
 const cppActionClientInitCustom = 
-`// ...
-#include &lt;rclcpp_action/rclcpp_action.hpp&gt;
+`#include &lt;rclcpp_action/rclcpp_action.hpp&gt;
+
 public:
 
     // Constructor
@@ -407,13 +393,11 @@ public:
         <span class="ph-var">[client_variable_name]</span> = rclcpp_action::create_client&lt;<span class="ph-type">[action_type]</span>&gt;(this, "<span class="ph-generic">[action_name]</span>");
 
     }
-// ...
+
 private:
-// ...
 
 // Declare a pointer to the client attribute
-rclcpp_action::Client&lt;<span class="ph-type">[action_type]</span>&gt;::SharedPtr <span class="ph-var">[client_variable_name]</span>;
-// ...`;
+rclcpp_action::Client&lt;<span class="ph-type">[action_type]</span>&gt;::SharedPtr <span class="ph-var">[client_variable_name]</span>;`;
 
 // --- 4.2.2 Checking Availability ---
 const pyWaitActionCode = `self.[client_variable_name].wait_for_action_server([check_period])`;
@@ -421,20 +405,18 @@ const pyWaitActionCustom = `self.<span class="ph-var">[client_variable_name]</sp
 
 const cppWaitActionCode = 
 `using namespace std::chrono_literals;
-// ...
+
 [client_variable_name]->wait_for_action_server([check_period]s)`;
 
 const cppWaitActionCustom = 
 `using namespace std::chrono_literals;
-// ...
+
 <span class="ph-var">[client_variable_name]</span>-&gt;wait_for_action_server([check_period]s)`;
 
 // --- 4.2.3 Sending Requests ---
 const pySendGoalCode = 
 `# IMPORTANT: Import partial from functools to pass on goal message to callback function
 from functools import partial
-
-# ...
 
 # Get goal object
 goal_msg = [action_type].Goal()
@@ -450,8 +432,6 @@ send_goal_future.add_done_callback(partial(self.[client_callback_function], goal
 const pySendGoalCustom = 
 `# IMPORTANT: Import partial from functools to pass on goal message to callback function
 from functools import partial
-
-# ...
 
 # Get goal object
 goal_msg = <span class="ph-type">[action_type]</span>.Goal()
@@ -471,7 +451,7 @@ auto goal_msg = [action_type]::Goal();
 // ... Include message you want to send into the goal object's attributes
 
 // Set up send options (including callbacks)
-auto send_goal_options = rclcpp_action::Client<[action_type]>::SendGoalOptions();
+auto send_goal_options = rclcpp_action::Client${'<'}[action_type]>::SendGoalOptions();
 send_goal_options.goal_response_callback = std::bind(&[node_class_name]::[client_callback_function], this, std::placeholders::_1);
 
 // Send request
@@ -485,7 +465,7 @@ auto goal_msg = <span class="ph-type">[action_type]</span>::Goal();
 
 // Set up send options (including callbacks)
 auto send_goal_options = rclcpp_action::Client&lt;<span class="ph-type">[action_type]</span>&gt;::SendGoalOptions();
-send_goal_options.goal_response_callback = std::bind(&<span class="ph-class">[node_class_name]</span>::<span class="ph-fn">[client_callback_function]</span>, this, std::placeholders::_1);
+send_goal_options.goal_response_callback = std::bind(&amp;<span class="ph-class">[node_class_name]</span>::<span class="ph-fn">[client_callback_function]</span>, this, std::placeholders::_1);
 
 // Send request
 <span class="ph-var">[client_variable_name]</span>-&gt;async_send_goal(goal_msg, send_goal_options);`;
@@ -510,7 +490,7 @@ const cppResponseCode =
 
 // ...
 
-void [client_callback_function](rclcpp_action::ClientGoalHandle<[action_type]>::SharedPtr future) {
+void [client_callback_function](rclcpp_action::ClientGoalHandle${'<'}[action_type]>::SharedPtr future) {
             
     auto goal_handle = future.get();
     // Do what you need on the response from the server
@@ -565,7 +545,7 @@ void <span class="ph-fn">[client_callback_function]</span>(rclcpp_action::Client
     </div>
     <div class="param-item">
       <code class="param-name ph-fn-inline">[action_accepted_callback_function]</code>
-      <span class="param-desc">: a callback (member) function that is called when the action request is accepted (usually to start the execution of the action, <strong>which is handled by a separate member function <code class="ph-fn-inline">[handle_execution_function]</code></strong>).</span>
+      <span class="param-desc">: a callback (member) function that is called when the action request is accepted (usually to start the execution of the action, <strong>which is handled by a separate member function <code class="param-name ph-fn-inline"">[handle_execution_function]</code></strong>).</span>
     </div>
   </div>
 
@@ -578,7 +558,7 @@ void <span class="ph-fn">[client_callback_function]</span>(rclcpp_action::Client
   <h3 class="subsection-heading">6.1.2 Handling Action Client Requests</h3>
   <p>This is the first callback function that will be executed once a request is received. This is mainly used to verify whether the goal of the action is feasible and thus can be executed safely.</p>
   <blockquote>
-    <strong>uuid:</strong> A unique identifier for a specific goal request (16 byte value). This is used to determine which action client sent the request, and can be used to perform queuing or prioritized scheduling.
+    <strong class="ph-generic-inline">uuid:</strong> A unique identifier for a specific goal request (16 byte value). This is used to determine which action client sent the request, and can be used to perform queuing or prioritized scheduling.
   </blockquote>
 
   <h4 class="subsection-heading">6.1.2.1 Python</h4>
@@ -588,7 +568,7 @@ void <span class="ph-fn">[client_callback_function]</span>(rclcpp_action::Client
   <CodeBlock code={cppGoalReqCode} lang="cpp" customHtml={cppGoalReqCustom} />
 
   <h3 class="subsection-heading">6.1.3 Handling Cancel Requests</h3>
-  <p>This will be called if ever an action client sends a cancel request. This function is meant to be used to <strong>evaluate whether cancellation is feasible</strong>. The execution function <code class="ph-fn-inline">[handle_execution_function]</code> is where the action is truly canceled, while <code class="ph-fn-inline">[action_cancel_callback_function]</code> only forwards the cancellation request to the execution function.</p>
+  <p>This will be called if ever an action client sends a cancel request. This function is meant to be used to <strong>evaluate whether cancellation is feasible</strong>. The execution function <code class="param-name ph-fn-inline">[handle_execution_function]</code> is where the action is truly canceled, while <code class="param-name ph-fn-inline">[action_cancel_callback_function]</code> only forwards the cancellation request to the execution function.</p>
 
   <h4 class="subsection-heading">6.1.3.1 Python</h4>
   <CodeBlock code={pyCancelReqCode} lang="python" customHtml={pyCancelReqCustom} />
@@ -597,11 +577,11 @@ void <span class="ph-fn">[client_callback_function]</span>(rclcpp_action::Client
   <CodeBlock code={cppCancelReqCode} lang="cpp" customHtml={cppCancelReqCustom} />
 
   <h3 class="subsection-heading">6.1.4 Executing Actions, Providing Feedback &amp; Returning Results</h3>
-  <p><code class="ph-fn-inline">[action_accepted_callback_function]</code> is called once the action request is accepted. This function is used to start the execution of the action.</p>
-  <p><code class="ph-fn-inline">[handle_execution_function]</code>: the member variable that will run on a separate thread which actually runs the action.</p>
+  <p><code class="param-name ph-fn-inline">[action_accepted_callback_function]</code> is called once the action request is accepted. This function is used to start the execution of the action.</p>
+  <p><code class="param-name ph-fn-inline">[handle_execution_function]</code>: the member variable that will run on a separate thread which actually runs the action.</p>
 
   <h4 class="subsection-heading">6.1.4.1 Python</h4>
-  <p>In RCLPy, there is only one function needed for <code class="ph-fn-inline">[action_accepted_callback_function]</code> &amp; <code class="ph-fn-inline">[handle_execution_function]</code>; execution is handled automatically in an asynchronous manner.</p>
+  <p>In RCLPy, there is only one function needed for <code class="param-name ph-fn-inline">[action_accepted_callback_function]</code> &amp; <code class="param-name ph-fn-inline">[handle_execution_function]</code>; execution is handled automatically in an asynchronous manner.</p>
   <CodeBlock code={pyExecutionLoopCode} lang="python" customHtml={pyExecutionLoopCustom} />
 
   <h4 class="subsection-heading">6.1.4.2 C++</h4>
@@ -635,7 +615,7 @@ void <span class="ph-fn">[client_callback_function]</span>(rclcpp_action::Client
   <CodeBlock code={cppActionClientInitCode} lang="cpp" customHtml={cppActionClientInitCustom} showLegend={true} />
 
   <h3 class="subsection-heading">6.2.2 Checking Whether an Action Server is Available (If Server is Operational)</h3>
-  <p><code class="ph-generic-inline">[check_period]</code> is the amount of time (in seconds) at which the node checks whether the action server is available. This returns either <code class="path-inline">True</code> or <code class="path-inline">False</code>.</p>
+  <p><code class="param-name ph-generic-inline"">[check_period]</code> is the amount of time (in seconds) at which the node checks whether the action server is available. This returns either <code class="ph-var-inline">True</code> or <code class="ph-var-inline">False</code>.</p>
 
   <h4 class="subsection-heading">6.2.2.1 Python</h4>
   <CodeBlock code={pyWaitActionCode} lang="python" customHtml={pyWaitActionCustom} />
@@ -645,7 +625,7 @@ void <span class="ph-fn">[client_callback_function]</span>(rclcpp_action::Client
 
   <h3 class="subsection-heading">6.2.3 Sending an Asynchronous Request from a Client to a Server</h3>
   <p>A node sending an asynchronous request can continue performing operations until a response is received. <strong>It is advised but not necessary to wrap the following in a function (that can be called when you want to call an action).</strong> Include the following code into your node class.</p>
-  <p><code class="ph-fn-inline">[client_callback_function]</code>: a callback function which is called when a goal response message is received from a server.</p>
+  <p><code class="param-name ph-fn-inline">[client_callback_function]</code>: a callback function which is called when a goal response message is received from a server.</p>
 
   <h4 class="subsection-heading">6.2.3.1 Python</h4>
   <CodeBlock code={pySendGoalCode} lang="python" customHtml={pySendGoalCustom} />
@@ -654,7 +634,7 @@ void <span class="ph-fn">[client_callback_function]</span>(rclcpp_action::Client
   <CodeBlock code={cppSendGoalCode} lang="cpp" customHtml={cppSendGoalCustom} />
 
   <h3 class="subsection-heading">6.2.4 Receiving an Asynchronous Response</h3>
-  <p>Create the <code class="ph-fn-inline">[client_callback_function]</code> as a node class member.</p>
+  <p>Create the <code class="param-name ph-fn-inline"">[client_callback_function]</code> as a node class member.</p>
 
   <h4 class="subsection-heading">6.2.4.1 Python</h4>
   <CodeBlock code={pyResponseCode} lang="python" customHtml={pyResponseCustom} />
@@ -663,5 +643,3 @@ void <span class="ph-fn">[client_callback_function]</span>(rclcpp_action::Client
   <CodeBlock code={cppResponseCode} lang="cpp" customHtml={cppResponseCustom} />
 
 </DocLayout>
-
-```
