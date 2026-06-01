@@ -4,8 +4,6 @@ import { Image } from 'astro:assets';
 import coverImg from './Drone.jpg';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
-console.log('BASE_URL:', import.meta.env.BASE_URL);
-console.log('base:', base);
 ---
 
 <LandingLayout title="ROS 2 Documentation">
@@ -136,4 +134,22 @@ console.log('base:', base);
 
 </LandingLayout>
 
-<!-- your existing <style> block unchanged -->
+<style>
+  .landing-cover-container {
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto 2.5rem auto;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+
+  .landing-cover {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    max-height: 600px;
+    object-fit: cover;
+    display: block;
+  }
+</style>
