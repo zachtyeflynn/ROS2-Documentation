@@ -6,114 +6,115 @@ interface Props {
   activeSection?: string;
 }
 const { title = 'ROS 2 Documentation', activeSection = '' } = Astro.props;
- 
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
 const nav = [
   {
     section: '1. Preamble',
     id: 'preamble',
-    href: '/preamble',
+    href: `${base}/preamble`,
     links: []
   },
   {
     section: '2. ROS 2 Setup',
     id: 'setup',
-    href: '/setup',
+    href: `${base}/setup`,
     links: [
-      { href: '/setup#installation',    label: '2.1 Installation' },
-      { href: '/setup#setup-environment',   label: '2.2 Setup Development Environment' },
-      { href: '/setup#updating-packages', label: '2.3 Updating ROS 2 Packages' },
+      { href: `${base}/setup#installation`,       label: '2.1 Installation' },
+      { href: `${base}/setup#setup-environment`,  label: '2.2 Setup Development Environment' },
+      { href: `${base}/setup#updating-packages`,  label: '2.3 Updating ROS 2 Packages' },
     ]
   },
   {
     section: '3. Packages & Nodes',
     id: 'packages',
-    href: '/packages',
+    href: `${base}/packages`,
     links: [
-      { href: '/packages#creating-packages',    label: '3.1 Creating Packages' },
-      { href: '/packages#building-packages',   label: '3.2 Building Packages' },
-      { href: '/packages#creating-nodes', label: '3.3 Creating Nodes' },
-      { href: '/packages#running-nodes', label: '3.4 Running Nodes' },
-      { href: '/packages#introspecting-nodes', label: '3.5 Introspecting Nodes' },
+      { href: `${base}/packages#creating-packages`,    label: '3.1 Creating Packages' },
+      { href: `${base}/packages#building-packages`,    label: '3.2 Building Packages' },
+      { href: `${base}/packages#creating-nodes`,       label: '3.3 Creating Nodes' },
+      { href: `${base}/packages#running-nodes`,        label: '3.4 Running Nodes' },
+      { href: `${base}/packages#introspecting-nodes`,  label: '3.5 Introspecting Nodes' },
     ]
   },
   {
     section: '4. Topics, Publishers & Subscribers',
     id: 'topics',
-    href: '/topics',
+    href: `${base}/topics`,
     links: [
-      { href: '/topics#publishers',    label: '4.1 Publishers' },
-      { href: '/topics#subscribers',   label: '4.2 Subscribers' },
-      { href: '/topics#introspection', label: '4.3 Introspecting Topics' },
+      { href: `${base}/topics#publishers`,    label: '4.1 Publishers' },
+      { href: `${base}/topics#subscribers`,   label: '4.2 Subscribers' },
+      { href: `${base}/topics#introspection`, label: '4.3 Introspecting Topics' },
     ]
   },
   {
     section: '5. Services, Servers & Clients',
     id: 'services',
-    href: '/services',
+    href: `${base}/services`,
     links: [
-      { href: '/services#servers',    label: '5.1 Servers' },
-      { href: '/services#clients',   label: '5.2 Clients' },
-      { href: '/services#introspection', label: '5.3 Introspecting Services' },
+      { href: `${base}/services#servers`,       label: '5.1 Servers' },
+      { href: `${base}/services#clients`,       label: '5.2 Clients' },
+      { href: `${base}/services#introspection`, label: '5.3 Introspecting Services' },
     ]
   },
   {
     section: '6. Actions',
     id: 'actions',
-    href: '/actions',
+    href: `${base}/actions`,
     links: [
-      { href: '/actions#action-servers',    label: '6.1 Action Servers' },
-      { href: '/actions#action-clients',   label: '6.2 Actions Clients' },
+      { href: `${base}/actions#action-servers`, label: '6.1 Action Servers' },
+      { href: `${base}/actions#action-clients`, label: '6.2 Action Clients' },
     ]
   },
   {
-  section: '7. Interfaces',
-  id: 'interfaces',
-  href: '/interfaces',
-  links: [
-    { href: '/interfaces#data-types',          label: '7.1 Common Interface & Action Data Types' },
-    { href: '/interfaces#interface-structure', label: '7.2 Structure of Interfaces & Actions' },
-    { href: '/interfaces#using-interfaces',    label: '7.3 Using Interfaces & Actions' },
-    { href: '/interfaces#storing-interfaces',  label: '7.4 Creating Packages for Custom Interfaces & Actions' },
-    { href: '/interfaces#custom-messages',     label: '7.5 Custom Message Interfaces' },
-    { href: '/interfaces#custom-services',     label: '7.6 Custom Service Interfaces' },
-    { href: '/interfaces#custom-actions',      label: '7.7 Custom Action Types' },
-    { href: '/interfaces#vscode-config',       label: '7.8 Configuring VS Code for Custom Interfaces' },
-    { href: '/interfaces#introspecting',       label: '7.9 Introspecting Interfaces' },
-  ]
-},
+    section: '7. Interfaces',
+    id: 'interfaces',
+    href: `${base}/interfaces`,
+    links: [
+      { href: `${base}/interfaces#data-types`,          label: '7.1 Common Interface & Action Data Types' },
+      { href: `${base}/interfaces#interface-structure`, label: '7.2 Structure of Interfaces & Actions' },
+      { href: `${base}/interfaces#using-interfaces`,    label: '7.3 Using Interfaces & Actions' },
+      { href: `${base}/interfaces#storing-interfaces`,  label: '7.4 Creating Packages for Custom Interfaces & Actions' },
+      { href: `${base}/interfaces#custom-messages`,     label: '7.5 Custom Message Interfaces' },
+      { href: `${base}/interfaces#custom-services`,     label: '7.6 Custom Service Interfaces' },
+      { href: `${base}/interfaces#custom-actions`,      label: '7.7 Custom Action Types' },
+      { href: `${base}/interfaces#vscode-config`,       label: '7.8 Configuring VS Code for Custom Interfaces' },
+      { href: `${base}/interfaces#introspecting`,       label: '7.9 Introspecting Interfaces' },
+    ]
+  },
   {
     section: '8. Parameters',
     id: 'parameters',
-    href: '/parameters',
+    href: `${base}/parameters`,
     links: [
-      { href: '/parameters#allowed-parameter-types',    label: '8.1 Common Parameter Data Types' },
-      { href: '/parameters#defining-loading-parameters',   label: '8.2 Defining & Using Parameters' },
-      { href: '/parameters#introspecting-parameters', label: '8.3 Introspecting Parameters' },
+      { href: `${base}/parameters#allowed-parameter-types`,      label: '8.1 Common Parameter Data Types' },
+      { href: `${base}/parameters#defining-loading-parameters`,  label: '8.2 Defining & Using Parameters' },
+      { href: `${base}/parameters#introspecting-parameters`,     label: '8.3 Introspecting Parameters' },
     ]
   },
   {
     section: '9. Launch Files',
     id: 'launch',
-    href: '/launch',
+    href: `${base}/launch`,
     links: [
-      { href: '/launch#creating-launch-files',    label: '9.1 Creating Launch Files' },
-      { href: '/launch#python-launch-files',   label: '9.2 Python Launch Files' },
-      { href: '/launch#yaml-launch-files', label: '9.3 YAML Launch Files' },
-      { href: '/launch#xml-launch-files', label: '9.4 XML Launch Files' },
-      { href: '/launch#configuring-running-launch-files', label: '9.5 Configuring Launch Executables' },
-      { href: '/launch#running-launch-scripts', label: '9.6 Running Launch Scripts' },
+      { href: `${base}/launch#creating-launch-files`,          label: '9.1 Creating Launch Files' },
+      { href: `${base}/launch#python-launch-files`,            label: '9.2 Python Launch Files' },
+      { href: `${base}/launch#yaml-launch-files`,              label: '9.3 YAML Launch Files' },
+      { href: `${base}/launch#xml-launch-files`,               label: '9.4 XML Launch Files' },
+      { href: `${base}/launch#configuring-running-launch-files`, label: '9.5 Configuring Launch Executables' },
+      { href: `${base}/launch#running-launch-scripts`,         label: '9.6 Running Launch Scripts' },
     ]
   }
 ];
 ---
- 
+
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{title}</title>
-  <!-- global.css is imported in the frontmatter so Vite can watch and cache-bust it -->
   <script is:inline>
     const saved = localStorage.getItem('theme');
     if (saved) document.documentElement.dataset.theme = saved;
@@ -124,7 +125,7 @@ const nav = [
 <body>
   <nav class="sidebar" aria-label="Documentation Navigation">
     <div class="sidebar-logo">
-      <a href="/" class="sidebar-home-link" aria-label="Back To Home">
+      <a href={base || '/'} class="sidebar-home-link" aria-label="Back To Home">
         <span class="sidebar-home-arrow">←</span>
         <div>
           <h1>ROS 2 Documentation</h1>
@@ -132,7 +133,7 @@ const nav = [
         </div>
       </a>
     </div>
- 
+
     {nav.map(group => (
       <div class="sidebar-section">
         <a href={group.href} class={`sidebar-section-title-link ${activeSection === group.id ? 'active' : ''}`}>
@@ -143,7 +144,7 @@ const nav = [
         ))}
       </div>
     ))}
- 
+
     <div class="sidebar-footer">
       <button id="theme-toggle" aria-label="Toggle light/dark mode">
         <span class="icon-light">☀ Light</span>
@@ -151,13 +152,13 @@ const nav = [
       </button>
     </div>
   </nav>
- 
+
   <main>
     <div class="content-body">
       <slot />
     </div>
   </main>
- 
+
   <script>
     const toggle = document.getElementById('theme-toggle');
     toggle?.addEventListener('click', () => {
