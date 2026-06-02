@@ -198,7 +198,16 @@ h2.section-heading {
 
 h3.subsection-heading {
   font-family: var(--font-ui);
-  font-size: 16px;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 1.75rem 0 0.5rem;
+  letter-spacing: 0.05em;
+}
+
+h4.subsection-heading {
+  font-family: var(--font-ui);
+  font-size: 15px;
   font-weight: 600;
   color: var(--text-primary);
   margin: 1.75rem 0 0.5rem;

@@ -1,0 +1,847 @@
+---
+import DocLayout from '../layouts/Doclayout.astro';
+import CodeBlock from '../components/CodeBlock.astro';
+
+// Key:
+//   ph-generic  → bashGeneric   RGB(208,26,20)    red
+//   ph-var      → variables     RGB(0,75,0)       dark green
+//   ph-type     → types         Blue
+//   ph-class    → classes       Orange
+//   ph-fn       → functions     Orchid
+//   ph-exec     → executables   RGB(255,102,178)  pink
+//   ph-file     → fileNames     NavyBlue
+//   ph-dir      → directories   Green
+
+const cmakeEigenInclude = `find_package(eigen3_cmake_module REQUIRED)
+find_package(Eigen3 REQUIRED)
+`;
+
+const cmakeEigenExecutable = `add_executable([executable_node_name] src/[node_file_name].cpp)
+# Configure dependencies
+ament_target_dependencies([executable_node_name] rclcpp Eigen3 [...])
+
+target_include_directories([executable_node_name] PUBLIC \${EIGEN3_INCLUDE_DIRS})
+target_link_libraries([executable_node_name] Eigen3::Eigen)
+`;
+
+const cmakeEigenExecutableCustom = `add_executable(<span class="ph-exec">[executable_node_name]</span> src/<span class="ph-file">[node_file_name]</span>.cpp)
+# Configure dependencies
+ament_target_dependencies(<span class="ph-exec">[executable_node_name]</span> rclcpp Eigen3 <span class="ph-generic">[...]</span>)
+
+target_include_directories(<span class="ph-exec">[executable_node_name]</span> PUBLIC \${EIGEN3_INCLUDE_DIRS})
+target_link_libraries(<span class="ph-exec">[executable_node_name]</span> Eigen3::Eigen)
+`;
+
+const cmakeEigenExecutableMultiple = `# Define executables & dependencies as before: add_executable(...), ament_target_dependencies(...)
+
+foreach(executable
+  [executable_node_1]
+  [executable_node_2]
+  [...]
+)
+  target_include_directories(\${executable} PUBLIC \${EIGEN3_INCLUDE_DIRS})
+  target_link_libraries(\${executable} Eigen3::Eigen)
+endforeach()
+`;
+
+const cmakeEigenExecutableMultipleCustom = `# Define executables & dependencies as before: add_executable(...), ament_target_dependencies(...)
+
+foreach(executable
+  <span class="ph-exec">[executable_node_1]</span>
+  <span class="ph-exec">[executable_node_2]</span>
+  <span class="ph-exec">[...]</span>
+)
+  target_include_directories(\${executable} PUBLIC \${EIGEN3_INCLUDE_DIRS})
+  target_link_libraries(\${executable} Eigen3::Eigen)
+endforeach()
+`;
+
+const cppEigen3RowMajor = `Eigen::Matrix<double, a, b, Eigen::RowMajor> matrix;
+`
+
+const cppEigenMapFromArrayVector = `// **** Declaring and assigning a new variable **** //
+// Fixed size Eigen::Vector (e.g. Vector3d) - C array must have at least 3 entries
+Eigen::Map<Eigen::Vector3d> [eigen_variable_vector3d]([c_array_vector]);
+// Dynamic Eigen::Vector
+Eigen::Map<Eigen::VectorXd> [eigen_variable_vectorXd]([c_array_vector], sizeof([c_array_vector]));
+
+// **** Assigning an existing variable **** //
+// Previously declared, fixed size Eigen::Vector (e.g. Vector3d)
+[eigen_variable_vector3d] = Eigen::Map<Eigen::Vector3d>([c_array_vector]);
+`;
+
+const cppEigenMapFromArrayVectorCustom = `// **** Declaring and assigning a new variable **** //
+// Fixed size Eigen::Vector (e.g. Vector3d) - C array must have at least 3 entries
+Eigen::Map&lt;Eigen::Vector3d&gt; <span class="ph-var">[eigen_variable_vector3d]</span>(<span class="ph-var">[c_array_vector]</span>);
+// Dynamic Eigen::Vector
+Eigen::Map&lt;Eigen::VectorXd&gt; <span class="ph-var">[eigen_variable_vectorXd]</span>(<span class="ph-var">[c_array_vector]</span>, sizeof(<span class="ph-var">[c_array_vector]</span>));
+
+// **** Assigning an existing variable **** //
+// Previously declared, fixed size Eigen::Vector (e.g. Vector3d)
+<span class="ph-var">[eigen_variable_vector3d]</span> = Eigen::Map&lt;Eigen::Vector3d&gt;(<span class="ph-var">[c_array_vector]</span>);
+`;
+
+const cppEigenMapFromArrayMatrix = `// **** Declaring and assigning a new variable **** //
+// Fixed size Eigen::Matrix (e.g. Matrix3d) - C array must have at least 9 entries
+Eigen::Map<Eigen::Matrix3d> [eigen_variable_matrix3d]([c_array_matrix]);
+// Dynamic Eigen::Matrix - [num_cols] * [num_rows] = sizeof(c_array)
+Eigen::Map<Eigen::MatrixXd> [eigen_variable_matrixXd]([c_array_matrix], [num_rows], [num_columns]);
+
+// **** Assigning an existing variable **** //
+// Previously declared, fixed size Eigen::Matrix (e.g. Matrix3d)
+[eigen_variable_matrix3d] = Eigen::Map<Eigen::Matrix3d>([c_array_matrix]);
+`;
+
+const cppEigenMapFromArrayMatrixCustom = `// **** Declaring and assigning a new variable **** //
+// Fixed size Eigen::Matrix (e.g. Matrix3d) - C array must have at least 9 entries
+Eigen::Map&lt;Eigen::Matrix3d&gt; <span class="ph-var">[eigen_variable_matrix3d]</span>(<span class="ph-var">[c_array_matrix]</span>);
+// Dynamic Eigen::Matrix - [num_cols] * [num_rows] = sizeof(c_array)
+Eigen::Map&lt;Eigen::MatrixXd&gt; <span class="ph-var">[eigen_variable_matrixXd]</span>(<span class="ph-var">[c_array_matrix]</span>, <span class="ph-generic">[num_rows]</span>, <span class="ph-generic">[num_columns]</span>);
+
+// **** Assigning an existing variable **** //
+// Previously declared, fixed size Eigen::Matrix (e.g. Matrix3d)
+<span class="ph-var">[eigen_variable_matrix3d]</span> = Eigen::Map&lt;Eigen::Matrix3d&gt;(<span class="ph-var">[c_array_matrix]</span>);
+`;
+
+const cppEigenMapFromStdVectorVector = `// **** Declaring and assigning a new variable **** //
+// Dynamic Eigen::Vector
+Eigen::Map<Eigen::VectorXd> [eigen_variable_vectorXd]([std_vector_variable].data(), [std_vector_variable].size());
+
+// **** Assigning an existing variable **** //
+// Previously declared, dynamic Eigen::Vector
+[eigen_variable_vectorXd] = Eigen::Map<Eigen::VectorXd>([std_vector_variable].data(), [std_vector_variable].size());
+`;
+
+const cppEigenMapFromStdVectorVectorCustom = `// **** Declaring and assigning a new variable **** //
+// Dynamic Eigen::Vector
+Eigen::Map&lt;Eigen::VectorXd&gt; <span class="ph-var">[eigen_variable_vectorXd]</span>(<span class="ph-var">[std_vector_variable]</span>.data(), <span class="ph-var">[std_vector_variable]</span>.size());
+
+// **** Assigning an existing variable **** //
+// Previously declared, dynamic Eigen::Vector
+<span class="ph-var">[eigen_variable_vectorXd]</span> = Eigen::Map&lt;Eigen::VectorXd&gt;(<span class="ph-var">[std_vector_variable]</span>.data(), <span class="ph-var">[std_vector_variable]</span>.size());
+`;
+
+const cppEigenMapToStdVectorVector = `// **** Declaring and assigning a new variable **** //
+// Eigen::Vector → std::vector
+std::vector<double> [std_vector_variable]([eigen_variable].data(), [eigen_variable].data() + [eigen_variable].size());
+`;
+
+const cppEigenMapToStdVectorVectorCustom = `// **** Declaring and assigning a new variable **** //
+// Eigen::Vector → std::vector
+std::vector&lt;double&gt; <span class="ph-var">[std_vector_variable]</span>(<span class="ph-var">[eigen_variable]</span>.data(), <span class="ph-var">[eigen_variable]</span>.data() + <span class="ph-var">[eigen_variable]</span>.size());
+`;
+
+const cppEigenMapMatrixToVector = `// **** Matrix → Vector **** //
+// Maps a matrix's internal data buffer to a dynamic column vector (Column-major by default)
+Eigen::Map<Eigen::VectorXd> [eigen_variable_vectorXd]([eigen_variable_matrix].data(), [eigen_variable_matrix].size());
+`;
+
+const cppEigenMapMatrixToVectorCustom = `// **** Matrix → Vector **** //
+// Maps a matrix's internal data buffer to a dynamic column vector (Column-major by default)
+Eigen::Map&lt;Eigen::VectorXd&gt; <span class="ph-var">[eigen_variable_vectorXd]</span>(<span class="ph-var">[eigen_variable_matrix]</span>.data(), <span class="ph-var">[eigen_variable_matrix]</span>.size());
+`;
+
+const cppStdVectorConstructorFromEigen = `// **** Inline construction into an existing container variable **** //
+Eigen::VectorXd [eigen_variable_vector](4);
+
+// Re-initializes the vector inline by constructing it from an Eigen iterator range
+[std_vector_variable] = std::vector<double>([eigen_variable_vector].data(), [eigen_variable_vector].data() + [eigen_variable_vector].size());
+`;
+
+const cppStdVectorConstructorFromEigenCustom = `// **** Inline construction into an existing container variable **** //
+Eigen::VectorXd <span class="ph-var">[eigen_variable_vector]</span>(4);
+
+// Re-initializes the vector inline by constructing it from an Eigen iterator range
+<span class="ph-var">[std_vector_variable]</span> = std::vector&lt;double&gt;(<span class="ph-var">[eigen_variable_vector]</span>.data(), <span class="ph-var">[eigen_variable_vector]</span>.data() + <span class="ph-var">[eigen_variable_vector]</span>.size());
+`;
+
+const cppEigenMapVectorToMatrix = `// **** Vector → Matrix **** //
+// Maps a vector's data buffer into a matrix layout — [num_cols] * [num_rows] = [eigen_variable_vector].size()
+Eigen::Map<Eigen::MatrixXd> [eigen_variable_matrixXd]([eigen_variable_vector].data(), [num_rows], [num_columns]);
+`;
+
+const cppEigenMapVectorToMatrixCustom = `// **** Vector → Matrix **** //
+// Maps a vector's data buffer into a matrix layout — [num_cols] * [num_rows] = [eigen_variable_vector].size()
+Eigen::Map&lt;Eigen::MatrixXd&gt; <span class="ph-var">[eigen_variable_matrixXd]</span>(<span class="ph-var">[eigen_variable_vector]</span>.data(), <span class="ph-generic">[num_rows]</span>, <span class="ph-generic">[num_columns]</span>);
+`;
+
+const cppStdCopyToVector = `// **** Pre-allocated fixed size or dynamic vector **** //
+Eigen::VectorXd [eigen_variable_vector](4);
+std::vector<double> [std_vector_variable]([eigen_variable_vector].size());
+
+// Eigen::Vector → std::vector
+std::copy([eigen_variable_vector].data(), [eigen_variable_vector].data() + [eigen_variable_vector].size(), [std_vector_variable].begin());
+`;
+
+const cppStdCopyToVectorCustom = `// **** Pre-allocated fixed size or dynamic vector **** //
+Eigen::VectorXd <span class="ph-var">[eigen_variable_vector]</span>(4);
+std::vector&lt;double&gt; <span class="ph-var">[std_vector_variable]</span>(<span class="ph-var">[eigen_variable_vector]</span>.size());
+
+// Eigen::Vector → std::vector
+std::copy(<span class="ph-var">[eigen_variable_vector]</span>.data(), <span class="ph-var">[eigen_variable_vector]</span>.data() + <span class="ph-var">[eigen_variable_vector]</span>.size(), <span class="ph-var">[std_vector_variable]</span>.begin());
+`;
+
+const cppStdCopyFromVector = `// **** Pre-allocated target Eigen::Vector **** //
+std::vector<double> [std_vector_variable] = {1, 2, 3, 4};
+Eigen::VectorXd [eigen_variable_vector]([std_vector_variable].size());
+
+// std::vector → Eigen::Vector
+std::copy([std_vector_variable].begin(), [std_vector_variable].end(), [eigen_variable_vector].data());
+`;
+
+const cppStdCopyFromVectorCustom = `// **** Pre-allocated target Eigen::Vector **** //
+std::vector&lt;double&gt; <span class="ph-var">[std_vector_variable]</span> = {1, 2, 3, 4};
+Eigen::VectorXd <span class="ph-var">[eigen_variable_vector]</span>(<span class="ph-var">[std_vector_variable]</span>.size());
+
+// std::vector → Eigen::Vector
+std::copy(<span class="ph-var">[std_vector_variable]</span>.begin(), <span class="ph-var">[std_vector_variable]</span>.end(), <span class="ph-var">[eigen_variable_vector]</span>.data());
+`;
+
+const cmakePinocchioInclude = `find_package(pinocchio REQUIRED)
+`
+
+const cmakePinocchioExecutable = `add_executable([executable_node_name] src/[node_file_name].cpp)
+# Configure dependencies
+ament_target_dependencies([executable_node_name] rclcpp Pinocchio [...])
+`;
+
+const cmakePinocchioExecutableCustom = `add_executable(<span class="ph-exec">[executable_node_name]</span> src/<span class="ph-file">[node_file_name]</span>.cpp)
+# Configure dependencies
+ament_target_dependencies(<span class="ph-exec">[executable_node_name]</span> rclcpp Pinocchio <span class="ph-generic">[...]</span>)
+`;
+
+const cppPinocchioFK = `#include <pinocchio/parsers/urdf.hpp>
+#include <pinocchio/algorithm/kinematics.hpp>
+
+// Load model and create data cache
+pinocchio::Model [pinocchio_model];
+pinocchio::urdf::buildModel([urdf_filename], [pinocchio_model]);
+pinocchio::Data [pinocchio_data]([pinocchio_model]);
+
+// Compute forward kinematics at joint configuration q
+Eigen::VectorXd [joint_configuration_q] = Eigen::VectorXd::Zero([pinocchio_model].nq);
+pinocchio::forwardKinematics([pinocchio_model], [pinocchio_data], [joint_configuration_q]);
+
+// Access placement (SE3) of a specific joint index
+const pinocchio::SE3& [joint_placement] = [pinocchio_data].oMi[[joint_id]];
+`;
+
+const cppPinocchioFKCustom = `#include &lt;pinocchio/parsers/urdf.hpp&gt;
+#include &lt;pinocchio/algorithm/kinematics.hpp&gt;
+
+// Load model and create data cache
+pinocchio::Model <span class="ph-var">[pinocchio_model]</span>;
+pinocchio::urdf::buildModel(<span class="ph-var">[urdf_filename]</span>, <span class="ph-var">[pinocchio_model]</span>);
+pinocchio::Data <span class="ph-var">[pinocchio_data]</span>(<span class="ph-var">[pinocchio_model]</span>);
+
+// Compute forward kinematics at joint configuration q
+Eigen::VectorXd <span class="ph-var">[joint_configuration_q]</span> = Eigen::VectorXd::Zero(<span class="ph-var">[pinocchio_model]</span>.nq);
+pinocchio::forwardKinematics(<span class="ph-var">[pinocchio_model]</span>, <span class="ph-var">[pinocchio_data]</span>, <span class="ph-var">[joint_configuration_q]</span>);
+
+// Access placement (SE3) of a specific joint index
+const pinocchio::SE3&amp; <span class="ph-var">[joint_placement]</span> = <span class="ph-var">[pinocchio_data]</span>.oMi[<span class="ph-generic">[joint_id]</span>];
+`;
+
+const cppPinocchioDiffFK = `#include <pinocchio/algorithm/frames.hpp>
+#include <pinocchio/algorithm/jacobian.hpp>
+
+// Compute all joint Jacobians in world/local frames
+pinocchio::computeJointJacobians([pinocchio_model], [pinocchio_data], [joint_configuration_q]);
+
+// Extract spatial/analytical Jacobian matrix (6 x model.nv) for a joint
+Eigen::MatrixXd [jacobian_matrix](6, [pinocchio_model].nv);
+[jacobian_matrix].setZero();
+pinocchio::getJointJacobian([pinocchio_model], [pinocchio_data], [joint_id], pinocchio::ReferenceFrame::LOCAL, [jacobian_matrix]);
+`;
+
+const cppPinocchioDiffFKCustom = `#include &lt;pinocchio/algorithm/frames.hpp&gt;
+#include &lt;pinocchio/algorithm/jacobian.hpp&gt;
+
+// Compute all joint Jacobians in world/local frames
+pinocchio::computeJointJacobians(<span class="ph-var">[pinocchio_model]</span>, <span class="ph-var">[pinocchio_data]</span>, <span class="ph-var">[joint_configuration_q]</span>);
+
+// Extract spatial/analytical Jacobian matrix (6 x model.nv) for a joint
+Eigen::MatrixXd <span class="ph-var">[jacobian_matrix]</span>(6, <span class="ph-var">[pinocchio_model]</span>.nv);
+<span class="ph-var">[jacobian_matrix]</span>.setZero();
+pinocchio::getJointJacobian(<span class="ph-var">[pinocchio_model]</span>, <span class="ph-var">[pinocchio_data]</span>, <span class="ph-generic">[joint_id]</span>, pinocchio::ReferenceFrame::LOCAL, <span class="ph-var">[jacobian_matrix]</span>);
+`;
+
+const cppPinocchioIK = `#include <pinocchio/algorithm/joint-configuration.hpp>
+
+// Numerical optimization settings
+double [eps] = 1e-4;
+int [max_iters] = 1000;
+double [damp] = 1e-6;
+
+Eigen::VectorXd [q_init] = pinocchio::neutral([pinocchio_model]);
+Eigen::VectorXd [q_result] = [q_init];
+
+// Iterative IK routine utilizing Pseudo-Inverse Jacobian steps
+for (int i = 0; i < [max_iters]; ++i) {
+  pinocchio::forwardKinematics([pinocchio_model], [pinocchio_data], [q_result]);
+  const pinocchio::SE3 [dMi] = [target_placement].actInv([pinocchio_data].oMi[[joint_id]]);
+  const pinocchio::Motion [err] = pinocchio::log6([dMi]);
+  
+  if ([err].toVector().norm() < [eps]) break;
+
+  Eigen::MatrixXd [J](6, [pinocchio_model].nv); [J].setZero();
+  pinocchio::computeJointJacobian([pinocchio_model], [pinocchio_data], [q_result], [joint_id], [J]);
+  
+  Eigen::MatrixXd [JJt] = [J] * [J].transpose();
+  [JJt].diagonal().array() += [damp];
+  Eigen::VectorXd [v] = [J].transpose() * [JJt].ldlt().solve([err].toVector());
+  [q_result] = pinocchio::integrate([pinocchio_model], [q_result], [v]);
+}
+`;
+
+const cppPinocchioIKCustom = `#include &lt;pinocchio/algorithm/joint-configuration.hpp&gt;
+
+// Numerical optimization settings
+double <span class="ph-generic">[eps]</span> = 1e-4;
+int <span class="ph-generic">[max_iters]</span> = 1000;
+double <span class="ph-generic">[damp]</span> = 1e-6;
+
+Eigen::VectorXd <span class="ph-var">[q_init]</span> = pinocchio::neutral(<span class="ph-var">[pinocchio_model]</span>);
+Eigen::VectorXd <span class="ph-var">[q_result]</span> = <span class="ph-var">[q_init]</span>;
+
+// Iterative IK routine utilizing Pseudo-Inverse Jacobian steps
+for (int i = 0; i &lt; <span class="ph-generic">[max_iters]</span>; ++i) {
+  pinocchio::forwardKinematics(<span class="ph-var">[pinocchio_model]</span>, <span class="ph-var">[pinocchio_data]</span>, <span class="ph-var">[q_result]</span>);
+  const pinocchio::SE3 <span class="ph-var">[dMi]</span> = <span class="ph-var">[target_placement]</span>.actInv(<span class="ph-var">[pinocchio_data]</span>.oMi[<span class="ph-generic">[joint_id]</span>]);
+  const pinocchio::Motion <span class="ph-var">[err]</span> = pinocchio::log6(<span class="ph-var">[dMi]</span>);
+  
+  if (<span class="ph-var">[err]</span>.toVector().norm() &lt; <span class="ph-generic">[eps]</span>) break;
+
+  Eigen::MatrixXd <span class="ph-var">[J]</span>(6, <span class="ph-var">[pinocchio_model]</span>.nv); <span class="ph-var">[J]</span>.setZero();
+  pinocchio::computeJointJacobian(<span class="ph-var">[pinocchio_model]</span>, <span class="ph-var">[pinocchio_data]</span>, <span class="ph-var">[q_result]</span>, <span class="ph-generic">[joint_id]</span>, <span class="ph-var">[J]</span>);
+  
+  Eigen::MatrixXd <span class="ph-var">[JJt]</span> = <span class="ph-var">[J]</span> * <span class="ph-var">[J]</span>.transpose();
+  <span class="ph-var">[JJt]</span>.diagonal().array() += <span class="ph-generic">[damp]</span>;
+  Eigen::VectorXd <span class="ph-var">[v]</span> = <span class="ph-var">[J]</span>.transpose() * <span class="ph-var">[JJt]</span>.ldlt().solve(<span class="ph-var">[err]</span>.toVector());
+  <span class="ph-var">[q_result]</span> = pinocchio::integrate(<span class="ph-var">[pinocchio_model]</span>, <span class="ph-var">[q_result]</span>, <span class="ph-var">[v]</span>);
+}
+`;
+
+const cppPinocchioDynamics = `#include <pinocchio/algorithm/crba.hpp>
+#include <pinocchio/algorithm/rnea.hpp>
+
+// 1. Joint Space Inertia Matrix M(q) via Composite Rigid Body Algorithm
+Eigen::MatrixXd [M_matrix]([pinocchio_model].nv, [pinocchio_model].nv);
+[M_matrix].setZero();
+pinocchio::crba([pinocchio_model], [pinocchio_data], [joint_configuration_q]);
+// Fill the symmetric upper/lower triangulation structures safely
+[M_matrix].triangularView<Eigen::Lower>() = [pinocchio_data].M.triangularView<Eigen::Lower>();
+
+// 2. Non-linear effects vector h(q, v) = C(q,v)v + g(q) via Recursive Newton-Euler Algorithm
+Eigen::VectorXd [joint_velocity_v] = Eigen::VectorXd::Zero([pinocchio_model].nv);
+Eigen::VectorXd [joint_acceleration_a] = Eigen::VectorXd::Zero([pinocchio_model].nv);
+Eigen::VectorXd [h_vector] = pinocchio::rnea([pinocchio_model], [pinocchio_data], [joint_configuration_q], [joint_velocity_v], [joint_acceleration_a]);
+`;
+
+const cppPinocchioDynamicsCustom = `#include &lt;pinocchio/algorithm/crba.hpp&gt;
+#include &lt;pinocchio/algorithm/rnea.hpp&gt;
+
+// 1. Joint Space Inertia Matrix M(q) via Composite Rigid Body Algorithm
+Eigen::MatrixXd <span class="ph-var">[M_matrix]</span>(<span class="ph-var">[pinocchio_model]</span>.nv, <span class="ph-var">[pinocchio_model]</span>.nv);
+<span class="ph-var">[M_matrix]</span>.setZero();
+pinocchio::crba(<span class="ph-var">[pinocchio_model]</span>, <span class="ph-var">[pinocchio_data]</span>, <span class="ph-var">[joint_configuration_q]</span>);
+// Fill the symmetric upper/lower triangulation structures safely
+<span class="ph-var">[M_matrix]</span>.triangularView&lt;Eigen::Lower|Eigen::Upper&gt;() = <span class="ph-var">[pinocchio_data]</span>.M.triangularView&lt;Eigen::Lower|Eigen::Upper&gt;();
+
+// 2. Non-linear effects vector h(q, v) = C(q,v)v + g(q) via Recursive Newton-Euler Algorithm
+Eigen::VectorXd <span class="ph-var">[joint_velocity_v]</span> = Eigen::VectorXd::Zero(<span class="ph-var">[pinocchio_model]</span>.nv);
+Eigen::VectorXd <span class="ph-var">[joint_acceleration_a]</span> = Eigen::VectorXd::Zero(<span class="ph-var">[pinocchio_model]</span>.nv);
+Eigen::VectorXd <span class="ph-var">[h_vector]</span> = pinocchio::rnea(<span class="ph-var">[pinocchio_model]</span>, <span class="ph-var">[pinocchio_data]</span>, <span class="ph-var">[joint_configuration_q]</span>, <span class="ph-var">[joint_velocity_v]</span>, <span class="ph-var">[joint_acceleration_a]);</span>
+`;
+
+const cppPinocchioComputeAll = `#include <pinocchio/algorithm/compute-all-terms.hpp>
+
+// Create acceleration vector set to zero for static/quasi-static checks
+Eigen::VectorXd [joint_velocity_v] = Eigen::VectorXd::Zero([pinocchio_model].nv);
+Eigen::VectorXd [joint_acceleration_a] = Eigen::VectorXd::Zero([pinocchio_model].nv);
+
+// Computes FK, Jacobians, M(q), and h(q,v) simultaneously in a single pass
+pinocchio::computeAllTerms([pinocchio_model], [pinocchio_data], [joint_configuration_q], [joint_velocity_v]);
+
+// Results are immediately accessible inside data cache structures:
+// M(q) -> pinocchio_data.M
+// h(q,v) -> pinocchio_data.nle
+// Jacobians -> pinocchio_data.J
+// Placements -> pinocchio_data.oMi
+`;
+
+const cppPinocchioComputeAllCustom = `#include &lt;pinocchio/algorithm/compute-all-terms.hpp&gt;
+
+// Create acceleration vector set to zero for static/quasi-static checks
+Eigen::VectorXd <span class="ph-var">[joint_velocity_v]</span> = Eigen::VectorXd::Zero(<span class="ph-var">[pinocchio_model]</span>.nv);
+Eigen::VectorXd <span class="ph-var">[joint_acceleration_a]</span> = Eigen::VectorXd::Zero(<span class="ph-var">[pinocchio_model]</span>.nv);
+
+// Computes FK, Jacobians, M(q), and h(q,v) simultaneously in a single pass
+pinocchio::computeAllTerms(<span class="ph-var">[pinocchio_model]</span>, <span class="ph-var">[pinocchio_data]</span>, <span class="ph-var">[joint_configuration_q]</span>, <span class="ph-var">[joint_velocity_v]</span>);
+
+// Results are immediately accessible inside data cache structures:
+// M(q) -&gt; <span class="ph-var">[pinocchio_data]</span>.M
+// h(q,v) -&gt; <span class="ph-var">[pinocchio_data]</span>.nle
+// Jacobians -&gt; <span class="ph-var">[pinocchio_data]</span>.J
+// Placements -&gt; <span class="ph-var">[pinocchio_data]</span>.oMi
+`;
+---
+
+<DocLayout title="Important C++ Functionalities &amp; Libraries" activeSection="functionalities">
+
+  <h1 class="doc-title">Important C++ Functionalities &amp; Libraries</h1>
+  <p class="doc-subtitle">Chapter 11</p>
+  
+  <h2 class="section-heading" id="eigen3">11.1 Eigen3</h2>
+
+  <h3 class="subsection-heading">11.1.1 Including Eigen3 in C++ Packages</h3>
+  <p>Include the following in the <strong><code class="path-inline">CMakeLists.txt</code></strong> of your C++ package.</p>
+
+  <CodeBlock code={cmakeEigenInclude} lang="cmake"/>
+
+  <p>For each executable node <code class="param-name ph-exec-inline">[executable_node_name]</code> in your package which uses Eigen3, include the following:</p>
+
+  <CodeBlock code={cmakeEigenExecutable} lang="cmake" customHtml={cmakeEigenExecutableCustom} showLegend={true} />
+
+  <div class="text-center" style="text-align: center; margin: 0.5rem 0;"><strong>or</strong></div>
+
+  <p>If you have several nodes which uses Eigen3, you can use the following block for concision:
+
+  <CodeBlock code={cmakeEigenExecutableMultiple} lang="cmake" customHtml={cmakeEigenExecutableMultipleCustom} showLegend={true} />
+
+  <p><strong>Don't forget to modify your dependencies within the <strong><code class="path-inline">pacakge.xml</code></strong> of your package.</strong></p>
+
+  <h3 class="subsection-heading">11.1.2 Useful Data Types</h3>
+
+  <div class="table-container">
+  <table class="doc-table">
+    <thead>
+      <tr>
+        <th>Data Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Eigen::Vector2f<br>Eigen::Vector3f<br>Eigen::Vector4f</td>
+        <td>Fixed-size column vectors (float)</td>
+      </tr>
+      <tr>
+        <td>Eigen::Vector2d<br>Eigen::Vector3d<br>Eigen::Vector4d</td>
+        <td>Fixed-size column vectors (double)</td>
+      </tr>
+      <tr>
+        <td>Eigen::VectorXf</td>
+        <td>Dynamic-size column vector (float)</td>
+      </tr>
+      <tr>
+        <td>Eigen::VectorXd</td>
+        <td>Dynamic-size column vector (double)</td>
+      </tr>
+      <tr>
+        <td>Eigen::Matrix2f<br>Eigen::Matrix3f<br>Eigen::Matrix4f</td>
+        <td>Fixed-size matrices (2×2, 3×3, 4×4) (float)</td>
+      </tr>
+      <tr>
+        <td>Eigen::Matrix2d<br>Eigen::Matrix3d<br>Eigen::Matrix4d</td>
+        <td>Fixed-size matrices (2×2, 3×3, 4×4) (double)</td>
+      </tr>
+      <tr>
+        <td>Eigen::MatrixXf</td>
+        <td>Dynamic-size matrix (float)</td>
+      </tr>
+      <tr>
+        <td>Eigen::MatrixXd</td>
+        <td>Dynamic-size matrix (double)</td>
+      </tr>
+      <tr>
+        <td>Eigen::Matrix&lt;Scalar, Rows, Cols&gt;</td>
+        <td>Fully custom fixed-size matrix with explicit scalar type and dimensions</td>
+      </tr>
+      <tr>
+        <td>Eigen::Quaternionf</td>
+        <td>Quaternion for 3D rotations (float)</td>
+      </tr>
+      <tr>
+        <td>Eigen::Quaterniond</td>
+        <td>Quaternion for 3D rotations (double)</td>
+      </tr>
+      <tr>
+        <td>Eigen::AngleAxisf</td>
+        <td>Rotation defined by an angle and axis (float)</td>
+      </tr>
+      <tr>
+        <td>Eigen::AngleAxisd</td>
+        <td>Rotation defined by an angle and axis (double)</td>
+      </tr>
+      <tr>
+        <td>Eigen::Affine3f</td>
+        <td>3D affine transform — rotation, translation, and scaling (float)</td>
+      </tr>
+      <tr>
+        <td>Eigen::Affine3d</td>
+        <td>3D affine transform — rotation, translation, and scaling (double)</td>
+      </tr>
+      <tr>
+        <td>Eigen::Isometry3f</td>
+        <td>3D rigid transform — rotation and translation only (float)</td>
+      </tr>
+      <tr>
+        <td>Eigen::Isometry3d</td>
+        <td>3D rigid transform — rotation and translation only (double)</td>
+      </tr>
+      <tr>
+        <td>Eigen::Array&lt;Scalar, Rows, Cols&gt;</td>
+        <td>Element-wise array (coefficient-wise operations instead of linear algebra)</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+  <h3 class="subsection-heading">11.1.3 Useful Operations & Functions</h3>
+
+  <div class="table-container">
+  <table class="doc-table doc-table--categories">
+    <thead>
+      <tr>
+        <th>Category</th>
+        <th>Operation / Function</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+  <tr>
+    <th scope="row" rowspan="5">Matrix / Vector</th>
+    <td>A + B<br>A - B<br>A * B</td>
+    <td>Matrix/vector addition, subtraction, and multiplication</td>
+  </tr>
+  <tr>
+    <td>A * s<br>A / s</td>
+    <td>Scalar multiplication and division</td>
+  </tr>
+  <tr>
+    <td>A.transpose()</td>
+    <td>Matrix/vector transpose</td>
+  </tr>
+  <tr>
+    <td>A.inverse()</td>
+    <td>Matrix inverse (use only for small fixed-size matrices; prefer decompositions for large ones)</td>
+  </tr>
+  <tr>
+    <td>A.determinant()</td>
+    <td>Matrix determinant</td>
+  </tr>
+  <tr>
+    <th scope="row" rowspan="4">Vector</th>
+    <td>A.norm()<br>A.squaredNorm()</td>
+    <td>Euclidean (L2) norm and its square — prefer squaredNorm() to avoid a sqrt</td>
+  </tr>
+  <tr>
+    <td>A.normalized()<br>A.normalize()</td>
+    <td>Returns a unit-length copy (normalized) or normalizes in-place (normalize)</td>
+  </tr>
+  <tr>
+    <td>a.dot(b)</td>
+    <td>Dot product of two vectors</td>
+  </tr>
+  <tr>
+    <td>a.cross(b)</td>
+    <td>Cross product of two 3D vectors</td>
+  </tr>
+  <tr>
+    <th scope="row" rowspan="3">Coefficient-Wise</th>
+    <td>A.cwiseProduct(B)<br>A.cwiseQuotient(B)<br>A.cwiseAbs()</td>
+    <td>Coefficient-wise product, quotient, and absolute value</td>
+  </tr>
+  <tr>
+    <td>A.sum()<br>A.prod()<br>A.mean()<br>A.minCoeff()<br>A.maxCoeff()</td>
+    <td>Reductions: sum, product, mean, min, and max over all coefficients</td>
+  </tr>
+  <tr>
+    <td>Eigen::Array&lt;Scalar, Rows, Cols&gt;</td>
+    <td>Element-wise array type for coefficient-wise operations instead of linear algebra</td>
+  </tr>
+  <tr>
+    <th scope="row" rowspan="4">Submatrix / Slicing</th>
+    <td>A.block(i, j, rows, cols)<br>A.topLeftCorner(rows, cols)<br>A.bottomRightCorner(rows, cols)</td>
+    <td>Extract a submatrix block by position or corner</td>
+  </tr>
+  <tr>
+    <td>A.row(i)<br>A.col(j)</td>
+    <td>Access a single row or column as a vector expression</td>
+  </tr>
+  <tr>
+    <td>A.head(n)<br>A.tail(n)<br>A.segment(i, n)</td>
+    <td>Extract the first n, last n, or n elements starting at i from a vector</td>
+  </tr>
+  <tr>
+    <td>A.resize(rows, cols)<br>A.conservativeResize(rows, cols)</td>
+    <td>Resize a dynamic matrix; conservativeResize preserves existing coefficients</td>
+  </tr>
+  <tr>
+    <th scope="row" rowspan="2">Initialization</th>
+    <td>A.setZero()<br>A.setOnes()<br>A.setIdentity()<br>A.setRandom()</td>
+    <td>Fill a matrix with zeros, ones, identity, or random values in-place</td>
+  </tr>
+  <tr>
+    <td>Eigen::MatrixXd::Zero(r, c)<br>Eigen::MatrixXd::Identity(r, c)<br>Eigen::MatrixXd::Ones(r, c)</td>
+    <td>Static constructors for common initializations</td>
+  </tr>
+  <tr>
+    <th scope="row" rowspan="3">Decompositions &amp; Solvers</th>
+    <td>A.lu()<br>A.llt()<br>A.ldlt()<br>A.colPivHouseholderQr()</td>
+    <td>Matrix decompositions: LU, Cholesky (LLT / LDLT), and QR — preferred over inverse() for solving systems</td>
+  </tr>
+  <tr>
+    <td>A.lu().solve(b)<br>A.llt().solve(b)</td>
+    <td>Solve the linear system Ax = b using a decomposition</td>
+  </tr>
+  <tr>
+    <td>Eigen::JacobiSVD&lt;&gt;<br>Eigen::BDCSVD&lt;&gt;<br>Eigen::SelfAdjointEigenSolver&lt;&gt;</td>
+    <td>SVD (JacobiSVD for small, BDCSVD for large matrices) and eigenvalue decomposition for symmetric matrices</td>
+  </tr>
+  <tr>
+    <th scope="row" rowspan="3">Quaternion</th>
+    <td>q.toRotationMatrix()</td>
+    <td>Convert a quaternion to a 3×3 rotation matrix</td>
+  </tr>
+  <tr>
+    <td>q.slerp(t, q2)</td>
+    <td>Spherical linear interpolation between two quaternions</td>
+  </tr>
+  <tr>
+    <td>q.conjugate()<br>q.inverse()</td>
+    <td>Quaternion conjugate and inverse (conjugate is sufficient for unit quaternions)</td>
+  </tr>
+  <tr>
+    <th scope="row" rowspan="2">Transforms</th>
+    <td>T.translation()<br>T.rotation()<br>T.linear()</td>
+    <td>Extract translation, rotation, and linear part from an Affine3 or Isometry3 transform</td>
+  </tr>
+  <tr>
+    <td>T1 * T2<br>T.inverse()</td>
+    <td>Compose transforms and compute the inverse transform</td>
+  </tr>
+</tbody>
+  </table>
+</div>
+
+  <h3 class="subsection-heading">11.1.4 Eigen::Map</h3>
+
+  <p>
+  <strong><code class="path-inline">Eigen::Map</code></strong> creates an Eigen object that references an existing block of memory <strong>without copying its contents</strong>. This makes it possible to work directly with data stored in other Eigen objects, C arrays, or <strong><code class="path-inline">std::vector</code></strong>
+  </p>
+
+  <h4 class="subsection-heading">11.1.4.1 Mapping From a C Array</h4>
+
+  <div class="param-list">
+    <div class="param-item">
+      <code class="param-name ph-var-inline">[c_array]</code>
+      <span class="param-desc">The C array from which we are mapping.</span>
+    </div>
+    <div class="param-item">
+      <code class="param-name ph-var-inline">[eigen_variable]</code>
+      <span class="param-desc">The Eigen3 object we are mapping to.</span>
+    </div>
+  </div>
+
+  <p>To map between a C array and <strong><code class="path-inline">Eigen::Vector</code></strong>:</p>
+
+  <CodeBlock code={cppEigenMapFromArrayVector} lang="cpp" customHtml={cppEigenMapFromArrayVectorCustom} showLegend={true} />
+
+  <p>To map between a C array and <strong><code class="path-inline">Eigen::Matrix</code></strong>:</p>
+
+  <CodeBlock code={cppEigenMapFromArrayMatrix} lang="cpp" customHtml={cppEigenMapFromArrayMatrixCustom} showLegend={true} />
+
+  <h4 class="subsection-heading">11.1.4.2 Mapping To/From a std::vector</h4>
+
+  <div class="param-list">
+    <div class="param-item">
+      <code class="param-name ph-var-inline">[std_vector_variable]</code>
+      <span class="param-desc">The <strong><code class="path-inline">std::vector</code></strong> from which we are mapping from/to.</span>
+    </div>
+    <div class="param-item">
+      <code class="param-name ph-var-inline">[eigen_variable]</code>
+      <span class="param-desc">The Eigen3 vector object we are mapping from/to.</span>
+    </div>
+  </div>
+
+  <p>To map between a <strong><code class="path-inline">std::vector</code></strong> and <strong><code class="path-inline">Eigen::Vector</code></strong>:</p>
+
+  <CodeBlock code={cppEigenMapFromStdVectorVector} lang="cpp" customHtml={cppEigenMapFromStdVectorVectorCustom} showLegend={true} />
+
+  <p>To map from an <strong><code class="path-inline">Eigen::Vector</code></strong> to a <strong><code class="path-inline">std::vector</code></strong>:</p>
+
+  <CodeBlock code={cppEigenMapToStdVectorVector} lang="cpp" customHtml={cppEigenMapToStdVectorVectorCustom} showLegend={true} />
+
+  <h4 class="subsection-heading">11.1.4.3 Mapping Between Eigen::Matrix and Eigen::Vector</h4>
+
+  <div class="param-list">
+    <div class="param-item">
+      <code class="param-name ph-var-inline">[eigen_variable_matrix]</code>
+      <span class="param-desc">The source or destination Eigen matrix.</span>
+    </div>
+    <div class="param-item">
+      <code class="param-name ph-var-inline">[eigen_variable_vector]</code>
+      <span class="param-desc">The source or destination Eigen vector.</span>
+    </div>
+  </div>
+
+  <p>To map from an <strong><code class="path-inline">Eigen::Matrix</code></strong> to an <strong><code class="path-inline">Eigen::Vector</code></strong> without copying memory:</p>
+
+  <CodeBlock code={cppEigenMapMatrixToVector} lang="cpp" customHtml={cppEigenMapMatrixToVectorCustom} showLegend={true} />
+
+  <p>To map from an <strong><code class="path-inline">Eigen::Vector</code></strong> to an <strong><code class="path-inline">Eigen::Matrix</code></strong> layout:</p>
+
+  <CodeBlock code={cppEigenMapVectorToMatrix} lang="cpp" customHtml={cppEigenMapVectorToMatrixCustom} showLegend={true} />
+
+  <h3 class="subsection-heading">11.1.5 std::copy</h3>
+
+  <p>
+    <strong><code class="path-inline">std::copy</code></strong> copies data between Eigen types and STL containers into an <strong>already allocated</strong> destination. Unlike <strong><code class="path-inline">Eigen::Map</code></strong>, the source and destination do not share memory. Requires <strong><code class="path-inline">#include &lt;algorithm&gt;</code></strong>.
+  </p>
+
+  <div class="param-list">
+    <div class="param-item">
+      <code class="param-name ph-var-inline">[std_vector_variable]</code>
+      <span class="param-desc">The <code class="path-inline">std::vector</code></strong>  variable used as a source or destination.</span>
+    </div>
+    <div class="param-item">
+      <code class="param-name ph-var-inline">[eigen_variable_vector]</code>
+      <span class="param-desc">The Eigen vector variable used as a source or destination.</span>
+    </div>
+  </div>
+
+  <h4 class="subsection-heading">11.1.5.1 Eigen to std::vector</h4>
+
+  <p>The destination <code class="param-name ph-var-inline">[std_vector_variable]</code> must be pre-allocated to the correct size before calling <strong><code class="path-inline">std::copy</strong>.</p>
+
+  <CodeBlock code={cppStdCopyToVector} lang="cpp" customHtml={cppStdCopyToVectorCustom} showLegend={true} />
+
+  <h4 class="subsection-heading">11.1.5.2 std::vector to Eigen</h4>
+
+  <p>The destination <code class="param-name ph-var-inline">[eigen_variable_vector]</code> must be pre-allocated to the correct size before calling <strong><code class="path-inline">std::copy</strong>.</p>
+
+  <CodeBlock code={cppStdCopyFromVector} lang="cpp" customHtml={cppStdCopyFromVectorCustom} showLegend={true} />
+
+  <h4 class="subsection-heading">11.1.5.3 Inline Vector Assignment via Range Constructor</h4>
+
+  <p>Alternatively, you can overwrite a target <code class="param-name ph-var-inline">[std_vector_variable]</code> on a single line by re-initializing it with the <strong><code class="path-inline">std::vector</strong> range constructor. This handles allocation and data population in one move, though it creates a temporary container during processing.</p>
+
+  <CodeBlock code={cppStdVectorConstructorFromEigen} lang="cpp" customHtml={cppStdVectorConstructorFromEigenCustom} showLegend={true} />
+
+  <h3 class="subsection-heading">11.1.6 Column-Major Versus Row-Major Storage</h3>
+
+  <p>Eigen3 stores matrices in column-major order within memory by default. In some situations, you may wish to initialize and define a matrix in row-major order in the following way:</p>
+
+  <CodeBlock code={cppEigen3RowMajor} lang="cpp"/>
+
+  <p>a, b are non-zero integers of your liking.</p>
+
+  <h2 class="section-heading" id="pinocchio">11.2 Pinocchio</h2>
+
+  <h3 class="subsection-heading">11.2.1 Including Pinocchio in C++ Packages</h3>
+
+  <p>Include the following within the <strong><code class="path-inline">CMakeLists.txt</code></strong> of the pacakge in which you wish to use Pinocchio:
+
+  <CodeBlock code={cmakePinocchioInclude} lang="cmake"/>
+
+  <p> Don't forget to include it within the dependencies of your node executables.
+
+  <CodeBlock code={cmakePinocchioExecutable} lang="cmake" customHtml={cmakePinocchioExecutableCustom} showLegend={true} />
+
+  <p><strong>Don't forget to modify your dependencies within the <strong><code class="path-inline">pacakge.xml</code></strong> of your package.</strong></p>
+
+  <h3 class="subsection-heading">11.2.2 Importing a Robot Model From URDF</h3>
+
+  <h3 class="subsection-heading">11.2.3 Forward Kinematics</h3>
+  <p>To compute the coordinate transformation from the root origin out to individual local link coordinates across your rigid-body system, utilize the following format:</p>
+
+  <CodeBlock code={cppPinocchioFK} lang="cpp" customHtml={cppPinocchioFKCustom} showLegend={true} />
+
+  <h3 class="subsection-heading">11.2.4 Forward Differential Kinematics</h3>
+  <p>To compute the geometric Jacobian map relating configuration-space generalized velocities to specific spatial frames, leverage the following functions:</p>
+
+  <CodeBlock code={cppPinocchioDiffFK} lang="cpp" customHtml={cppPinocchioDiffFKCustom} showLegend={true} />
+
+  <h3 class="subsection-heading">11.2.5 Dynamics Matrix Computations</h3>
+  <p>To solve your equations of motion parameters, you can extract the Joint-Space Inertia Matrix $M(q)$ using the Composite Rigid Body Algorithm (CRBA), and evaluate nonlinear Coriolis, centrifugal, and gravity forces $h(q, v)$ using the Recursive Newton-Euler Algorithm (RNEA):</p>
+
+  <CodeBlock code={cppPinocchioDynamics} lang="cpp" customHtml={cppPinocchioDynamicsCustom} showLegend={true} />
+
+  <h3 class="subsection-heading">11.2.6 Simultaneous Term Evaluation (Compute All)</h3>
+  <p>For real-time control loops where kinematics, Jacobians, and full rigid-body dynamics matrices are required at every step, Pinocchio provides a unified evaluation function to minimize redundant calculations across algorithms:</p>
+
+  <CodeBlock code={cppPinocchioComputeAll} lang="cpp" customHtml={cppPinocchioComputeAllCustom} showLegend={true} />
+
+  <h2 class="section-heading" id="thread">11.3 Thread</h2>
+
+  <h2 class="section-heading" id="boost.asio">11.4 Boost.asio</h2>
+
+</DocLayout>
+
+<style>
+  .table-container {
+    display: flex;
+    justify-content: center;
+    overflow-x: auto;
+    margin: 2rem 0;
+  }
+
+  .doc-table {
+    width: 100%;
+    max-width: 10.5in;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    border: 1px solid #000000;
+    color: #000000; 
+  }
+
+  .doc-table th, 
+  .doc-table td {
+    border: 1px solid #000000;
+    padding: 8px 12px;
+    text-align: center;
+    vertical-align: middle;
+    word-wrap: break-word;
+  }
+
+  /* Header Styling */
+  .doc-table th {
+    background-color: #e7e7e7;
+    font-weight: bold;
+    border-bottom: 2px solid #000000;
+  }
+
+  /* Category column — second table only */
+  .doc-table--categories tbody th {
+    border-bottom: 1px solid #000000;
+    border-right: 2px solid #000000;
+  }
+
+  .doc-table--categories thead th:first-child {
+    border-bottom: 1px solid #000000;
+  }
+
+  /* Dark mode */
+  :global([data-theme="dark"]) .doc-table,
+  :global([data-theme="dark"]) .doc-table th,
+  :global([data-theme="dark"]) .doc-table td {
+    border-color: #949494;
+    color: #a6adc8;
+  }
+
+  :global([data-theme="dark"]) .doc-table th {
+    background-color: #222230;
+    border-bottom-color: #949494;
+  }
+
+  :global([data-theme="dark"]) .doc-table--categories tbody th {
+    border-bottom: 1px solid #949494;
+    border-right: 2px solid #949494;
+  }
+
+  :global([data-theme="dark"]) .doc-table--categories thead th:first-child {
+    border-bottom: 1px solid #949494;
+  }
+</style>
